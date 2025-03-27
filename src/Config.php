@@ -15,7 +15,7 @@ class Config
 
     // classe URL
     static public string $protocol = 'http';
-    static public string $host = 'nageurs.localhost';
+    //static public string $host = '';
     static public string $port = '80';
 
     // copier dans ce tableau les variables contenant des chemins

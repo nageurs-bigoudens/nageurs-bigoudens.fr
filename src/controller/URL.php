@@ -6,7 +6,7 @@ declare(strict_types=1);
 class URL implements Stringable
 {
 	static private string $protocol = 'http://';
-	static private string $host = 'localhost';
+	static private string $host = '';
 	static private string $port;
 	static private string $path = '/index.php';
 	private array $params;
