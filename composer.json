@@ -1,0 +1,32 @@
+{
+    "name": "nageurs/bigoudens",
+    "description": "site web du club de natation: les nageurs bigoudens à Pont-l'Abbé",
+    "require": {
+        "doctrine/dbal": "^4.2",
+        "doctrine/orm": "^3.3",
+        "symfony/cache": "^7.2",
+        "composer": "*",
+        "htmlawed/htmlawed": "^1.2",
+        "tinymce/tinymce": "^7.7",
+        "tweeb/tinymce-i18n": "^2.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
+            "php bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
+        ],
+        "post-update-cmd": [
+            "php bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
+            "php bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
+        ]
+    },
+    "authors": [
+        {
+            "name": "polo",
+            "email": "paul.jusot@fdn.fr"
+        }
+    ],
+	"autoload": {
+        "classmap": ["src/"]
+     }
+}

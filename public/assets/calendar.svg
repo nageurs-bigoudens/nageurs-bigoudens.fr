@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 24 24"
+   fill="currentColor"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="calendar.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="16.333333"
+     inkscape:cx="10.867347"
+     inkscape:cy="7.0714286"
+     inkscape:window-width="1378"
+     inkscape:window-height="1032"
+     inkscape:window-x="538"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"
+     id="path1" />
+  <path
+     style="fill:#dd3333;stroke-width:0.2314;fill-opacity:1"
+     d="M 2.6632967,20.900914 C 2.5791303,20.867183 2.4456452,20.779249 2.3666632,20.705506 2.0328996,20.393883 2.0510204,20.894721 2.0510204,11.981482 V 3.7221898 L 2.1887755,3.5197856 C 2.2645408,3.4084632 2.4042737,3.2597461 2.4992931,3.1893029 2.6658093,3.0658553 2.7504798,3.0605903 4.8411299,3.0436855 L 7.0102041,3.0261465 V 2.0181753 1.0102041 h 0.9795918 0.9795919 v 1.0102041 1.010204 H 12 15.030612 V 2.0204082 1.0102041 h 0.979592 0.979592 v 1.0079712 1.0079712 l 2.169074,0.017539 c 2.09065,0.016905 2.175321,0.02217 2.341837,0.1456174 0.09502,0.070443 0.234752,0.2191603 0.310518,0.3304827 L 21.94898,3.7221898 V 12 20.27781 l -0.137755,0.202405 c -0.07577,0.111322 -0.215538,0.260039 -0.310605,0.330482 l -0.17285,0.128079 -9.255722,0.01173 c -6.0661846,0.0077 -9.3084558,-0.0094 -9.4087513,-0.0496 z M 20.05102,15 V 10.989796 H 12 3.9489796 V 15 19.010204 H 12 20.05102 Z m 0,-7.9897959 V 4.9897959 H 18.520408 16.989796 V 5.9693878 6.9489796 H 16.010204 15.030612 V 5.9693878 4.9897959 H 12 8.9693878 V 5.9693878 6.9489796 H 7.9897959 7.0102041 V 5.9693878 4.9897959 H 5.4795918 3.9489796 V 7.0102041 9.0306123 H 12 20.05102 Z"
+     id="path2" />
+</svg>

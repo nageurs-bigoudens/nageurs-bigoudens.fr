@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+// bin/doctrine
+
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+
+chdir('bin'); // pour être au même niveau que l'appli dans /public
+
+require('../src/Config.php');
+Config::load('../config/config.ini');
+
+require '../src/model/doctrine-bootstrap.php';  // relatif
+//require __DIR__ . '/../src/model/doctrine-bootstrap.php'; // absolu
+
+ConsoleRunner::run(
+    new SingleManagerProvider($entityManager)
+);

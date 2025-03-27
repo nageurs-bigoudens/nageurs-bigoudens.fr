@@ -1,0 +1,59 @@
+header
+{
+	text-align: center;
+	/*padding-top: 5px;*/
+	/*padding-bottom: 10px;*/
+	background-image: url('../assets/fond-piscine.jpg');
+	background-size: cover; /* largeur du bloc_page  */
+}
+header > div
+{
+	/*margin: auto;*/
+	/*max-width: 1200px;*/
+	display: flex;
+	/*align-items: center;*/ /* conflit possible avec .social align-self */
+	justify-content: space-around;
+}
+.header-content
+{
+	padding: 20px 0;
+}
+.site_title
+{
+	background-color: #ffffff7f;
+	border-radius: 10px;
+}
+header h1
+{
+	font-size: x-large;
+	margin: 10px;
+}
+header h2
+{
+	font-size: medium; /* défaut = x-large */
+	margin: 10px;
+}
+header img
+{
+	vertical-align: bottom; /* supprime espace sous l'image */
+}
+header a
+{
+	color: unset; /* ne plus hériter */
+	text-decoration: none;
+}
+.social
+{
+	align-self: end;
+}
+.social img
+{
+	width: 25px;
+	background-color: #ffffffb3;
+	border-radius: 10px;
+}
+
+.social img:hover
+{
+	background-color: #ffff00;
+}

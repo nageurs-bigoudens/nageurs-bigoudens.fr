@@ -1,0 +1,7 @@
+vendor/
+node_modules/
+public/js/tinymce/
+public/js/tinymce-langs/
+config/config.ini
+data/
+bdd_nageurs.sql

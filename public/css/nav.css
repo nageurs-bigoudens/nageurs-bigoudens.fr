@@ -1,0 +1,95 @@
+/*-- menu principal --*/
+.empty_nav_zone
+{
+	height: 33px;
+}
+.nav_main
+{
+	position: fixed;
+	/*box-shadow: 3px 3px 5px #13aff0;*/
+	border: 2px solid #13aff0;
+	top: -2px;
+}
+.nav_main
+{
+	/*font-size: 90%;*/
+	/*margin-top: 10px;*/
+	/*margin-bottom: 10px;*/
+	text-wrap: nowrap;
+}
+.nav_main > ul
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+ul
+{
+	margin: 0;
+}
+.nav_main ul, .nav_main li
+{
+	list-style: none;
+	padding-left: 0;
+}
+.nav_main p
+{
+	padding: 7px;
+	margin: 0;
+	background-color: #ffffffe1; /* b3 = 179 = 0.7 (x 256) */
+}
+.nav_main p:hover
+{
+	background-color: white;
+}
+.current > p
+{
+	background-color: white;
+	font-weight: bold;
+}
+.drop-down > p::after
+{
+	content: ' ▼';
+	font-size: x-small;
+}
+
+.drop-down:hover > .sub-menu /* faire apparaître sub-menu */
+{
+	display: block;
+}
+.sub-menu
+{
+	display: none;
+	background-color: white;
+	border-top: 3px solid #13aff0;
+	box-shadow: 1px 1px 3px black;
+	font-size: 95%;
+}
+/*.sub-menu p:hover*/
+.nav_main p:hover
+{
+	background-color: #ffff00;
+}
+.drop-down .sub-menu .drop-down > p:after /* bricolage? */
+{
+	content: " ▶";
+	font-size: x-small;
+}
+
+/* 1er sous-menu, poitionnement pour ne pas aggrandir l'élément parent */
+nav > ul > li > ul
+{
+	position: absolute; /* retire du flux, positionnement par rapport à la fenêtre */
+}
+/* élément du menu survolé, le positionnement relatif en fait la référence du positionnement suivant */
+.drop-down .sub-menu .drop-down
+{
+	position: relative;
+}
+.drop-down .sub-menu .drop-down .sub-menu
+{
+	position: absolute; /* positionnement par rapport au précédent "position" en CSS */
+	left: 100%;
+	top: -3px; /* la bordure bleue fait 3px */
+}
