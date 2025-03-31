@@ -32,13 +32,13 @@ footer > div
 	border-bottom: 2px #ff1d04 solid;
 }
 
-
 /*-- fil d'ariane --*/
 .breadcrumb
 {
-	max-width: 45%;
+	/*max-width: 45%;*/
 	/*margin-right: 10px;*/
-	margin: 16px 0; /* = p */
+	/*margin: 16px 0;*/ /* = p */
+	padding: 10px;
 	list-style: none; /* retirer les puces */
 	font-size: small;
 	text-align: right;
@@ -67,6 +67,12 @@ footer > div
 	display: block;
 	margin: 0 3px;
 }*/
+
+.footer_logo img
+{
+	max-width: 288px;
+}
+
 .breadcrumb a
 {
 	color: unset; /* ne plus hériter */
@@ -101,7 +107,7 @@ footer > div
 {
 	margin: 5px 0;
 	display: flex;
-	justify-content: space-around;
+	justify-content: center;
 }
 .logged_in button
 {

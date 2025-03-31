@@ -6,19 +6,23 @@ use App\Entity\Node;
 class HeaderBuilder extends AbstractBuilder
 {
     private ?Node $nav = null;
+    private ?Node $breadcrumb = null;
 
     public function __construct(Node $node)
     {
-        // nav
-        // n'utilise pas useChildrenBuilder, il faudrait peut-être
+        // pas de useChildrenBuilder, il faudrait peut-être
         $children = $node->getChildren();
         foreach($children as $child)
         {
-            if($child->getName() === 'nav')
-            {
+            if($child->getName() === 'nav'){
                 $this->nav = $child;
                 $nav_builder = new NavBuilder($this->nav);
                 $nav = $nav_builder->render();
+            }
+            elseif($child->getName() === 'breadcrumb'){
+                $this->breadcrumb = $child;
+                $breadcrumb_builder = new BreadcrumbBuilder($this->breadcrumb);
+                $breadcrumb = $breadcrumb_builder->render();
             }
         }
     	

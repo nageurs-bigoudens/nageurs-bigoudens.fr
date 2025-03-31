@@ -32,6 +32,9 @@ class Page
     #[ORM\Column(type: "boolean")]
     private bool $in_menu;
 
+    #[ORM\Column(type: "integer", nullable: true)] // null si hors menu
+    private ?int $position;
+
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(name: "parent_id", referencedColumnName: "id_page", onDelete: "SET NULL", nullable: true)]
     private ?self $parent = null;
@@ -42,12 +45,13 @@ class Page
     /*#[ORM\Column(type: "json", nullable: true)]
     private ?array $metadata = null;*/
 
-    public function __construct(string $name, string $eop, bool $reachable, bool $in_menu, ?Page $parent)
+    public function __construct(string $name, string $eop, bool $reachable, bool $in_menu, ?int $position, ?Page $parent)
     {
         $this->name_page = $name;
         $this->end_of_path = $eop;
         $this->reachable = $reachable;
         $this->in_menu = $in_menu;
+        $this->position = $position;
         $this->parent = $parent;
         $this->children = new ArrayCollection();
     }
@@ -73,6 +77,10 @@ class Page
     {
         return $this->in_menu;
     }
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
     public function getParent(): ?Page
     {
         return $this->parent;
@@ -93,5 +101,26 @@ class Page
     public function addChild(self $child): void
     {
         $this->children[] = $child;
+        $this->sortChildren();
+    }
+
+    // utiliser $position pour afficher les éléments dans l'ordre
+    private function sortChildren(): void
+    {
+        $iteration = count($this->children);
+        while($iteration > 1)
+        {
+            for($i = 0; $i < $iteration - 1; $i++)
+            {
+                //echo '<br>' . $this->children[$i]->getPosition() . ' - ' . $this->children[$i + 1]->getPosition();
+                if($this->children[$i]->getPosition() > $this->children[$i + 1]->getPosition())
+                {
+                    $tmp = $this->children[$i];
+                    $this->children[$i] = $this->children[$i + 1];
+                    $this->children[$i + 1] = $tmp;
+                }
+            }
+            $iteration--;
+        }
     }
 }

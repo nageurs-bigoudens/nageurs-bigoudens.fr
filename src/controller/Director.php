@@ -62,7 +62,7 @@ class Director
         return true;
     }
 
-    public function feedObjects(array $bulk_data): void // $bulk_data = tableau de Node
+    private function feedObjects(array $bulk_data): void // $bulk_data = tableau de Node
     {
         // puis on les range
         // (attention, risque de disfonctionnement si les noeuds de 1er niveau ne sont pas récupérés en 1er dans la BDD)

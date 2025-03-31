@@ -35,7 +35,7 @@ article
 {
 	/*display: flex;*/
 	background-color: white;
-	margin: 15px 15px 0 15px;
+	margin: 15px;
 	padding: 0 15px;
 	/*min-height: 150px;*/
 }
@@ -78,10 +78,6 @@ article .action_icon:hover
 	display: flex;
 	justify-content: space-between;
 	font-size: small;
-}
-.under_an_article p
-{
-	margin: 5px;
 }
 .under_an_article img
 {
