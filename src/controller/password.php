@@ -159,7 +159,7 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 		$user = getUser($login, $entityManager);
 
 		// enregistrement et redirection
-		if(password_verify($password, $user->getPassword()))
+		if(!empty($user) && $login === $user->getLogin() && password_verify($password, $user->getPassword()))
 		{
 			session_start();
 			$_SESSION['user'] = $login;
@@ -286,18 +286,14 @@ function changePassword(EntityManager $entityManager)
 }
 
 
-function getUser(string $login, EntityManager $entityManager): User
+function getUser(string $login, EntityManager $entityManager): ?User
 {
 	$users = $entityManager->getRepository('App\Entity\User')->findBy(['login' => $login]);
 	
-	// détection d'un abus
 	if(count($users) === 0)
 	{
 		$_SESSION['user'] = '';
 		$_SESSION['admin'] = false;
-
-		header('Location: index.php'); // page création d'un mot de passe à l'attérissage
-		die;
 	}
 
 	foreach($users as $user)
@@ -307,8 +303,7 @@ function getUser(string $login, EntityManager $entityManager): User
 			return $user;
 		}
 	}
-	header('Location: ' . new URL);
-	die;
+	return null;
 }
 
 
