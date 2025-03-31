@@ -128,10 +128,10 @@ class Node
     {
         return $this->position;
     }
-    /*public function setPosition(int $position): void
+    public function setPosition(int $position): void
     {
         $this->position = $position;
-    }*/
+    }
     public function getPage(): Page
     {
         return $this->page;

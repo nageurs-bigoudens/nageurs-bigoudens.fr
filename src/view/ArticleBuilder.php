@@ -34,11 +34,11 @@ class ArticleBuilder extends AbstractBuilder
                 $modify_js = 'onclick="openEditor(\'' . $id . '\')"';
                 $modify_article = '<p id="edit-' . $id . '"><a href="#"><img class="action_icon" src="assets/edit.svg" ' . $modify_js . '></a></p>' . "\n";
 
-                $up_link = new URL(['page' => CURRENT_PAGE, 'id' => $id, 'action' => 'position_up']);
-                $up_button = '<p id="position_up-' . $id . '"><a href="' . $up_link . '"><img class="action_icon" src="assets/arrow-up.svg"></a></p>' . "\n";
+                $up_js = 'onclick="switchPositions(\'' . $id . '\', \'up\')"';
+                $up_button = '<p id="position_up-' . $id . '"><a href="#"><img class="action_icon" src="assets/arrow-up.svg" ' . $up_js . '></a></p>' . "\n";
                 
-                $down_link = new URL(['page' => CURRENT_PAGE, 'id' => $id, 'action' => 'position_down']);
-                $down_button = '<p id="position_down-' . $id . '"><a href="' . $down_link . '"><img class="action_icon" src="assets/arrow-down.svg"></a></p>' . "\n";
+                $down_js = 'onclick="switchPositions(\'' . $id . '\', \'down\')"';
+                $down_button = '<p id="position_down-' . $id . '"><a href="#"><img class="action_icon" src="assets/arrow-down.svg" ' . $down_js . '></a></p>' . "\n";
                 
                 $delete_js = 'onclick="deleteArticle(\'' . $id . '\')"';
                 $delete_article = '<p id="delete-' . $id . '"><a href="#"><img class="action_icon" src="assets/delete-bin.svg" ' . $delete_js . '></a></p>' . "\n";

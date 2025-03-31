@@ -58,6 +58,23 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
         }
 		die;
 	}
+	// inversion de la position de deux noeuds
+	elseif($_GET['action'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
+	{
+		$director = new Director($entityManager);
+		$director->makeArticleNode($json['id1']);
+        $node1 = $director->getRootNode();
+        $director->makeArticleNode($json['id2']);
+        $node2 = $director->getRootNode();
+
+        $tmp = $node1->getPosition();
+        $node1->setPosition($node2->getPosition());
+        $node2->setPosition($tmp);
+        $entityManager->flush();
+
+		echo json_encode(['success' => true]);
+		die;
+	}
 }
 
 // détection des requêtes d'upload d'image de tinymce
