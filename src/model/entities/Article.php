@@ -49,6 +49,10 @@ class Article
     {
         return $this->date_time;
     }
+    public function setDateTime(\DateTime $date_time): void
+    {
+        $this->date_time = $date_time;
+    }
     public function getTimestamp(): int
     {
         return $this->date_time->getTimestamp();
@@ -57,9 +61,17 @@ class Article
     {
         return $this->title;
     }
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
     public function getPreview(): string
     {
         return $this->preview;
+    }
+    public function setPreview(string $preview): void
+    {
+        $this->preview = $preview;
     }
     public function getContent(): string
     {

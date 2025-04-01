@@ -14,16 +14,32 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	{
 	    if(json_last_error() === JSON_ERROR_NONE)
 	    {
-	        $articleId = $json['id'];
+	        $id = $json['id'];
+	        $id[0] = 'i';
 	        $content = Security::secureString($json['content']);
 
 	        $director = new Director($entityManager);
-	        if($director->makeArticleNode($articleId)) // une entrée est trouvée
+	        if($director->makeArticleNode($id)) // une entrée est trouvée
 	        {
 	        	$node = $director->getRootNode();
-		        $node->getArticle()->setContent($content);
+	        	switch($json['id'][0]){
+					case 'i':
+						$node->getArticle()->setContent($content);
+						break;
+					case 'p':
+						$node->getArticle()->setPreview($content); // html de l'éditeur
+						break;
+					case 't':
+						$node->getArticle()->setTitle($content); // html de l'éditeur
+						break;
+					case 'd':
+						echo json_encode(['success' => false, 'message' => 'l\'action editor_submit ne supporte pas les dates, utiliser date_submit.']);
+						die;
+					default:
+						echo json_encode(['success' => false, 'message' => 'identifiant non utilisable']);
+						die;
+				}
 		        $entityManager->flush();
-
 		        echo json_encode(['success' => true]);
 	        }
 	        else{
@@ -37,16 +53,16 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	}
 	elseif($_GET['action'] === 'delete_article' && isset($json['id']))
 	{
-        $articleId = $json['id'];
+        $id = $json['id'];
 
         $director = new Director($entityManager);
-        $director->makeArticleNode($articleId);
+        $director->makeArticleNode($id);
         $node = $director->getRootNode();
         $entityManager->remove($node);
         $entityManager->flush();
 
         // test avec une nouvelle requête qui ne devrait rien trouver
-        if(!$director->makeArticleNode($articleId))
+        if(!$director->makeArticleNode($id))
         {
         	echo json_encode(['success' => true]);
 
@@ -72,6 +88,21 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
         $node2->setPosition($tmp);
         $entityManager->flush();
 
+		echo json_encode(['success' => true]);
+		die;
+	}
+	elseif($_GET['action'] === 'date_submit' && isset($json['id']) && isset($json['date']))
+	{
+		$id = $json['id'];
+		$id[0] = 'i';
+		$date = new DateTime($json['date']);
+
+		$director = new Director($entityManager);
+		$director->makeArticleNode($id);
+        $node = $director->getRootNode();
+		$node->getArticle()->setDateTime($date);
+		$entityManager->flush();
+		
 		echo json_encode(['success' => true]);
 		die;
 	}

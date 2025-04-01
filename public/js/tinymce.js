@@ -1,12 +1,14 @@
 let editors = {};
 
-function openEditor(articleId, page = '') {
+function openEditor(id, page = '') {
+    const real_id = 'i' + id.slice(1);
+
     // Récupérer et sauvegarder le contenu d'origine de l'article
-    const articleContent = document.getElementById(articleId).innerHTML;
-    document.getElementById(articleId).setAttribute('data-original-content', articleContent);
+    const articleContent = document.getElementById(id).innerHTML;
+    document.getElementById(id).setAttribute('data-original-content', articleContent);
 
     tinymce.init({
-        selector: `#${articleId}`,
+        selector: `#${id}`,
         language: 'fr_FR', // télécharger des paquets de langue ici: https://www.tiny.cloud/get-tiny/language-packages/
         language_url: 'js/tinymce-langs/fr_FR.js', // ou installer tweeb/tinymce-i18n avec composer
         license_key: 'gpl',
@@ -18,19 +20,18 @@ function openEditor(articleId, page = '') {
         statusbar: false,
         setup: function (editor) {
             editor.on('init', function () {
-                editors[articleId] = editor;
+                editors[id] = editor;
                 
                 // boutons "Modifier", "Supprimer", "déplacer vers le haut", "déplacer vers le bas", "Annuler" et "Soumettre"
-                document.querySelector(`#edit-${articleId}`).classList.add('hidden');
-                document.querySelector(`#delete-${articleId}`).classList.add('hidden');
+                document.querySelector(`#edit-${id}`).classList.add('hidden');
+                document.querySelector(`#cancel-${id}`).classList.remove('hidden');
+                document.querySelector(`#submit-${id}`).classList.remove('hidden');
+                document.querySelector(`#delete-${real_id}`).classList.add('hidden');
                 // boutons absents page article
                 if(page != 'article'){
-                    document.querySelector(`#position_up-${articleId}`).classList.add('hidden');
-                    document.querySelector(`#position_down-${articleId}`).classList.add('hidden');
+                    document.querySelector(`#position_up-${id}`).classList.add('hidden');
+                    document.querySelector(`#position_down-${id}`).classList.add('hidden');
                 }
-                document.querySelector(`#cancel-${articleId}`).classList.remove('hidden');
-                document.querySelector(`#submit-${articleId}`).classList.remove('hidden');
-                
             });
         },
         // upload d'image
@@ -59,10 +60,10 @@ function openEditor(articleId, page = '') {
     });
 
     // Remplacer le contenu de l'article par l'éditeur
-    document.getElementById(articleId).innerHTML = articleContent;
+    document.getElementById(id).innerHTML = articleContent;
 }
 
-function deleteArticle(articleId, page = '') {
+function deleteArticle(id, page = '') {
     if (confirm('Voulez-vous vraiment supprimer cet article ?'))
     {
         // Envoyer une requête au serveur pour supprimer l'article
@@ -71,7 +72,7 @@ function deleteArticle(articleId, page = '') {
             headers: {
             'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: articleId })
+            body: JSON.stringify({ id: id })
         })
         .then(response => response.json())
         .then(data => {
@@ -85,7 +86,7 @@ function deleteArticle(articleId, page = '') {
                 }
                 else{
                     // Supprimer l'article du DOM
-                    const articleElement = document.getElementById(articleId);
+                    const articleElement = document.getElementById(id);
                     articleElement.parentElement.parentElement.remove(); // <article> est deux niveau au dessus
                 }
             }
@@ -99,40 +100,42 @@ function deleteArticle(articleId, page = '') {
     }
 }
 
-function closeEditor(articleId, page = '', display_old = true)
+function closeEditor(id, page = '', display_old = true)
 {
+    const real_id = 'i' + id.slice(1);
+
     // Fermer l'éditeur
-    tinymce.remove(`#${articleId}`);
-    delete editors[articleId];
+    tinymce.remove(`#${id}`);
+    delete editors[id];
     
     // Restaurer le contenu d'origine de l'article
     if(display_old){
-        const originalContent = document.getElementById(articleId).getAttribute('data-original-content');
-        document.getElementById(articleId).innerHTML = originalContent;
+        const originalContent = document.getElementById(id).getAttribute('data-original-content');
+        document.getElementById(id).innerHTML = originalContent;
     }
 
     // boutons "Modifier", "Supprimer", "déplacer vers le haut", "déplacer vers le bas", "Annuler" et "Soumettre"
-    document.querySelector(`#edit-${articleId}`).classList.remove('hidden');
-    document.querySelector(`#delete-${articleId}`).classList.remove('hidden');
+    document.querySelector(`#edit-${id}`).classList.remove('hidden');
+    document.querySelector(`#cancel-${id}`).classList.add('hidden');
+    document.querySelector(`#submit-${id}`).classList.add('hidden');
+    document.querySelector(`#delete-${real_id}`).classList.remove('hidden');
     // boutons absents page article
     if(page != 'article'){
-        document.querySelector(`#position_up-${articleId}`).classList.remove('hidden');
-        document.querySelector(`#position_down-${articleId}`).classList.remove('hidden');
-    }
-    document.querySelector(`#cancel-${articleId}`).classList.add('hidden');
-    document.querySelector(`#submit-${articleId}`).classList.add('hidden');
+        document.querySelector(`#position_up-${id}`).classList.remove('hidden');
+        document.querySelector(`#position_down-${id}`).classList.remove('hidden');
+    }    
 }
 
-function submitArticle(articleId, page = '') {
+function submitArticle(id, page = '') {
     // Récupérer l'éditeur correspondant à l'article
-    const editor = editors[articleId];
-    if (!editor) {
-        console.error('Éditeur non trouvé pour l\'article:', articleId);
+    const editor = editors[id];
+    if(!editor) {
+        console.error('Éditeur non trouvé pour l\'article:', id);
         return;
     }
     
     // Récupérer le contenu de l'éditeur
-    const newContent = editor.getContent();
+    const html = editor.getContent();
 
     // Envoi AJAX au serveur
     fetch('index.php?action=editor_submit', {
@@ -140,14 +143,14 @@ function submitArticle(articleId, page = '') {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: articleId, content: newContent})
+        body: JSON.stringify({id: id, content: html})
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             // Fermer l'éditeur et mettre à jour le contenu de l'article
-            closeEditor(articleId, page, false);
-            document.getElementById(articleId).innerHTML = newContent;
+            closeEditor(id, page, false);
+            document.getElementById(id).innerHTML = html;
         }
         else {
             alert('Erreur lors de la sauvegarde de l\'article.');

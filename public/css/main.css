@@ -56,22 +56,39 @@ article .logo2
 	overflow: hidden;
 }
 
-article .action_icon
+.action_icon
 {
 	width: 24px;
-	vertical-align: middle;
+	vertical-align: bottom;
 	border: white 2px solid; /* invisible */
 }
-article .action_icon:hover
+button .action_icon
+{
+	border: none;
+}
+.action_icon:hover
 {
 	background-color: #ffff00;
 	border-radius: 4px;
 	border: lightgrey 2px outset;
 }
-.article_title_zone
+button .action_icon:hover
+{
+	border: none;
+}
+
+.button_zone
 {
 	display: flex;
-	justify-content: space-between;
+}
+
+.share
+{
+	float: right;
+}
+.article_title_zone
+{
+	padding: 10px;
 }
 .under_an_article
 {
@@ -82,8 +99,8 @@ article .action_icon:hover
 .under_an_article img
 {
 	width: 24px;
-	vertical-align: middle;
 	margin-right: 5px;
+	vertical-align: middle;
 }
 .article_admin_zone
 {

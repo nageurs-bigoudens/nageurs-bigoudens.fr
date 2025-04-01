@@ -1,7 +1,6 @@
 <article>
     <div class="article_content">
         <div class="article_title_zone">
-            <h4><?= $title ?></h4>
             <?= $share_button ?>
         </div>
         <div id="<?= $id ?>" class="html_from_editor">

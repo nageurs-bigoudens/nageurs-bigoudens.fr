@@ -25,7 +25,7 @@ class ArticleBuilder extends AbstractBuilder
             // partage
             $share_link = new URL(['page' => CURRENT_PAGE], $id);
             $share_js = 'onclick="copyInClipBoard(\'' . $share_link . '\')"';
-            $share_button = '<p><a href="' . $share_link . '" ' . $share_js . '><img class="action_icon" src="assets/share.svg"></a></p>' . "\n";
+            $share_button = '<a class="share" href="' . $share_link . '" ' . $share_js . '><img class="action_icon" src="assets/share.svg"></a>' . "\n";
 
             // modifier un article
             $admin_buttons = '';
