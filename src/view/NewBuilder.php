@@ -50,7 +50,7 @@ class NewBuilder extends AbstractBuilder
             if($_SESSION['admin'])
             {
                 if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
-                    $modify_js = 'onclick="openEditor(\'' . $id . '\')"';
+                    $modify_js = 'onclick="openEditor(\'' . $id . '\', \'article\')"';
                     $modify_article = '<p id="edit-' . $id . '"><a href="#"><img class="action_icon" src="assets/edit.svg" ' . $modify_js . '></a></p>' . "\n";
 
                     $up_button = '';
@@ -59,10 +59,10 @@ class NewBuilder extends AbstractBuilder
                     $delete_js = 'onclick="deleteArticle(\'' . $id . '\', \'' . CURRENT_PAGE . '\')"';
                     $delete_article = '<p id="delete-' . $id . '"><a href="#"><img class="action_icon" src="assets/delete-bin.svg" ' . $delete_js . '></a></p>' . "\n";
                     
-                    $close_js = 'onclick="closeEditor(\'' . $id . '\')"';
+                    $close_js = 'onclick="closeEditor(\'' . $id . '\', \'article\')"';
                     $close_editor = '<p id="cancel-' . $id . '" class="hidden"><a href="#"><button ' . $close_js . '>Annuler</button></a></p>';
                     
-                    $submit_js = 'onclick="submitArticle(\'' . $id . '\')"';
+                    $submit_js = 'onclick="submitArticle(\'' . $id . '\', \'article\')"';
                     $submit_article = '<p id="submit-' . $id . '" class="hidden"><a href="#"><button ' . $submit_js . '>Valider</button></a></p>';
                 }
                 else{

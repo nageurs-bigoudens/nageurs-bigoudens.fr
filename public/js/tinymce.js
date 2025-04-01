@@ -1,6 +1,6 @@
 let editors = {};
 
-function openEditor(articleId) {
+function openEditor(articleId, page = '') {
     // Récupérer et sauvegarder le contenu d'origine de l'article
     const articleContent = document.getElementById(articleId).innerHTML;
     document.getElementById(articleId).setAttribute('data-original-content', articleContent);
@@ -20,16 +20,13 @@ function openEditor(articleId) {
             editor.on('init', function () {
                 editors[articleId] = editor;
                 
-                // Masquer le bouton "Modifier" et afficher les boutons "Annuler" et "Soumettre"
-                if(articleId != 'new')
-                {
-                    document.querySelector(`#edit-${articleId}`).classList.add('hidden');
-                    document.querySelector(`#delete-${articleId}`).classList.add('hidden');
+                // boutons "Modifier", "Supprimer", "déplacer vers le haut", "déplacer vers le bas", "Annuler" et "Soumettre"
+                document.querySelector(`#edit-${articleId}`).classList.add('hidden');
+                document.querySelector(`#delete-${articleId}`).classList.add('hidden');
+                // boutons absents page article
+                if(page != 'article'){
                     document.querySelector(`#position_up-${articleId}`).classList.add('hidden');
                     document.querySelector(`#position_down-${articleId}`).classList.add('hidden');
-                }
-                else{
-                    document.querySelector(`#new-${articleId}`).classList.add('hidden');
                 }
                 document.querySelector(`#cancel-${articleId}`).classList.remove('hidden');
                 document.querySelector(`#submit-${articleId}`).classList.remove('hidden');
@@ -78,7 +75,7 @@ function deleteArticle(articleId, page = '') {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success)
+            if(data.success)
             {
                 if(page == 'article'){
                     // redirection vers la page d'accueil
@@ -102,7 +99,7 @@ function deleteArticle(articleId, page = '') {
     }
 }
 
-function closeEditor(articleId, display_old = true)
+function closeEditor(articleId, page = '', display_old = true)
 {
     // Fermer l'éditeur
     tinymce.remove(`#${articleId}`);
@@ -114,21 +111,19 @@ function closeEditor(articleId, display_old = true)
         document.getElementById(articleId).innerHTML = originalContent;
     }
 
-    // Afficher le bouton "Modifier" et masquer les boutons "Annuler" et "Soumettre"
-    if(articleId != 'new'){
-        document.querySelector(`#edit-${articleId}`).classList.remove('hidden');
-        document.querySelector(`#delete-${articleId}`).classList.remove('hidden');
+    // boutons "Modifier", "Supprimer", "déplacer vers le haut", "déplacer vers le bas", "Annuler" et "Soumettre"
+    document.querySelector(`#edit-${articleId}`).classList.remove('hidden');
+    document.querySelector(`#delete-${articleId}`).classList.remove('hidden');
+    // boutons absents page article
+    if(page != 'article'){
         document.querySelector(`#position_up-${articleId}`).classList.remove('hidden');
         document.querySelector(`#position_down-${articleId}`).classList.remove('hidden');
-    }
-    else{
-        document.querySelector(`#new-${articleId}`).classList.remove('hidden');
     }
     document.querySelector(`#cancel-${articleId}`).classList.add('hidden');
     document.querySelector(`#submit-${articleId}`).classList.add('hidden');
 }
 
-function submitArticle(articleId) {
+function submitArticle(articleId, page = '') {
     // Récupérer l'éditeur correspondant à l'article
     const editor = editors[articleId];
     if (!editor) {
@@ -151,7 +146,7 @@ function submitArticle(articleId) {
     .then(data => {
         if (data.success) {
             // Fermer l'éditeur et mettre à jour le contenu de l'article
-            closeEditor(articleId, false);
+            closeEditor(articleId, page, false);
             document.getElementById(articleId).innerHTML = newContent;
         }
         else {
