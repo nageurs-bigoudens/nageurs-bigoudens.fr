@@ -250,7 +250,7 @@ function submitArticle(id, page = '', clone = null) {
                 submit_btn.querySelector('button').setAttribute('onclick', "submitArticle('" + data.article_id + "')");
 
                 var next_div = parent.nextElementSibling.nextElementSibling;
-                parent.parentNode.replaceChild(clone, parent);
+                parent.parentNode.replaceChild(clone.cloneNode(true), parent); // clone du squelette pour le garder intact
                 next_div.appendChild(parent);
             }
             else{
