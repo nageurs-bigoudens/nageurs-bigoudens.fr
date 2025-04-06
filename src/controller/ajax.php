@@ -3,6 +3,9 @@
 
 declare(strict_types=1);
 
+use App\Entity\Article;
+use App\Entity\Node;
+
 // détection des requêtes de tinymce
 if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 {
@@ -15,13 +18,44 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	    if(json_last_error() === JSON_ERROR_NONE)
 	    {
 	        $id = $json['id'];
-	        $id[0] = 'i';
 	        $content = Security::secureString($json['content']);
-
 	        $director = new Director($entityManager);
+
+	        // nouvel article
+	        if($id[0] === 'n')
+	        {
+	        	if($content === ''){
+	        		echo json_encode(['success' => false, 'message' => 'pas de données à sauvegarder']);
+					die;
+	        	}
+	        	$section_id = (int)substr($id, 1); // id du bloc <section>
+	        	$director->makeSectionNode($section_id);
+	        	$node = $director->getNode(); // = <section>
+
+	        	$timestamp = time();
+	        	$date = new \DateTime;
+	        	$date->setTimestamp($timestamp);
+
+	        	$article = new Article($content, $date); // le "current" timestamp est obtenu par la BDD
+	        	$article_node = new Node('article', 'i' . (string)$timestamp, [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);
+
+	        	$entityManager->persist($article_node);
+	        	$entityManager->flush();
+
+	        	// id_node tout juste généré
+	        	//$article_node->getId();
+	        	
+	        	echo json_encode(['success' => true, 'article_id' => $article_node->getArticleTimestamp()]);
+	        	die;
+	        }
+	        // modification article
+	        else{
+	        	$id[0] = 'i'; // id de l'article node
+	        }
+
 	        if($director->makeArticleNode($id)) // une entrée est trouvée
 	        {
-	        	$node = $director->getRootNode();
+	        	$node = $director->getArticleNode(); // article
 	        	switch($json['id'][0]){
 					case 'i':
 						$node->getArticle()->setContent($content);
@@ -42,8 +76,9 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 		        $entityManager->flush();
 		        echo json_encode(['success' => true]);
 	        }
-	        else{
-	        	echo json_encode(['success' => false, 'message' => 'Aucune entrée trouvée en BDD']);
+	        else
+	        {
+	        	echo json_encode(['success' => false, 'message' => 'article non identifié']);
 	        }
 	    }
 	    else{
@@ -53,16 +88,18 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	}
 	elseif($_GET['action'] === 'delete_article' && isset($json['id']))
 	{
-        $id = $json['id'];
-
         $director = new Director($entityManager);
-        $director->makeArticleNode($id);
-        $node = $director->getRootNode();
-        $entityManager->remove($node);
+		$director->makeArticleNode($json['id'], true);
+        $article = $director->getArticleNode();
+		$section = $director->getNode();
+
+        $entityManager->remove($article);
+        $section->removeChild($article);
+        $section->sortChildren(true); // régénère les positions
         $entityManager->flush();
 
         // test avec une nouvelle requête qui ne devrait rien trouver
-        if(!$director->makeArticleNode($id))
+        if(!$director->makeArticleNode($json['id']))
         {
         	echo json_encode(['success' => true]);
 
@@ -78,14 +115,25 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	elseif($_GET['action'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
 	{
 		$director = new Director($entityManager);
-		$director->makeArticleNode($json['id1']);
-        $node1 = $director->getRootNode();
-        $director->makeArticleNode($json['id2']);
-        $node2 = $director->getRootNode();
+		$director->makeArticleNode($json['id1'], true);
+        $article1 = $director->getArticleNode();
+		$section = $director->getNode();
 
-        $tmp = $node1->getPosition();
-        $node1->setPosition($node2->getPosition());
-        $node2->setPosition($tmp);
+        $section->sortChildren(true); // régénère les positions avant inversion
+
+        $article2;
+        foreach($section->getChildren() as $child){
+        	if($child->getArticleTimestamp() === $json['id2']) // type string
+        	{
+        		$article2 = $child;
+        		break;
+        	}
+        }
+
+        // inversion
+        $tmp = $article1->getPosition();
+        $article1->setPosition($article2->getPosition());
+        $article2->setPosition($tmp);
         $entityManager->flush();
 
 		echo json_encode(['success' => true]);
@@ -99,7 +147,7 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 
 		$director = new Director($entityManager);
 		$director->makeArticleNode($id);
-        $node = $director->getRootNode();
+        $node = $director->getArticleNode();
 		$node->getArticle()->setDateTime($date);
 		$entityManager->flush();
 		

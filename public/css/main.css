@@ -28,8 +28,8 @@ section > p /* boutons spéciaux mode admin */
 }
 .galery_photos .html_from_editor img
 {
-	max-width: 400px;
-	max-height: 250px;
+	max-width: 300px;
+	max-height: 200px;
 }
 article
 {
@@ -49,6 +49,11 @@ article .logo2
 .new_content, .article_content
 {
 	width: 100%;
+}
+article img
+{
+	max-width: 100%;
+	height: auto;
 }
 .new_content_text
 {
@@ -120,4 +125,9 @@ main button:hover
 	cursor: pointer; /* curseur qui pointe du doigt */
 	background-color: #ffff00;
 	border-radius: 4px;
+}
+
+article a:hover
+{
+	cursor: pointer;
 }

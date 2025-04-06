@@ -65,32 +65,6 @@ class Node
         $this->article = $article;
     }
 
-    public function addChild(self $child): void
-    {
-        $this->children[] = $child;
-        $this->sortChildren();
-    }
-
-    // utiliser $position pour afficher les éléments dans l'ordre
-    private function sortChildren(): void
-    {
-        $iteration = count($this->children);
-        while($iteration > 1)
-        {
-            for($i = 0; $i < $iteration - 1; $i++)
-            {
-                //echo '<br>' . $this->children[$i]->getPosition() . ' - ' . $this->children[$i + 1]->getPosition();
-                if($this->children[$i]->getPosition() > $this->children[$i + 1]->getPosition())
-                {
-                    $tmp = $this->children[$i];
-                    $this->children[$i] = $this->children[$i + 1];
-                    $this->children[$i + 1] = $tmp;
-                }
-            }
-            $iteration--;
-        }
-    }
-
     // pfff...
     public function getId(): int
     {
@@ -155,6 +129,51 @@ class Node
     public function getChildren(): array
     {
         return $this->children;
+    }
+    public function addChild(self $child): void
+    {
+        $this->children[] = $child;
+        $this->sortChildren(false);
+    }
+    // utiliser $position pour afficher les éléments dans l'ordre
+    public function sortChildren(bool $reposition = false): void
+    {
+        // ordre du tableau des enfants
+        // inefficace quand des noeuds ont la même position
+        
+        // tri par insertion
+        for($i = 1; $i < count($this->children); $i++)
+        {
+            $tmp = $this->children[$i];
+            $j = $i - 1;
+
+            // Déplacez les éléments du tableau qui sont plus grands que la clé
+            // à une position devant leur position actuelle
+            while ($j >= 0 && $this->children[$j]->getPosition() > $tmp->getPosition()) {
+                $this->children[$j + 1] = $this->children[$j];
+                $j = $j - 1;
+            }
+            $this->children[$j + 1] = $tmp;
+        }
+
+        // nouvelles positions
+        if($reposition){
+            $i = 1;
+            foreach($this->children as $child){
+                $child->setPosition($i);
+                $i++;
+            }
+        }
+    }
+    public function removeChild(self $child): void
+    {
+        foreach($this->children as $key => $object){
+            if($object->getId() === $child->getId()){
+                unset($this->children[$key]);
+            }
+            break;
+        }
+        $this->children = array_values($this->children); // réindexer pour supprimer la case vide
     }
 
     public function getTempChild(): ?self // peut renvoyer null

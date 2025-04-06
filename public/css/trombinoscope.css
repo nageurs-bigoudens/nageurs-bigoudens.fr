@@ -2,3 +2,9 @@ article img
 {
 	border-radius: 50%;
 }
+
+.grid_columns
+{
+	/* écrase les 3 colonnes par défaut */
+  grid-template-columns: repeat(4, 1fr);
+}

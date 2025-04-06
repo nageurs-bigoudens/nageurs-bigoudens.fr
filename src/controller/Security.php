@@ -9,7 +9,7 @@ class Security
 	    'safe'=>1, // protection contre les élements et attributs dangereux
 
 	    // liste blanche d'éléments HTML
-	    'elements'=> 'h1, h2, h3, h4, h5, h6, p, s, em, span, strong, a, ul, ol, li, sup, sub, code, blockquote, div, pre, table, caption, colgroup, col, tbody, tr, th, td, figure, img, figcaption, iframe, small',
+	    'elements'=> 'h1, h2, h3, h4, h5, h6, p, br, s, em, span, strong, a, ul, ol, li, sup, sub, code, blockquote, div, pre, table, caption, colgroup, col, tbody, tr, th, td, figure, img, figcaption, iframe, small',
 
 	    // liste noire d'attributs HTML
 	    'deny_attribute'=> 'id, class' // on garde 'style'

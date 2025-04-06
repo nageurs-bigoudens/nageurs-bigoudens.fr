@@ -30,10 +30,10 @@ function copyInClipBoard(link){
 }
 
 // complète les fonctions dans tinymce.js
-function switchPositions(articleId, direction)
+function switchPositions(article_id, direction)
 {
-	const current_article = document.getElementById(articleId).parentElement.parentElement;
-	var other_article = current_article;
+	const current_article = findParent(document.getElementById(article_id), 'article');
+	var other_article;
 
 	if(direction == 'down'){
 		other_article = current_article.nextElementSibling;
@@ -41,14 +41,23 @@ function switchPositions(articleId, direction)
 	else if(direction == 'up'){
 		other_article = current_article.previousElementSibling;
 	}
-	const other_article_id = other_article.querySelector('div[id]').id;
+	
+	var other_article_id;
+	try{
+		other_article_id = other_article.querySelector('div[id]').id;
+		other_article_id = 'i' + other_article_id.slice(1); // peut mieux faire
+	}
+	catch(error){
+		console.log('Inversion impossible');
+		return;
+	}
 	
     fetch('index.php?action=switch_positions', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id1: articleId, id2: other_article_id })
+        body: JSON.stringify({ id1: article_id, id2: other_article_id })
     })
     .then(response => response.json())
     .then(data => {
@@ -155,4 +164,15 @@ function submitDate(id_date)
     .catch(error => {
         console.error('Erreur:', error);
     });
+}
+
+function findParent(element, tag_name) {
+    while (element !== null) {
+        if (element.tagName === tag_name.toUpperCase()) // tagName est en majuscules
+        {
+            return element;
+        }
+        element = element.parentElement;
+    }
+    return null;
 }

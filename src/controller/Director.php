@@ -13,16 +13,28 @@ class Director
     static public Menu $menu_data; // pour NavBuilder
     static public Path $page_path; // pour BreadcrumbBuilder
 	private Page $page;
-	private Node $root_node;
+	private Node $node;
+    private Node $article;
 
-	public function __construct(EntityManager $entityManager)
+	public function __construct(EntityManager $entityManager, bool $for_display = false)
 	{
 		$this->entityManager = $entityManager;
-        self::$menu_data = new Menu($entityManager); // Menu est un modèle mais pas une entité
-        self::$page_path = new Path();
-        $this->page = self::$page_path->getLast();
-        $this->root_node = new Node; // instance mère "vide" ne possédant rien d'autre que des enfants
+        if($for_display){
+            self::$menu_data = new Menu($entityManager); // Menu est un modèle mais pas une entité
+            self::$page_path = new Path();
+            $this->page = self::$page_path->getLast();
+        }
+        $this->node = new Node; // instance mère "vide" ne possédant rien d'autre que des enfants
 	}
+
+    public function getNode(): Node
+    {
+        return $this->node;
+    }
+    public function getArticleNode(): Node
+    {
+        return $this->article;
+    }
 
 	public function makeRootNode(string $id = ''): void
     {
@@ -44,25 +56,10 @@ class Director
                 ->setParameter('id', $id)
                 ->getResult();
         }
-        $this->feedObjects($bulk_data);
+        $this->feedRootNodeObjects($bulk_data);
     }
 
-    public function makeArticleNode(string $id = ''): bool
-    {
-        $bulk_data = $this->entityManager
-            ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.article_timestamp = :id')
-            ->setParameter('id', $id)
-            ->getResult();
-
-        if(count($bulk_data) === 0){
-            return false;
-        }
-        
-        $this->root_node = $bulk_data[0];
-        return true;
-    }
-
-    private function feedObjects(array $bulk_data): void // $bulk_data = tableau de Node
+    private function feedRootNodeObjects(array $bulk_data): void // $bulk_data = tableau de Node
     {
         // puis on les range
         // (attention, risque de disfonctionnement si les noeuds de 1er niveau ne sont pas récupérés en 1er dans la BDD)
@@ -71,7 +68,7 @@ class Director
             // premier niveau
             if($node->getParent() == null)
             {
-                $this->root_node->addChild($node);
+                $this->node->addChild($node);
 
                 // spécifique page article
                 if($node->getName() === 'main' && $this->page->getEndOfPath() == 'article'){
@@ -94,8 +91,50 @@ class Director
         }
     }
 
-	public function getRootNode(): Node
-	{
-        return $this->root_node;
+    // récupération d'un article pour modification
+    public function makeArticleNode(string $id = '', bool $get_section = false): bool
+    {
+        if($get_section){
+            $dql = 'SELECT n, p FROM App\Entity\Node n LEFT JOIN n.parent p WHERE n.article_timestamp = :id';
+        }
+        else{
+            $dql = 'SELECT n FROM App\Entity\Node n WHERE n.article_timestamp = :id';
+        }
+        // n est l'article et p son $parent
+        $bulk_data = $this->entityManager
+            ->createQuery($dql)
+            ->setParameter('id', $id)
+            ->getResult();
+
+        if(count($bulk_data) === 0){
+            return false;
+        }
+
+        if($get_section){
+            $this->article = $bulk_data[0];
+            $this->makeSectionNode($bulk_data[0]->getParent()->getId());
+        }
+        else{
+            $this->article = $bulk_data[0];
+        }
+
+        return true;
+    }
+
+    // récupération des articles d'un bloc <section> à la création d'un article
+    public function makeSectionNode(int $section_id): bool
+    {
+        $section = $this->entityManager->find('App\Entity\Node', (string)$section_id);
+        
+        $bulk_data = $this->entityManager
+            ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.parent = :parent')
+            ->setParameter('parent', $section)
+            ->getResult();
+
+        foreach($bulk_data as $article){
+            $section->addChild($article); // pas de flush, on ne va pas écrire dans la BDD à chaque nouvelle page
+        }
+        $this->node = $section;
+        return true;
     }
 }

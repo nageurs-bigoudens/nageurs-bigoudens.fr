@@ -1,6 +1,10 @@
-<section class="blog">
+<section class="blog" id="<?= $this->id_node ?>">
 	<h3><?= $title ?></h3>
 <?= $new_article ?>
-<?= $new_article_admin_buttons ?>
+	<script>
+		var clone<?= $this->id_node ?> = document.currentScript.previousElementSibling.cloneNode(true);
+	</script>
+	<div>
 <?= $content ?>
+	</div>
 </section>

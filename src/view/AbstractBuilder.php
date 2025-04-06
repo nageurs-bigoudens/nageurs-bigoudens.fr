@@ -7,6 +7,12 @@ abstract class AbstractBuilder
 {
 	protected const VIEWS_PATH = '../src/view/templates/';
 	protected string $html = '';
+    protected int $id_node;
+
+    protected function __construct(Node $node)
+    {
+        $this->id_node = $node->getId();
+    }
 
     protected function useChildrenBuilder(Node $node): void
     {

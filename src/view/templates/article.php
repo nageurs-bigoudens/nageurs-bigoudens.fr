@@ -10,5 +10,4 @@
             <?= $admin_buttons ?>
         </div>
     </div>
-    
 </article>

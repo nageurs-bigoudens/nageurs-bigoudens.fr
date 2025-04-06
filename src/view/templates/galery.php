@@ -1,9 +1,10 @@
-<section class="galery">
+<section class="galery" id="<?= $this->id_node ?>">
 	<h3><?= $title ?></h3>
 <?= $new_article ?>
-<?= $new_article_admin_buttons ?>
+	<script>
+		var clone<?= $this->id_node ?> = document.currentScript.previousElementSibling.cloneNode(true);
+	</script>
 	<div class="galery_photos">
-		<a><p></p></a>
 <?= $content ?>
 	</div>
 	<script>enableGaleryScroller();</script>

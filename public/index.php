@@ -69,9 +69,9 @@ elseif(isset($_GET['action']) && $_GET['action'] === 'modif_mdp')
 }
 
 // -- contrôleurs --
-$director = new Director($entityManager);
+$director = new Director($entityManager, true);
 $director->makeRootNode($id);
-$node = $director->getRootNode();
+$node = $director->getNode();
 
 // -- vues --
 $view_builder = new ViewBuilder($node);

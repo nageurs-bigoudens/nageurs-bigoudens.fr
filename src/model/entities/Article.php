@@ -20,7 +20,7 @@ class Article
 
     // datetime_immutable permet à la base de toujours gérer cette clé primaire correctement
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'], unique: true)]
-    private \DateTime $date_time; // le type datetime de doctrine convertit en type \DateTime de PHP
+    private ?\DateTime $date_time; // le type datetime de doctrine convertit en type \DateTime de PHP
 
     #[ORM\Column(type: "string")]
     private string $title;
@@ -40,8 +40,12 @@ class Article
     )]
     private Collection $images;
 
-    public function __construct()
+    public function __construct(string $content, \DateTime $date_time = null, string $title = '', string $preview = '')
     {
+        $this->date_time = $date_time;
+        $this->title = $title;
+        $this->preview = $preview;
+        $this->content = $content;
         $this->images = new ArrayCollection(); // initialisation nécessaire
     }
 
