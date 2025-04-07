@@ -95,7 +95,7 @@ function deleteArticle(id, page = '') {
         .then(data => {
             if(data.success)
             {
-                if(page == 'article'){
+                if(page === 'article'){
                     // redirection vers la page d'accueil
                     window.setTimeout(function(){
                         location.href = "index.php?page=accueil";
@@ -177,49 +177,27 @@ function closeEditor(id, page = '', restore_old = true)
 
 function submitArticle(id, page = '', clone = null)
 {
-    /*if(id[0] === 'n' && clone == null){
-        return; // sécurité
-    }*/
     var editor;
+    var content;
     const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
 
     // clic sur "tout enregistrer"
     if(id[0] === 'n' && page === 'article'){
         const prefixes = ['t', 'p', 'i', 'd'];
-        const allElemsWithId = document.querySelectorAll('[id]');
-        var content = {};
+        const allElemsWithId = document.querySelectorAll('[class="data"]');
+        content = {};
+        var id_from_builder;
 
         allElemsWithId.forEach(element => {
             const first_letter = element.id.charAt(0).toLowerCase();
             if(prefixes.includes(first_letter)){
                 content[first_letter] = element.innerHTML;
+                if(first_letter === 'i'){
+                    id_from_builder = element.id;
+                }
             }
         })
         content['d'] = dateToISO(content['d']);
-
-        // Envoi AJAX au serveur
-        fetch('index.php?action=editor_submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({id: id, content: content})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('données envoyées au serveur avec succès.');
-
-                // remplacer les boutons (Enregistrer => Supprimer)
-            }
-            else {
-                alert('Erreur lors de la sauvegarde de l\'article.');
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-        });
-        return;
     }
     // champs à remplir des nouvelles "news"
     else if(page === 'article' && params != null && params.get("id")[0] === 'n'){
@@ -235,6 +213,7 @@ function submitArticle(id, page = '', clone = null)
             console.error('Éditeur non trouvé pour l\'article:', id);
             return;
         }
+        content = editor.getContent();
     }
     
     // Envoi AJAX au serveur
@@ -243,15 +222,29 @@ function submitArticle(id, page = '', clone = null)
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, content: editor.getContent()})
+        body: JSON.stringify({id: id, content: content})
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Fermer l'éditeur et mettre à jour le contenu de l'article
-            closeEditor(id, page, false);
-            if(id[0] === 'n'){
-                makeNewArticleButtons(id, data.article_id, clone);
+            console.log(data.article_id);
+            if(id[0] === 'n' && page === 'article'){
+                console.log('données envoyées au serveur avec succès.');
+
+                // remplacer bouton Enregistrer par Supprimer
+                submit_btn = document.getElementById('save-' + id_from_builder); // id précédent par NewBuilder
+                submit_btn.classList.add('hidden');
+                delete_btn = document.getElementById('delete-' + id_from_builder);
+                delete_btn.id = data.article_id;
+                delete_btn.querySelector('button').setAttribute('onclick', "deleteArticle('" + data.article_id + "', 'article')");
+                delete_btn.classList.remove('hidden');
+            }
+            else{
+                // Fermer l'éditeur et mettre à jour le contenu de l'article
+                closeEditor(id, page, false);
+                if(id[0] === 'n'){
+                    makeNewArticleButtons(id, data.article_id, clone);
+                }
             }
         }
         else {

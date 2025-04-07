@@ -18,12 +18,9 @@ class MainBuilder extends AbstractBuilder
             }
 
             if($node->getAdoptedChild() == null){
-                // on pourrait raccourcir ça
-                $timestamp = time(); // int
                 $date = new \DateTime;
-                $date->setTimestamp($timestamp); // \DateTime
                 $article = new Article('', $date);
-                $new = new Node('new', 'i' . (string)$timestamp, [], 0, null, null, $article);
+                $new = new Node('new', 'i' . (string)$date->getTimestamp(), [], 0, null, null, $article);
             }
             else{
                 $new = $node->getAdoptedChild();

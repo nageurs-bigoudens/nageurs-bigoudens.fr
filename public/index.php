@@ -26,7 +26,7 @@ require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN 
 
 URL::setProtocol(Config::$protocol); // utile si port autre que 80 ou 443
 URL::setPort(Config::$port);
-URL::setHost($_SERVER['HTTP_HOST']);
+URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 
 //require('controller/Session.php');
 ini_set('session.cookie_samesite', 'Strict');

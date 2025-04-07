@@ -29,10 +29,6 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	        }
 	        else{
 	        	$content = Security::secureString($json['content']);
-	        	if($content === ''){
-	        		echo json_encode(['success' => false, 'message' => 'pas de données à sauvegarder']);
-					die;
-	        	}
 	        }
 
 	        // nouvel article
@@ -43,12 +39,7 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	        	$node = $director->getNode(); // = <section>
 
 	        	if(is_array($content)){
-	        		// 
-	        		//$timestamp = time(); // int
 	                $date = new \DateTime($content['d']);
-
-	                //echo substr($content['i'], 1) . ' ';
-	                //echo $article_id;die;
 	                $article = new Article($content['i'], $date, $content['t'], $content['p']);
 	                $article_node = new Node('new', 'i' . (string)$date->getTimestamp(), [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);
 
