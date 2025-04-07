@@ -90,13 +90,8 @@ function changeDate(id_date)
 	const real_id = 'i' + id_date.slice(1);
 	const date_span = document.getElementById(id_date); // = <span>
 	var old_date = date_span.innerHTML;
-
-	// changer "le 28-12-2024 à 23h14" en "2024-12-28T23:14"
-	let values = old_date.split(" à "); // 2 parties: date et heure
-	values[1] = values[1].replace('h', ':');
-	values[0] = values[0].replace("le ", "");
-	let date = values[0].split("-"); // tableau jj-mm-aaaa
-    old_date = date[2] + '-' + date[1] + "-" + date[0] + "T" + values[1];
+	
+	old_date = dateToISO(old_date);
 
 	var label = document.createElement('label');
 	label.textContent = 'Choisir une date: ';
@@ -117,6 +112,15 @@ function changeDate(id_date)
     document.querySelector(`#submit-${id_date}`).classList.remove('hidden');
 }
 
+function dateToISO(date){
+	// changer "le 28-12-2024 à 23h14" en "2024-12-28T23:14"
+	let values = date.split(" à "); // 2 parties: date et heure
+	values[1] = values[1].replace('h', ':');
+	values[0] = values[0].replace("le ", "");
+	let date_array = values[0].split("-"); // tableau jj-mm-aaaa
+    return date_array[2] + '-' + date_array[1] + "-" + date_array[0] + "T" + values[1];
+}
+
 function closeInput(id)
 {
     const date_span = document.getElementById(id);
@@ -133,40 +137,56 @@ function closeInput(id)
 
 function submitDate(id_date)
 {
-	const date_input = document.getElementById('input-' + id_date);
+	var date_input = document.getElementById('input-' + id_date);
 
-    fetch('index.php?action=date_submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({id: id_date, date: date_input.value})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-        	// modifier la date dans le <span> caché
-        	const date_span = document.getElementById(id_date);
-        	let date = new Date(date_input.value);
-        	date_span.innerHTML = 
-				'le ' + String(date.getDate()).padStart(2, '0') + '-' + 
-				String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-				String(date.getFullYear()).padStart(4, '0') + ' à ' + 
-				String(date.getHours()).padStart(2, '0') + 'h' + 
-				String(date.getMinutes()).padStart(2, '0');
-            
-            closeInput(id_date);
-        }
-        else {
-            console.error('Erreur lors de la sauvegarde de la date.');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
+	// cas des nouvelles "news"
+    const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
+    if(params != null && params.get("id")[0] === 'n')
+	{
+		// modifier la date dans le <span> caché
+    	date_input = updateDate(id_date, date_input);
+        closeInput(id_date);
+        return;
+	}
+	else{
+		fetch('index.php?action=date_submit', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({id: id_date, date: date_input.value})
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	        if (data.success) {
+	        	// modifier la date dans le <span> caché
+	        	date_input = updateDate(id_date, date_input);
+	            closeInput(id_date);
+	        }
+	        else {
+	            console.error('Erreur lors de la sauvegarde de la date.');
+	        }
+	    })
+	    .catch(error => {
+	        console.error('Erreur:', error);
+	    });
+	}    
 }
 
-function findParent(element, tag_name) {
+function updateDate(id_date, date_input){
+	var date_span = document.getElementById(id_date);
+	let date = new Date(date_input.value);
+	date_span.innerHTML = 
+		'le ' + String(date.getDate()).padStart(2, '0') + '-' + 
+		String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+		String(date.getFullYear()).padStart(4, '0') + ' à ' + 
+		String(date.getHours()).padStart(2, '0') + 'h' + 
+		String(date.getMinutes()).padStart(2, '0');
+
+	return date_input;
+}
+
+function findParent(element, tag_name){
     while (element !== null) {
         if (element.tagName === tag_name.toUpperCase()) // tagName est en majuscules
         {

@@ -52,7 +52,7 @@ class Node
     // -- fin des attributs destinés à doctrine, début du code utilisateur --
     
     private array $children = []; // tableau de Node
-    private ?self $temp_child = null; // = "new" est l'enfant de "main" lorsque la page est "article"
+    private ?self $adopted = null; // = "new" est un enfant de "main" lorsque la page est "article"
 
     public function __construct(string $name = '', ?string $article_timestamp = null, array $attributes = [], int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
     {
@@ -176,12 +176,12 @@ class Node
         $this->children = array_values($this->children); // réindexer pour supprimer la case vide
     }
 
-    public function getTempChild(): ?self // peut renvoyer null
+    public function getAdoptedChild(): ?self // peut renvoyer null
     {
-        return $this->temp_child;
+        return $this->adopted;
     }
-    public function setTempChild(self $child): void
+    public function setAdoptedChild(self $child): void
     {
-        $this->temp_child = $child;
+        $this->adopted = $child;
     }
 }

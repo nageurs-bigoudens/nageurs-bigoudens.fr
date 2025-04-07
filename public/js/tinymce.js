@@ -38,10 +38,10 @@ function openEditor(id, page = '') {
                 document.querySelector(`#submit-${id}`).classList.remove('hidden');
                 if(creation_mode === false){
                     document.querySelector(`#edit-${id}`).classList.add('hidden');
-                    document.querySelector(`#delete-${real_id}`).classList.add('hidden');
                     if(page != 'article'){
                         document.querySelector(`#position_up-${id}`).classList.add('hidden');
                         document.querySelector(`#position_down-${id}`).classList.add('hidden');
+                        document.querySelector(`#delete-${real_id}`).classList.add('hidden');
                     }
                 }
                 else{
@@ -175,37 +175,75 @@ function closeEditor(id, page = '', restore_old = true)
     
 }
 
-function submitArticle(id, page = '', clone = null) {
-    //var creation_mode;
-    if(id[0] === 'n'){
-        //creation_mode = true;
+function submitArticle(id, page = '', clone = null)
+{
+    /*if(id[0] === 'n' && clone == null){
+        return; // sécurité
+    }*/
+    var editor;
+    const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
 
-        // sécurité
-        if(clone == null){
+    // clic sur "tout enregistrer"
+    if(id[0] === 'n' && page === 'article'){
+        const prefixes = ['t', 'p', 'i', 'd'];
+        const allElemsWithId = document.querySelectorAll('[id]');
+        var content = {};
+
+        allElemsWithId.forEach(element => {
+            const first_letter = element.id.charAt(0).toLowerCase();
+            if(prefixes.includes(first_letter)){
+                content[first_letter] = element.innerHTML;
+            }
+        })
+        content['d'] = dateToISO(content['d']);
+
+        // Envoi AJAX au serveur
+        fetch('index.php?action=editor_submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: id, content: content})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('données envoyées au serveur avec succès.');
+
+                // remplacer les boutons (Enregistrer => Supprimer)
+            }
+            else {
+                alert('Erreur lors de la sauvegarde de l\'article.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+        return;
+    }
+    // champs à remplir des nouvelles "news"
+    else if(page === 'article' && params != null && params.get("id")[0] === 'n'){
+        closeEditor(id, page, false);
+        //makeNewArticleButtons(id, id, clone);
+        return;
+    }
+    // dans les autres cas, on doit pouvoir récupérer l'éditeur
+    else{
+        // l'éditeur correspond à l'article OU page "article" à un élément: titre, aperçu, article
+        editor = editors[id];
+        if(!editor) {
+            console.error('Éditeur non trouvé pour l\'article:', id);
             return;
         }
     }
-    else{
-        //creation_mode = false;
-    }
-
-    // Récupérer l'éditeur correspondant à l'article
-    const editor = editors[id];
-    if(!editor) {
-        console.error('Éditeur non trouvé pour l\'article:', id);
-        return;
-    }
     
-    // Récupérer le contenu de l'éditeur
-    const html = editor.getContent();
-
     // Envoi AJAX au serveur
     fetch('index.php?action=editor_submit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, content: html})
+        body: JSON.stringify({id: id, content: editor.getContent()})
     })
     .then(response => response.json())
     .then(data => {
@@ -213,48 +251,7 @@ function submitArticle(id, page = '', clone = null) {
             // Fermer l'éditeur et mettre à jour le contenu de l'article
             closeEditor(id, page, false);
             if(id[0] === 'n'){
-                var share_btn = document.querySelector(`.share.hidden`); // combinaison de deux classes
-                var new_btn = document.querySelector(`#new-${id}`);
-                var edit_btn = document.querySelector(`#edit-${id}`);
-                var pos_up_btn = document.querySelector(`#position_up-${id}`);
-                var pos_down_btn = document.querySelector(`#position_down-${id}`);
-                var delete_btn = document.querySelector(`#delete-${id}`);
-                var cancel_btn = document.querySelector(`#cancel-${id}`);
-                var submit_btn = document.querySelector(`#submit-${id}`);
-
-                share_btn.classList.remove('hidden')
-                new_btn.classList.add('hidden');
-                edit_btn.classList.remove('hidden');
-                pos_up_btn.classList.remove('hidden');
-                pos_down_btn.classList.remove('hidden');
-                delete_btn.classList.remove('hidden');
-                //cancel_btn.classList.add('hidden');
-                //submit_btn.classList.add('hidden');
-
-                var article = document.getElementById(id);
-                var parent = findParent(article, 'article');
-                //share_btn.setAttribute('href', '#' + data.article_id);
-                share_btn.setAttribute('onclick', "copyInClipBoard('" + window.location.href + data.article_id + "')"); // # de l'ancre ajouté au clic sur le lien ouvrant l'éditeur
-                article.id = data.article_id;
-                edit_btn.id = 'edit-' + data.article_id;
-                edit_btn.querySelector('.action_icon').setAttribute('onclick', "openEditor('" + data.article_id + "')");
-                pos_up_btn.id = 'position_up-' + data.article_id;
-                pos_up_btn.querySelector('.action_icon').setAttribute('onclick', "switchPositions('" + data.article_id + "', 'up')");
-                pos_down_btn.id = 'position_down-' + data.article_id;
-                pos_down_btn.querySelector('.action_icon').setAttribute('onclick', "switchPositions('" + data.article_id + "', 'down')");
-                delete_btn.id = 'delete-' + data.article_id;
-                delete_btn.querySelector('.action_icon').setAttribute('onclick', "deleteArticle('" + data.article_id + "')");
-                cancel_btn.id = 'cancel-' + data.article_id;
-                cancel_btn.querySelector('button').setAttribute('onclick', "closeEditor('" + data.article_id + "')");
-                submit_btn.id = 'submit-' + data.article_id;
-                submit_btn.querySelector('button').setAttribute('onclick', "submitArticle('" + data.article_id + "')");
-
-                var next_div = parent.nextElementSibling.nextElementSibling;
-                parent.parentNode.replaceChild(clone.cloneNode(true), parent); // clone du squelette pour le garder intact
-                next_div.appendChild(parent);
-            }
-            else{
-                //document.getElementById(id).innerHTML = html;
+                makeNewArticleButtons(id, data.article_id, clone);
             }
         }
         else {
@@ -264,4 +261,47 @@ function submitArticle(id, page = '', clone = null) {
     .catch(error => {
         console.error('Erreur:', error);
     });
+}
+
+function makeNewArticleButtons(id, article_id, clone)
+{
+    var share_btn = document.querySelector(`.share.hidden`); // combinaison de deux classes
+    var new_btn = document.querySelector(`#new-${id}`);
+    var edit_btn = document.querySelector(`#edit-${id}`);
+    var pos_up_btn = document.querySelector(`#position_up-${id}`);
+    var pos_down_btn = document.querySelector(`#position_down-${id}`);
+    var delete_btn = document.querySelector(`#delete-${id}`);
+    var cancel_btn = document.querySelector(`#cancel-${id}`);
+    var submit_btn = document.querySelector(`#submit-${id}`);
+
+    share_btn.classList.remove('hidden')
+    new_btn.classList.add('hidden');
+    edit_btn.classList.remove('hidden');
+    pos_up_btn.classList.remove('hidden');
+    pos_down_btn.classList.remove('hidden');
+    delete_btn.classList.remove('hidden');
+    //cancel_btn.classList.add('hidden');
+    //submit_btn.classList.add('hidden');
+
+    var article = document.getElementById(id);
+    var parent = findParent(article, 'article');
+    
+    share_btn.setAttribute('onclick', "copyInClipBoard('" + window.location.href + article_id + "')"); // # de l'ancre ajouté au clic sur le lien ouvrant l'éditeur
+    article.id = article_id;
+    edit_btn.id = 'edit-' + article_id;
+    edit_btn.querySelector('.action_icon').setAttribute('onclick', "openEditor('" + article_id + "')");
+    pos_up_btn.id = 'position_up-' + article_id;
+    pos_up_btn.querySelector('.action_icon').setAttribute('onclick', "switchPositions('" + article_id + "', 'up')");
+    pos_down_btn.id = 'position_down-' + article_id;
+    pos_down_btn.querySelector('.action_icon').setAttribute('onclick', "switchPositions('" + article_id + "', 'down')");
+    delete_btn.id = 'delete-' + article_id;
+    delete_btn.querySelector('.action_icon').setAttribute('onclick', "deleteArticle('" + article_id + "')");
+    cancel_btn.id = 'cancel-' + article_id;
+    cancel_btn.querySelector('button').setAttribute('onclick', "closeEditor('" + article_id + "')");
+    submit_btn.id = 'submit-' + article_id;
+    submit_btn.querySelector('button').setAttribute('onclick', "submitArticle('" + article_id + "')");
+
+    var next_div = parent.nextElementSibling.nextElementSibling;
+    parent.parentNode.replaceChild(clone.cloneNode(true), parent); // clone du squelette pour le garder intact
+    next_div.appendChild(parent);
 }

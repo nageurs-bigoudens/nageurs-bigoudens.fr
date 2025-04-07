@@ -1,6 +1,7 @@
 <?php
 // src/view/MainBuilder.php
 
+use App\Entity\Article;
 use App\Entity\Node;
 
 class MainBuilder extends AbstractBuilder
@@ -10,11 +11,22 @@ class MainBuilder extends AbstractBuilder
         $this->html .= "<main>\n";
 
         if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
-            if($node->getTempChild() == null){
-                $new = new Node;
+            // pas censé arriver
+            if(!isset($_GET['id'])){
+                header('Location: ' . new URL);
+                die;
+            }
+
+            if($node->getAdoptedChild() == null){
+                // on pourrait raccourcir ça
+                $timestamp = time(); // int
+                $date = new \DateTime;
+                $date->setTimestamp($timestamp); // \DateTime
+                $article = new Article('', $date);
+                $new = new Node('new', 'i' . (string)$timestamp, [], 0, null, null, $article);
             }
             else{
-                $new = $node->getTempChild();
+                $new = $node->getAdoptedChild();
             }
             //$builder_name = $this->snakeToPascalCase($new->getName()) . 'Builder';
             $builder_name = 'NewBuilder';

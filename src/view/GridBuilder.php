@@ -27,9 +27,9 @@ class GridBuilder extends AbstractBuilder
                 $share_button = '<p class="share hidden"><img class="action_icon" src="assets/share.svg"></p>';
                 $html = '';
 
-                if(CURRENT_PAGE === 'accueil'){
+                if(Director::$page_path->getLast()->getEndOfPath() === 'accueil'){
                     $new_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id]) . '">
-                        <button><img class="action_icon" src="assets/book-open.svg">Nouvel article</button></a></p>';
+                        <button><img class="action_icon" src="assets/edit.svg">Nouvel article</button></a></p>';
                 }
                 else{
                     $new_button = '<p id="new-' . $id . '">' . "\n" . 

@@ -87,7 +87,7 @@ class Director
             }
         }
         if(isset($new)){
-            $main->setTempChild($new);
+            $main->setAdoptedChild($new);
         }
     }
 

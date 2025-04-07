@@ -17,12 +17,6 @@ class Path extends Page
         	$this->findPage(Director::$menu_data, $path_array); // remplit $this->current_page
         }
 		catch(Exception $e){}
-		/*echo "nb d'autres pages: " . count(Director::$menu_data->getOtherPages()) . '<br>';
-		echo 'longueur du chemin: ' . count($this->current_page) . '<br>';
-		foreach($this->current_page as $current){
-			echo $current->getEndOfPath() . ' ';
-		}
-		die;*/
 	}
 
 	// produit un tableau de Page en comparant le chemin demandé avec les données dans Menu
