@@ -164,15 +164,6 @@ function closeEditor(id, page = '', restore_old = true)
             document.querySelector(`#delete-${id}`).classList.remove('hidden');
         }
     }
-    if(page != 'article'){
-        /*document.querySelector(`#position_up-${id}`).classList.remove('hidden');
-        document.querySelector(`#position_down-${id}`).classList.remove('hidden');
-        document.querySelector(`#delete-${id}`).classList.remove('hidden');*/
-    }
-    else{
-        //document.querySelector(`#delete-${real_id}`).classList.remove('hidden');
-    }
-    
 }
 
 function submitArticle(id, page = '', clone = null)
@@ -227,17 +218,15 @@ function submitArticle(id, page = '', clone = null)
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(data.article_id);
+            //console.log(data.article_id);
             if(id[0] === 'n' && page === 'article'){
                 console.log('données envoyées au serveur avec succès.');
 
-                // remplacer bouton Enregistrer par Supprimer
-                submit_btn = document.getElementById('save-' + id_from_builder); // id précédent par NewBuilder
-                submit_btn.classList.add('hidden');
-                delete_btn = document.getElementById('delete-' + id_from_builder);
-                delete_btn.id = data.article_id;
-                delete_btn.querySelector('button').setAttribute('onclick', "deleteArticle('" + data.article_id + "', 'article')");
-                delete_btn.classList.remove('hidden');
+                // redirection page de l'article
+                window.setTimeout(function(){
+                    location.href = "index.php?page=article&id=" + data.article_id;
+                }, 0);
+                
             }
             else{
                 // Fermer l'éditeur et mettre à jour le contenu de l'article

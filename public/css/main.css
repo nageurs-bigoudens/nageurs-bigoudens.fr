@@ -76,6 +76,7 @@ button .action_icon
 	background-color: #ffff00;
 	border-radius: 4px;
 	border: lightgrey 2px outset;
+	cursor: pointer;
 }
 button .action_icon:hover
 {
@@ -122,9 +123,9 @@ main button
 }
 main button:hover
 {
-	cursor: pointer; /* curseur qui pointe du doigt */
 	background-color: #ffff00;
 	border-radius: 4px;
+	cursor: pointer;
 }
 
 article a:hover

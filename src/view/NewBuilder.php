@@ -101,23 +101,13 @@ class NewBuilder extends AbstractBuilder
                     $submit_date = '<p id="submit-' . $id_date . '" class="hidden"><button ' . $submit_js_date . '>Valider</button></p>';
                     $date_buttons = '<div class="button_zone">' . $modify_date . $close_editor_date . $submit_date . '</div>';
 
-                    $delete_article = '';
                     $submit_article = '';
-                    $delete_class = '';
                     // nouvel article: bouton pour valider la création d'un nouvel article
                     if($_GET['id'][0] != 'i'){
                         $submit_js = 'onclick="submitArticle(\'' . $_GET['id'] . '\', \'' . Director::$page_path->getLast()->getEndOfPath() . '\')"';
                         $submit_article = '<p id="save-' . $id . '"><button ' . $submit_js . '><img class="action_icon" src="assets/edit.svg">Tout<br>enregistrer</button></p>' . "\n";
-                        $delete_class = 'class="hidden"';
                     }
-                    // modification: bouton "supprimer"
-                    else{
-                        $delete_class = 'class=""';
-                    }
-                    $delete_js = 'onclick="deleteArticle(\'' . $id . '\', \'' . Director::$page_path->getLast()->getEndOfPath() . '\')"';
-                    $delete_article = '<p ' . $delete_class . ' id="delete-' . $id . '"><button ' . $delete_js . '><img class="action_icon" src="assets/delete-bin.svg">Retirer<br>la publication</button></p>' . "\n";
-                    
-                    $admin_buttons = $delete_article . $submit_article;
+                    $admin_buttons = $submit_article;
                 }
                 // page d'accueil
                 else{

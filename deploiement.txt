@@ -1,58 +1,84 @@
 déploiement
 
-=> procédure pour un hébergement "normal" avec un accès SSH,
-ne marche pas sans la formule pro d'OVH
-- peu de manips (le renommage) peuvent être faites avec filezilla
-- pour le reste il faut contourner avec des scripts PHP faisant des exec()
 
-=> pour utiliser PHP-cli il faut utiliser le chemin de PHP /usr/local/php8.3/bin
+=> procédure spécifique sur un hébergement "normal" avec un accès SSH.
+=> avec un hébergement non-pro d'OVH, SSH n'est pas disponible, par contre il y a un phpmyadmin,
+pour le reste il faut contourner avec des scripts PHP faisant des exec()
+
+=> pour utiliser PHP-cli il faut utiliser le chemin de PHP, quelque chose comme /usr/local/php8.4/bin/
 ou l'ajouter au PATH en éditant .bash_profile (facile avec filezilla):
 trouver la ligne PATH=$PATH:$HOME/bin
-et y coller :$HOME/usr/local/php8.3/bin
+et y coller :$HOME/usr/local/php8.4/bin
 
 => utiliser PHP-cli depuis un script web:
-$param = '-r "echo \'hello world\';"';
+$param = '-r echo hello world 2>&1';
 $commande = 'php ' . $param; // OU
-$commande = '/usr/local/php8.3/bin/php ' . $param;
+$commande = '/usr/local/php8.4/bin/php ' . $param;
 $sortie = null;
 $code_retour = null;
 exec($commande, $sortie, $code_retour);
 
 
+=> avec SSH
+
 1/ se connecter au serveur en ssh et télécharger les fichiers:
-cd /var/www
-git clone git@ordipolo.fr:nageurs
+cd dossier_parent_du_site 
+git clone lien_git
 
 2/ renommer le dossier du site pour apache
-mv nageurs dossier_du_site
+mv nageurs nom_de_domaine
 
-3/ côté client, envoyer les fichier config.ini et bdd_nageurs.sql en FTP
-placer config.ini à la racine du site
+3/ selon l'hébergement, si apache utilise son propre utilisateur (www-data),
+changer les permissions parce qu'on veut utiliser composer et la console de doctrine avec cet utilisateur
+chown -R www-data:www-data dossier_du_site
 
-retour côté serveur en ssh
+on ajoutera ensuite "sudo -u www-data" devant les commandes
 
-4/ mieux vaut utiliser composer et la console doctrine sans être root,
-changer les permissions:
-chown -R www-data www-data dossier_du_site
+4/ si nécessaire, trouver PHP-cli!
+placer sur le site un fichier php contenant:
+<?php phpinfo();
 
-5/ télécharger les dépendances PHP (dont doctrine) en lisant le composer.json:
-sudo -u www-data php composer.phar update
+un fichier de config devrait être trouvé, du genre:
+/usr/local/php8.4/etc/php.ini
 
-6/ générer l'autoloader
-composer dump-autoload -o
+l'exécutable est donc (à vérifier dans filezilla):
+/usr/local/php8.4/bin/php
 
-7/ se connecter à la BDD et créer la base:
+optionnel: l'ajouter au PATH en éditant .bash_profile (facile avec filezilla):
+trouver la ligne PATH=$PATH:$HOME/bin
+et y coller :$HOME/usr/local/php8.4/bin
+
+5/ installer composer, si n'y est pas:
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+
+on appelera donc composer en faisant: php composer.phar
+
+6/ installer les dépendances
+sudo -u www-data php composer.phar install
+
+cette commande exécute du PHP écrit dans composer.json qui réalise la copie de fichiers dans /vendor vers /public/js
+si une erreur se présente, il doit y avoir un problème de permission avec /public/js/tinymce et /public/js/tinymce-langs
+
+7/ générer l'autoloader
+php composer.phar dump-autoload -o
+
+8/ se connecter à la BDD et créer la base:
 mysql/mariadb -u root -p
-CREATE DATABASES nageurs CHARACTER SET utf8mb4;
-l'utilisateur doit avoir les droits SELECT, INSERT, UPDATE, DELETE, CREATE, DROP et ALTER
+CREATE DATABASE nageurs CHARACTER SET utf8mb4;
 
-8/ créer les tables:
+9/ droits de l'utilisateur sur la base de données
+l'utilisateur de la BDD doit avoir les droits SELECT, INSERT, UPDATE, DELETE, CREATE, DROP et ALTER
+
+10/ avec FTP, envoyer le fichier config.ini et le placer dans /config
+ce fichier contient les codes de la BDD
+
+11/ créer les tables avec composer:
 sudo -u www-data php bin/doctrine orm:schema-tool:create
-et remplir la base de données:
-mariadb -D nageurs -u root -p < bdd_nageurs.sql
 
-9/ le 1er chargement d'une page est long,
-le cache de symfony inclu fait ensuite son job
+12/ éventuellement: remplir la base de données:
+=> phpmyadmin ou ligne de commande
+mariadb -D nageurs -u utilisateur_mysql -p < bdd_nageurs.sql
 
-sinon, regarder ici:
-https://www.doctrine-project.org/projects/doctrine-orm/en/3.3/reference/caching.html
+13/ associer le domaine au dossier du site dans l'espace client de l'hébergeur
+par sécurité, choisir comme racine le dossier /public du site et non la vraie racine!

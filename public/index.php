@@ -1,13 +1,6 @@
 <?php
 // public/index/php
 
-/* installation de composer sur un hébergement mutualisé
-1. télécharger le script d'installation: 
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-2. installation: php composer-setup.php
-3. supprimer l'installateur: php -r "unlink('composer-setup.php');"
-4. utilisation: php composer.phar */
-
 declare(strict_types=1);
 
 // -- prétraitement --
