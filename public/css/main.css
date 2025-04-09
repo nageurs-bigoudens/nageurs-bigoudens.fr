@@ -50,15 +50,15 @@ article .logo2
 {
 	width: 100%;
 }
+.new_content
+{
+	/*max-height: 400;*/
+	overflow: hidden;
+}
 article img
 {
 	max-width: 100%;
 	height: auto;
-}
-.new_content_text
-{
-	max-height: 250px;
-	overflow: hidden;
 }
 
 .action_icon

@@ -7,11 +7,11 @@
             </div>
             <?= $title_buttons ?>
         </div>
-        <div class="data" id="<?= $id_preview ?>" class="new_content_text">
+        <div class="data new_content_text" id="<?= $id_preview ?>">
             <?= $preview ?>
         </div>
         <?= $preview_buttons ?>
-        <div class="data" id="<?= $id ?>" class="article_content_text">
+        <div class="data article_content_text" id="<?= $id ?>">
             <?= $content ?>
         </div>
         <?= $article_buttons ?>
