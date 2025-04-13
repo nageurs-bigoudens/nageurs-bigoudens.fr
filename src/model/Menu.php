@@ -20,12 +20,12 @@ class Menu extends Page
             ->getResult(); // :array de Page
 
         if(count($bulk_data) === 0){
-            makeStartPage($entityManager);
+            makeStartPage($entityManager); // => installation.php
         }
 
         foreach($bulk_data as $first_level_entries){
-            // génération du menu
-            if($first_level_entries->getInMenu()){
+            // dans le menu
+            if($first_level_entries->isInMenu()){
                 $this->addChild($first_level_entries);
             }
             // autres pages

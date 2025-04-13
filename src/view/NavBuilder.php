@@ -22,20 +22,12 @@ class NavBuilder extends AbstractBuilder
 
         foreach($nav_data->getChildren() as $data)
         {
-            $class = '';
+            $li_class = '';
             if(isset($current[$level]) && $data->getEndOfPath() === $current[$level]->getEndOfPath()){
-                $class = ' current';
+                $li_class = 'current';
             }
-            
-            if(count($data->getChildren()) > 0) // titre de catégorie
-            {
-                $nav_html .= '<li class="drop-down'. $class . '"><p>' . $data->getPageName() . '</p><ul class="sub-menu">' . "\n";
-                $level++;
-                $nav_html .= $this->navMainHTML($data, $current);
-                $level--;
-                $nav_html .= '</ul></li>' . "\n";
-            }
-            else
+
+            if($data->isReachable())
             {
                 $target = '';
                 if(str_starts_with($data->getEndOfPath(), 'http')) // lien vers autre site
@@ -47,14 +39,28 @@ class NavBuilder extends AbstractBuilder
                 {
                     $link = new URL(['page' => $data->getPagePath()]); // $link = objet
                 }
-                /*else
-                {
-                    echo "else page d'accueil" . '<br>';
-                    $link = new URL; // page d'accueil
-                }*/
-
-                $nav_html .= '<a href="' . $link . '"' . $target . '><li class="'. $class . '"><p>' . $data->getPageName() . '</p></li></a>' . "\n";
+                $nav_html .= '<a href="' . $link . '"' . $target . '>';
             }
+            else{
+                $nav_html .= '<a>';
+            }
+            
+            if(count($data->getChildren()) > 0) // titre de catégorie
+            {
+                $li_class = $data->getParent() == null ? 'drop-down' : 'drop-right';
+                
+                $nav_html .= '<li class="'. $li_class . '"><p>' . $data->getPageName() . '</p><ul class="sub-menu">' . "\n";
+                $level++;
+                $nav_html .= $this->navMainHTML($data, $current);
+                $level--;
+                $nav_html .= '</ul></li>' . "\n";
+            }
+            else
+            {
+                $nav_html .= '<li class="'. $li_class . '"><p>' . $data->getPageName() . '</p></li>' . "\n";
+            }
+            
+            $nav_html .= "</a>\n";
         }
         return $nav_html;
     }

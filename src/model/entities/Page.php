@@ -73,7 +73,11 @@ class Page
     {
         return $this->end_of_path;
     }
-    public function getInMenu(): bool
+    public function isReachable(): bool
+    {
+        return $this->reachable;
+    }
+    public function isInMenu(): bool
     {
         return $this->in_menu;
     }
@@ -112,7 +116,6 @@ class Page
         {
             for($i = 0; $i < $iteration - 1; $i++)
             {
-                //echo '<br>' . $this->children[$i]->getPosition() . ' - ' . $this->children[$i + 1]->getPosition();
                 if($this->children[$i]->getPosition() > $this->children[$i + 1]->getPosition())
                 {
                     $tmp = $this->children[$i];

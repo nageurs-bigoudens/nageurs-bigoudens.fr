@@ -48,14 +48,17 @@ ul
 	background-color: white;
 	font-weight: bold;
 }
-.drop-down > p::after
+.drop-down > a > p::after
 {
 	content: ' ▼';
 	font-size: x-small;
 }
 
-.drop-down:hover > .sub-menu /* faire apparaître sub-menu */
-{
+/* faire apparaître sub-menu */
+.drop-down:hover > .sub-menu{
+	display: block;
+}
+.drop-right:hover > .sub-menu{
 	display: block;
 }
 .sub-menu
@@ -71,7 +74,7 @@ ul
 {
 	background-color: #ffff00;
 }
-.drop-down .sub-menu .drop-down > p:after /* bricolage? */
+.drop-right > a > p:after
 {
 	content: " ▶";
 	font-size: x-small;
@@ -83,11 +86,11 @@ nav > ul > li > ul
 	position: absolute; /* retire du flux, positionnement par rapport à la fenêtre */
 }
 /* élément du menu survolé, le positionnement relatif en fait la référence du positionnement suivant */
-.drop-down .sub-menu .drop-down
+.drop-right
 {
 	position: relative;
 }
-.drop-down .sub-menu .drop-down .sub-menu
+.drop-right .sub-menu
 {
 	position: absolute; /* positionnement par rapport au précédent "position" en CSS */
 	left: 100%;
