@@ -43,7 +43,7 @@ ul
 {
 	background-color: white;
 }
-.current > p
+.current > a > p
 {
 	background-color: white;
 	font-weight: bold;

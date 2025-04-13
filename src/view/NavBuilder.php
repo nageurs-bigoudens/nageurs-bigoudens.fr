@@ -24,32 +24,30 @@ class NavBuilder extends AbstractBuilder
         {
             $li_class = '';
             if(isset($current[$level]) && $data->getEndOfPath() === $current[$level]->getEndOfPath()){
-                $li_class = 'current';
+                $li_class = 'current ';
             }
 
+            $link = '';
             if($data->isReachable())
             {
-                $target = '';
                 if(str_starts_with($data->getEndOfPath(), 'http')) // lien vers autre site
                 {
-                    $link = $data->getEndOfPath(); // $link = chaine
-                    $target = ' target="_blank"';
+                    $link .= '<a href="' . $data->getEndOfPath() . '" target="_blank">';
                 }
                 elseif($data->getEndOfPath() != '') // lien relatif
                 {
-                    $link = new URL(['page' => $data->getPagePath()]); // $link = objet
+                    $link .= '<a href="' . new URL(['page' => $data->getPagePath()]) . '">';
                 }
-                $nav_html .= '<a href="' . $link . '"' . $target . '>';
             }
             else{
-                $nav_html .= '<a>';
+                $link .= '<a>';
             }
             
             if(count($data->getChildren()) > 0) // titre de catégorie
             {
-                $li_class = $data->getParent() == null ? 'drop-down' : 'drop-right';
+                $li_class .= $data->getParent() == null ? 'drop-down' : 'drop-right';
                 
-                $nav_html .= '<li class="'. $li_class . '"><p>' . $data->getPageName() . '</p><ul class="sub-menu">' . "\n";
+                $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a><ul class="sub-menu">' . "\n";
                 $level++;
                 $nav_html .= $this->navMainHTML($data, $current);
                 $level--;
@@ -57,10 +55,8 @@ class NavBuilder extends AbstractBuilder
             }
             else
             {
-                $nav_html .= '<li class="'. $li_class . '"><p>' . $data->getPageName() . '</p></li>' . "\n";
+                $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a></li>' . "\n";
             }
-            
-            $nav_html .= "</a>\n";
         }
         return $nav_html;
     }
