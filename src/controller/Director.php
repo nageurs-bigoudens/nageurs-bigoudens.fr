@@ -11,7 +11,7 @@ class Director
 {
 	private EntityManager $entityManager;
     static public Menu $menu_data; // pour NavBuilder
-    static public Path $page_path; // pour BreadcrumbBuilder
+    static public ?Path $page_path = null; // pour $current dans NavBuilder et pour BreadcrumbBuilder
 	private Page $page;
 	private Node $node;
     private Node $article;

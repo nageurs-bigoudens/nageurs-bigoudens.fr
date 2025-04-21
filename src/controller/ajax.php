@@ -6,7 +6,7 @@ declare(strict_types=1);
 use App\Entity\Article;
 use App\Entity\Node;
 
-// détection des requêtes de tinymce
+// détection des requêtes de tinymce ou touchant aux articles
 if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 {
 	// récupération des données
@@ -202,6 +202,48 @@ if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_
         echo json_encode(['message' => 'Erreur 400: Bad Request']);
     }
     die;
+}
+
+if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
+{
+	// récupération des données
+	$data = file_get_contents('php://input');
+	$json = json_decode($data, true);
+
+	if($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
+	{
+		//$menu = new Menu($entityManager);
+		Director::$menu_data = new Menu($entityManager);
+
+        $id1 = $json['id1'];
+        $id2 = $json['id2'];
+
+        // vérifier qu'ils ont le même parent
+        $page1 = Director::$menu_data->findPageById((int)$id1);
+        $page2 = Director::$menu_data->findPageById((int)$id2);
+
+        // double le contrôle fait en JS
+        if($page1->getParent() === $page2->getParent()) // comparaison stricte d'objet (même instance du parent?)
+        {
+        	// inversion
+	        $tmp = $page1->getPosition();
+	        $page1->setPosition($page2->getPosition());
+	        $page2->setPosition($tmp);
+	        Director::$menu_data->sortChildren(true); // modifie tableau children 
+	        $entityManager->flush();
+	        
+	        // menu utilisant les nouvelles données
+	        //Director::$page_path = new Path();
+	        $nav_builder = new NavBuilder(); // builder appelé sans envoi du noeud correspondant
+	        
+	        echo json_encode(['success' => true, 'path1' => '', 'path2' => '', 'nav' => $nav_builder->render()]);
+        }
+        else{
+        	echo json_encode(['success' => false]);
+        }
+	    
+	    die;
+	}
 }
 
 // détection des requêtes de type XHR, pas d'utilité pour l'instant

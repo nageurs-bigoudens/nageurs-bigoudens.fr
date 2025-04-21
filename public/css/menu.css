@@ -1,0 +1,72 @@
+/* page "Menu et chemins" uniquement */
+
+.menu
+{
+	padding: 0 20px;
+}
+.menu img
+{
+	width: 20px;
+	vertical-align: middle;
+}
+
+/* explications pour l'utiisateur */
+.menu aside
+{
+	display: flex;
+	flex-wrap: wrap;
+	background-color: white;
+	padding: 10px;
+}
+.menu aside p
+{
+	margin: 5px;
+	font-size: smaller;
+}
+.menu aside input
+{
+	pointer-events: none; /* case non clicable, sauf action au clavier... */
+}
+
+.menu button
+{
+	margin: 5px;
+}
+input
+{
+	vertical-align: middle;
+}
+.menu_entry_checkbox
+{
+	margin-left: 2px;
+}
+.move_entry_icon
+{
+	width: 20px;
+	vertical-align: middle;
+	border: 2px #e3f3ff solid;
+}
+.move_entry_icon:hover
+{
+	background-color: #ffff00;
+	border-radius: 4px;
+	border: lightgrey 2px outset;
+	cursor: pointer;
+}
+
+.menu .new_entry_buttons
+{
+	background-color: white;
+	padding: 10px;
+}
+.menu .new_entry_buttons p
+{
+	margin: 5px;
+}
+
+@media screen and (min-width: 80rem) {
+	i
+	{
+		/*display: none;*/
+	}
+}

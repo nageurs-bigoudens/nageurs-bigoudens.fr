@@ -29,10 +29,17 @@ function copyInClipBoard(link){
 	alert('Cette adresse a été copiée dans le presse-papier:\n\n' + link);
 }
 
+function toastNotify(message) {
+    var toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast show';
+    setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 3000);
+}
+
 // complète les fonctions dans tinymce.js
 function switchPositions(article_id, direction)
 {
-	const current_article = findParent(document.getElementById(article_id), 'article');
+	const current_article = findParent(document.getElementById(article_id), 'article'); // l'id n'est pas sur la bonne balise
 	var other_article;
 
 	if(direction == 'down'){
@@ -195,4 +202,100 @@ function findParent(element, tag_name){
         element = element.parentElement;
     }
     return null;
+}
+
+/* page Menu et chemins */
+function moveOneLevelUp(){}
+function moveOneLevelDown(){}
+
+function switchMenuPositions(page_id, direction)
+{
+	const nav_zone = document.getElementById("nav_zone"); // parent de <nav>
+	const clicked_menu_entry = document.getElementById(page_id); // div parente du bouton
+	var other_entry = null;
+
+	// pas bon
+	if(direction == 'down'){
+		other_entry = clicked_menu_entry.nextElementSibling;
+	}
+	else if(direction == 'up'){
+		other_entry = clicked_menu_entry.previousElementSibling;
+	}
+
+	if(other_entry == null){
+		console.log('Inversion impossible');
+		return;
+	}
+	
+    fetch('index.php?menu_edit=switch_positions', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id1: clicked_menu_entry.id, id2: other_entry.id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success)
+        {
+        	if(direction == 'down'){
+				clicked_menu_entry.parentElement.insertBefore(other_entry, clicked_menu_entry);
+				console.log('Inversion réussie');
+			}
+			else if(direction == 'up'){
+				other_entry.parentElement.insertBefore(clicked_menu_entry, other_entry);
+				console.log('Inversion réussie');
+			}
+			else{
+				console.error('Échec de l\'inversion');
+			}
+
+        	// remplacement du menu
+        	nav_zone.innerHTML = '';
+        	nav_zone.insertAdjacentHTML('afterbegin', data.nav);
+        }
+        else {
+
+            console.error('Échec de l\'inversion');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
+function checkMenuEntry(page_id){
+	const clicked_menu_entry = document.getElementById(page_id); // div parente du bouton
+	const checkbox = clicked_menu_entry.querySelector("input");
+
+	let color;
+	if(checkbox.checked){
+		color = "#ff1d04";
+		checked = true;
+	}
+	else{
+		color = "grey";
+		checked = false;
+	}
+
+	// contrôle check impossible si le parent le plus ancien est unchecked
+	//
+
+	// sur l'élément concerné
+	clicked_menu_entry.querySelector("button").style.color = color;
+
+	// même chose sur les enfants
+	/*try{
+		const level_markup = clicked_menu_entry.querySelector('.level');
+		//const other_buttons = .querySelectorAll("button");
+		level_markup.querySelectorAll("input").forEach(input => {
+			input.checked = checked;
+		});
+		level_markup.querySelectorAll("button").forEach(button => {
+			button.style.color = color;
+		});
+	}
+	catch(error){
+		console.log("pas d'enfant");
+	}*/
 }

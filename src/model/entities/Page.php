@@ -13,6 +13,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 #[ORM\Table(name: TABLE_PREFIX . "page")]
 class Page
 {
+    use \Position;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
@@ -56,11 +58,11 @@ class Page
         $this->children = new ArrayCollection();
     }
     
-    // getters
-    /*public function getId(): int
+    // getters/setters
+    public function getId(): int
     {
         return $this->id_page;
-    }*/
+    }
     public function getPageName(): string
     {
         return $this->name_page;
@@ -85,6 +87,10 @@ class Page
     {
         return $this->position;
     }
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
+    }
     public function getParent(): ?Page
     {
         return $this->parent;
@@ -105,25 +111,23 @@ class Page
     public function addChild(self $child): void
     {
         $this->children[] = $child;
-        $this->sortChildren();
+        $this->sortChildren(false);
     }
 
-    // utiliser $position pour afficher les éléments dans l'ordre
-    private function sortChildren(): void
+    public function findPageById(int $id): ?Page
     {
-        $iteration = count($this->children);
-        while($iteration > 1)
-        {
-            for($i = 0; $i < $iteration - 1; $i++)
-            {
-                if($this->children[$i]->getPosition() > $this->children[$i + 1]->getPosition())
-                {
-                    $tmp = $this->children[$i];
-                    $this->children[$i] = $this->children[$i + 1];
-                    $this->children[$i + 1] = $tmp;
+        $target = null;
+        foreach($this->children as $page){
+            if($page->getId() === $id){
+                return $page;
+            }
+            if(count($page->getChildren()) > 0){
+                $target = $page->findPageById($id);
+                if($target !== null){
+                    return $target;
                 }
             }
-            $iteration--;
         }
+        return $target;
     }
 }

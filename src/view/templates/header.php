@@ -1,7 +1,7 @@
 <body>
     <div>
 	   <header>
-            <div class="empty_nav_zone">
+            <div id="nav_zone">
                 <?= $nav ?>
             </div>
 

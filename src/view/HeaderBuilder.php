@@ -16,7 +16,9 @@ class HeaderBuilder extends AbstractBuilder
         {
             if($child->getName() === 'nav'){
                 $this->nav = $child;
+                // actuellement le noeud nav ne contient aucune info utile et l'envoyer à NavBuilder est inutile
                 $nav_builder = new NavBuilder($this->nav);
+                
                 $nav = $nav_builder->render();
             }
             elseif($child->getName() === 'breadcrumb'){

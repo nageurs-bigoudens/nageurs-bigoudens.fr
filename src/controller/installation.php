@@ -80,9 +80,9 @@ function makeStartPage(EntityManager $entityManager){
 	$accueil = new Page('Accueil', 'accueil', true, true, 1, NULL);
 	$connection = new Page('Connexion', 'connexion', true, false, NULL, NULL);
 	$article = new Page('Article', 'article', true, false, NULL, NULL);
+	$menu_paths = new Page("Menu et chemins", 'menu_chemins', true, false, NULL, NULL);
 	$edit_page = new Page("Modification d'une page", 'modif_page', true, false, NULL, NULL);
 	$new_page = new Page('Nouvelle page', 'nouvelle_page', true, false, NULL, NULL);
-	$edit_paths = new Page("Menu et chemins", 'menu_chemins', true, false, NULL, NULL);
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
@@ -95,6 +95,8 @@ function makeStartPage(EntityManager $entityManager){
 	$head_login = new Node('head', NULL, ["stop" => true, 'css_array' => ['body', 'head', 'nav', 'main'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
 	$login = new Node('login', NULL, [], 1, $main, $connection, NULL);
 	$head_article = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'main', 'foot'], 'js_array' => ['main']], 1, NULL, $article, NULL);
+	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'main', 'menu'], 'js_array' => ['main']], 1, NULL, $menu_paths, NULL);
+	$edit_menu = new Node('menu', NULL, [], 1, $main, $menu_paths, NULL);
 
 	/* -- table image -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
@@ -111,13 +113,14 @@ function makeStartPage(EntityManager $entityManager){
 	$footer_data = new NodeData(["adresse" => "17, rue Raymonde Folgoas Guillou, 29120 Pont-l’Abbé", "contact_nom" => "Les Nageurs Bigoudens", "e_mail" => "nb.secretariat@orange.fr", "logo_footer" => "assets/logo-nb-et-ffn.png"], $footer);
 	$head_login_data = new NodeData(["description" => "Connexion", "title" => "Connexion"], $head_login, new ArrayCollection([$favicon]));
 	$head_article_data = new NodeData(["description" => "", "title" => ""], $head_article, new ArrayCollection([$favicon]));
+	$head_edit_menu_data = new NodeData(["description" => "Menu et chemins", "title" => "Menu et chemins"], $head_edit_menu, new ArrayCollection([$favicon]));
 
     $entityManager->persist($accueil);
 	$entityManager->persist($connection);
 	$entityManager->persist($article);
+	$entityManager->persist($menu_paths);
 	$entityManager->persist($edit_page);
 	$entityManager->persist($new_page);
-	$entityManager->persist($edit_paths);
 	$entityManager->persist($head_accueil);
 	$entityManager->persist($header);
 	$entityManager->persist($nav);
@@ -127,6 +130,8 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($head_login);
 	$entityManager->persist($login);
 	$entityManager->persist($head_article);
+	$entityManager->persist($head_edit_menu);
+	$entityManager->persist($edit_menu);
 	$entityManager->persist($favicon);
 	$entityManager->persist($logo);
 	$entityManager->persist($facebook);
@@ -137,6 +142,7 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($footer_data);
 	$entityManager->persist($head_login_data);
 	$entityManager->persist($head_article_data);
+	$entityManager->persist($head_edit_menu_data);
     $entityManager->flush();
 
 	header('Location: ' . new URL);

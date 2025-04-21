@@ -6,7 +6,7 @@ header
 	background-image: url('../assets/fond-piscine.jpg');
 	background-size: cover; /* largeur du bloc_page  */
 }
-.empty_nav_zone
+#nav_zone
 {
 	/*margin: auto;*/
 	/*max-width: 1200px;*/

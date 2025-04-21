@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: TABLE_PREFIX . "node")]
 class Node
 {
+    use \Position;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
@@ -135,36 +137,7 @@ class Node
         $this->children[] = $child;
         $this->sortChildren(false);
     }
-    // utiliser $position pour afficher les éléments dans l'ordre
-    public function sortChildren(bool $reposition = false): void
-    {
-        // ordre du tableau des enfants
-        // inefficace quand des noeuds ont la même position
-        
-        // tri par insertion
-        for($i = 1; $i < count($this->children); $i++)
-        {
-            $tmp = $this->children[$i];
-            $j = $i - 1;
-
-            // Déplacez les éléments du tableau qui sont plus grands que la clé
-            // à une position devant leur position actuelle
-            while ($j >= 0 && $this->children[$j]->getPosition() > $tmp->getPosition()) {
-                $this->children[$j + 1] = $this->children[$j];
-                $j = $j - 1;
-            }
-            $this->children[$j + 1] = $tmp;
-        }
-
-        // nouvelles positions
-        if($reposition){
-            $i = 1;
-            foreach($this->children as $child){
-                $child->setPosition($i);
-                $i++;
-            }
-        }
-    }
+    
     public function removeChild(self $child): void
     {
         foreach($this->children as $key => $object){

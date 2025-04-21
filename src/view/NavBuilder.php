@@ -1,5 +1,7 @@
 <?php
 // src/view/NavBuilder.php
+//
+// menu principal
 
 declare(strict_types=1);
 
@@ -8,10 +10,13 @@ use App\Entity\Page;
 
 class NavBuilder extends AbstractBuilder
 {
-    public function __construct(Node $node)
+    public function __construct(Node $node = null)
     {
         $this->html .= '<nav class="nav_main"><ul>';
-        $this->html .= $this->navMainHTML(Director::$menu_data, Director::$page_path->getArray());
+        $this->html .= $this->navMainHTML(
+            Director::$menu_data,
+            // param nullable, ça retire une dépendance stricte entre NavBuilder et Director
+            Director::$page_path != null ? Director::$page_path->getArray() : []);
         $this->html .= '</ul></nav>';
     }
 

@@ -5,7 +5,7 @@
    version="1.1"
    id="svg1"
    sodipodi:docname="delete-bin.svg"
-   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   inkscape:version="1.4.1 (93de688d07, 2025-03-30)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -22,17 +22,14 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="5.7747054"
-     inkscape:cx="8.0523589"
+     inkscape:cx="8.0523588"
      inkscape:cy="13.940105"
-     inkscape:window-width="956"
+     inkscape:window-width="636"
      inkscape:window-height="1032"
-     inkscape:window-x="960"
+     inkscape:window-x="640"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg1" />
-  <path
-     d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z"
-     id="path1" />
   <path
      style="fill:#dd3333;stroke:#dd3333;stroke-width:0.654497"
      d="M 4.428179,21.633757 C 4.1901151,21.395692 4.1560562,20.517904 4.1560562,14.620412 V 7.8791899 H 3.1170421 2.0780281 V 7.0133448 6.1474998 H 4.5889787 7.0999293 V 4.4910099 c 0,-0.9110696 0.080668,-1.8072192 0.1792618,-1.9914437 0.1701493,-0.317927 0.4073212,-0.3349536 4.6657439,-0.3349536 5.369132,0 5.025628,-0.1624223 5.025628,2.3763127 v 1.6065745 h 2.51095 2.510951 v 0.865845 0.8658451 H 20.95345 19.914436 v 6.7267521 c 0,6.296846 -0.02024,6.745069 -0.316681,7.013345 -0.28412,0.257124 -1.066299,0.286592 -7.607067,0.286592 -6.396732,0 -7.3237431,-0.03336 -7.562509,-0.272122 z M 18.009577,13.940105 V 7.8791899 H 11.948662 5.8877463 v 6.0609151 6.060915 h 6.0609157 6.060915 z M 15.065704,5.0219012 V 3.8963027 H 11.948662 8.8316194 v 1.0101525 c 0,0.555584 0.051951,1.0621033 0.1154461,1.1255985 0.063495,0.063495 1.4661645,0.1154461 3.1170425,0.1154461 h 3.001596 z"

@@ -307,7 +307,7 @@ function getUser(string $login, EntityManager $entityManager): ?User
 }
 
 
-function disconnect(EntityManager $entityManager)
+function disconnect()
 {
 	// nettoyage complet
 	$_SESSION = []; // mémoire vive
