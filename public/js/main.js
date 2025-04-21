@@ -204,6 +204,7 @@ function findParent(element, tag_name){
     return null;
 }
 
+
 /* page Menu et chemins */
 function moveOneLevelUp(){}
 function moveOneLevelDown(){}
@@ -250,7 +251,6 @@ function switchMenuPositions(page_id, direction)
 				console.error('Échec de l\'inversion');
 			}
 
-        	// remplacement du menu
         	nav_zone.innerHTML = '';
         	nav_zone.insertAdjacentHTML('afterbegin', data.nav);
         }
@@ -265,37 +265,34 @@ function switchMenuPositions(page_id, direction)
 }
 
 function checkMenuEntry(page_id){
+	const nav_zone = document.getElementById("nav_zone"); // parent de <nav>
 	const clicked_menu_entry = document.getElementById(page_id); // div parente du bouton
 	const checkbox = clicked_menu_entry.querySelector("input");
-
 	let color;
-	if(checkbox.checked){
-		color = "#ff1d04";
-		checked = true;
-	}
-	else{
-		color = "grey";
-		checked = false;
-	}
 
-	// contrôle check impossible si le parent le plus ancien est unchecked
-	//
+	fetch('index.php?menu_edit=displayInMenu', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: clicked_menu_entry.id, checked: checkbox.checked })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success)
+        {
+        	color = checkbox.checked ? "#ff1d04" : "grey";
+        	clicked_menu_entry.querySelector("button").style.color = color;
 
-	// sur l'élément concerné
-	clicked_menu_entry.querySelector("button").style.color = color;
+        	nav_zone.innerHTML = '';
+        	nav_zone.insertAdjacentHTML('afterbegin', data.nav);
+        }
+        else {
 
-	// même chose sur les enfants
-	/*try{
-		const level_markup = clicked_menu_entry.querySelector('.level');
-		//const other_buttons = .querySelectorAll("button");
-		level_markup.querySelectorAll("input").forEach(input => {
-			input.checked = checked;
-		});
-		level_markup.querySelectorAll("button").forEach(button => {
-			button.style.color = color;
-		});
-	}
-	catch(error){
-		console.log("pas d'enfant");
-	}*/
+            console.error('Échec de l\'inversion');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
 }

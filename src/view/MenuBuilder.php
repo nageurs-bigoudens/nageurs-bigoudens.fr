@@ -22,8 +22,6 @@ class MenuBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }*/
 
-            // ajouter un article
-            $new_article = '';
             if($_SESSION['admin'])
             {
                 $this->unfoldMenu(Director::$menu_data, 0 - $this->margin_left_multiplier);
@@ -47,7 +45,7 @@ class MenuBuilder extends AbstractBuilder
         foreach($menu->getChildren() as $entry)
         {
             $div_style = 'margin-left: ' . $margin_left . 'px;';
-            $checked = $entry->IsInMenu() ? 'checked' : '';
+            $checked = $entry->isHidden() ? '' : 'checked';
             $this->html .= '<div id="' . $entry->getId() . '" style="' . $div_style . '">
                 <img class="move_entry_icon" onclick="" src="assets/arrow-left.svg">
                 <img class="move_entry_icon" onclick="" src="assets/arrow-right.svg">
@@ -67,14 +65,9 @@ class MenuBuilder extends AbstractBuilder
                 $this->html .= '<i>' . $entry->getPagePath() . '</i>';
             }
             
-
-            // supprimer me label "visible" et griser le texte et bouton en JS à la place
-
             /*
             => flèche gauche: position = position du parent + 1, parent = grand-parent, recalculer les positions
             => flèche droite: position = nombre d'éléments de la fraterie + 1, l'élément précédent devient le parent
-            => flèches haut et bas: inversement de position, comme pour les noeuds, mais dans la table page
-            => checkbox: in_menu ^= 1
             */
             
             if(count($entry->getChildren()) > 0){

@@ -209,12 +209,10 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
 	// récupération des données
 	$data = file_get_contents('php://input');
 	$json = json_decode($data, true);
+	Director::$menu_data = new Menu($entityManager);
 
 	if($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
 	{
-		//$menu = new Menu($entityManager);
-		Director::$menu_data = new Menu($entityManager);
-
         $id1 = $json['id1'];
         $id2 = $json['id2'];
 
@@ -232,11 +230,9 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
 	        Director::$menu_data->sortChildren(true); // modifie tableau children 
 	        $entityManager->flush();
 	        
-	        // menu utilisant les nouvelles données
-	        //Director::$page_path = new Path();
-	        $nav_builder = new NavBuilder(); // builder appelé sans envoi du noeud correspondant
-	        
-	        echo json_encode(['success' => true, 'path1' => '', 'path2' => '', 'nav' => $nav_builder->render()]);
+	        // nouveau menu
+	        $nav_builder = new NavBuilder();
+	        echo json_encode(['success' => true, 'nav' => $nav_builder->render()]);
         }
         else{
         	echo json_encode(['success' => false]);
@@ -244,9 +240,29 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
 	    
 	    die;
 	}
+
+	if($_GET['menu_edit'] === 'displayInMenu' && isset($json['id']) && isset($json['checked']))
+	{
+		$id = $json['id'];
+		$checked = $json['checked'];
+
+		$page = Director::$menu_data->findPageById((int)$id);
+		if($page->isHidden() === $checked){
+			$page->setHidden(!$checked);
+			$entityManager->flush();
+
+			// nouveau menu
+			$nav_builder = new NavBuilder();
+			echo json_encode(['success' => true, 'nav' => $nav_builder->render()]);
+		}
+		else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+	}
 }
 
-// détection des requêtes de type XHR, pas d'utilité pour l'instant
+// détection des requêtes de type XHR?, pas d'utilité pour l'instant
 /*elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
 	echo "requête XHR reçue par le serveur";
 	die;

@@ -34,6 +34,9 @@ class Page
     #[ORM\Column(type: "boolean")]
     private bool $in_menu;
 
+    #[ORM\Column(type: "boolean")]
+    private bool $hidden;
+
     #[ORM\Column(type: "integer", nullable: true)] // null si hors menu
     private ?int $position;
 
@@ -47,12 +50,13 @@ class Page
     /*#[ORM\Column(type: "json", nullable: true)]
     private ?array $metadata = null;*/
 
-    public function __construct(string $name, string $eop, bool $reachable, bool $in_menu, ?int $position, ?Page $parent)
+    public function __construct(string $name, string $eop, bool $reachable, bool $in_menu, bool $hidden, ?int $position, ?Page $parent)
     {
         $this->name_page = $name;
         $this->end_of_path = $eop;
         $this->reachable = $reachable;
         $this->in_menu = $in_menu;
+        $this->hidden = $hidden;
         $this->position = $position;
         $this->parent = $parent;
         $this->children = new ArrayCollection();
@@ -82,6 +86,14 @@ class Page
     public function isInMenu(): bool
     {
         return $this->in_menu;
+    }
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+    public function setHidden(bool $hidden): void
+    {
+        $this->hidden = $hidden;
     }
     public function getPosition(): ?int
     {

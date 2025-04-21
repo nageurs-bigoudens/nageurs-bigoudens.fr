@@ -1,5 +1,5 @@
 /*-- menu principal --*/
-.empty_nav_zone
+#nav_zone
 {
 	height: 33px;
 }

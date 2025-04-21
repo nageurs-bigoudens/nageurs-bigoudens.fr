@@ -27,41 +27,44 @@ class NavBuilder extends AbstractBuilder
 
         foreach($nav_data->getChildren() as $data)
         {
-            $li_class = '';
-            if(isset($current[$level]) && $data->getEndOfPath() === $current[$level]->getEndOfPath()){
-                $li_class = 'current ';
-            }
+            if(!$data->isHidden()){
+                $li_class = '';
+                if(isset($current[$level]) && $data->getEndOfPath() === $current[$level]->getEndOfPath()){
+                    $li_class = 'current ';
+                }
 
-            $link = '';
-            if($data->isReachable())
-            {
-                if(str_starts_with($data->getEndOfPath(), 'http')) // lien vers autre site
+                $link = '';
+                if($data->isReachable()) // titre de catégorie du menu non clicable
                 {
-                    $link .= '<a href="' . $data->getEndOfPath() . '" target="_blank">';
+                    if(str_starts_with($data->getEndOfPath(), 'http')) // lien vers autre site
+                    {
+                        $link .= '<a href="' . $data->getEndOfPath() . '" target="_blank">';
+                    }
+                    elseif($data->getEndOfPath() != '') // lien relatif
+                    {
+                        $link .= '<a href="' . new URL(['page' => $data->getPagePath()]) . '">';
+                    }
                 }
-                elseif($data->getEndOfPath() != '') // lien relatif
+                else{
+                    $link .= '<a>';
+                }
+                
+                if(count($data->getChildren()) > 0) // titre de catégorie
                 {
-                    $link .= '<a href="' . new URL(['page' => $data->getPagePath()]) . '">';
+                    $li_class .= $data->getParent() == null ? 'drop-down' : 'drop-right';
+                    
+                    $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a><ul class="sub-menu">' . "\n";
+                    $level++;
+                    $nav_html .= $this->navMainHTML($data, $current);
+                    $level--;
+                    $nav_html .= '</ul></li>' . "\n";
                 }
-            }
-            else{
-                $link .= '<a>';
+                else
+                {
+                    $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a></li>' . "\n";
+                }
             }
             
-            if(count($data->getChildren()) > 0) // titre de catégorie
-            {
-                $li_class .= $data->getParent() == null ? 'drop-down' : 'drop-right';
-                
-                $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a><ul class="sub-menu">' . "\n";
-                $level++;
-                $nav_html .= $this->navMainHTML($data, $current);
-                $level--;
-                $nav_html .= '</ul></li>' . "\n";
-            }
-            else
-            {
-                $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a></li>' . "\n";
-            }
         }
         return $nav_html;
     }

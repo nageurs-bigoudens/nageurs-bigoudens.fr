@@ -38,12 +38,6 @@ class Menu extends Page
         foreach($this->getChildren() as $page){
         	$page->fillChildrenPagePath();
         }
-        
-        /*for($i = 0; $i < count($this->getChildren()[1]->getChildren()); $i++){
-        	echo $this->getChildren()[1]->getChildren()[$i]->getEndOfPath() . ' - ';
-        	echo $this->getChildren()[1]->getChildren()[$i]->getPageName() . '<br>';
-        }*/
-        //die;
 	}
 
     public function getOtherPages(): array
