@@ -77,12 +77,12 @@ HTACCESS;
 function makeStartPage(EntityManager $entityManager){
 	/* -- table page -- */
 	// paramètres: name_page, end_of_path, reachable, in_menu, position, parent
-	$accueil = new Page('Accueil', 'accueil', true, true, 1, NULL);
-	$connection = new Page('Connexion', 'connexion', true, false, NULL, NULL);
-	$article = new Page('Article', 'article', true, false, NULL, NULL);
-	$menu_paths = new Page("Menu et chemins", 'menu_chemins', true, false, NULL, NULL);
-	$edit_page = new Page("Modification d'une page", 'modif_page', true, false, NULL, NULL);
-	$new_page = new Page('Nouvelle page', 'nouvelle_page', true, false, NULL, NULL);
+	$accueil = new Page('Accueil', 'accueil', true, true, false, 1, NULL);
+	$connection = new Page('Connexion', 'connexion', true, false, false, NULL, NULL);
+	$article = new Page('Article', 'article', true, false, false, NULL, NULL);
+	$menu_paths = new Page("Menu et chemins", 'menu_chemins', true, false, false, NULL, NULL);
+	$edit_page = new Page("Modification d'une page", 'modif_page', true, false, false, NULL, NULL);
+	$new_page = new Page('Nouvelle page', 'nouvelle_page', true, false, false, NULL, NULL);
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
@@ -95,7 +95,7 @@ function makeStartPage(EntityManager $entityManager){
 	$head_login = new Node('head', NULL, ["stop" => true, 'css_array' => ['body', 'head', 'nav', 'main'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
 	$login = new Node('login', NULL, [], 1, $main, $connection, NULL);
 	$head_article = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'main', 'foot'], 'js_array' => ['main']], 1, NULL, $article, NULL);
-	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'main', 'menu'], 'js_array' => ['main']], 1, NULL, $menu_paths, NULL);
+	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'main', 'menu'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
 	$edit_menu = new Node('menu', NULL, [], 1, $main, $menu_paths, NULL);
 
 	/* -- table image -- */

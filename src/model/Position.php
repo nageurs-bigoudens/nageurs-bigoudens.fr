@@ -7,34 +7,30 @@ declare(strict_types=1);
 
 trait Position
 {
-	public function sortChildren(bool $reposition = false): void
+	public function sortChildren(bool $reindexation = false): void
     {
-        // ordre du tableau des enfants
-        // inefficace quand des noeuds ont la même position
-        
-        // tri par insertion avant affichage
+        // tri par insertion du tableau des enfants
         for($i = 1; $i < count($this->children); $i++)
         {
             $tmp = $this->children[$i];
             $j = $i - 1;
 
-            // Déplacez les éléments du tableau qui sont plus grands que la clé
-            // à une position devant leur position actuelle
-            while ($j >= 0 && $this->children[$j]->getPosition() > $tmp->getPosition()) {
+            // Déplacez les éléments du tableau qui sont plus grands que la clé à une position devant leur position actuelle
+            while($j >= 0 && $this->children[$j]->getPosition() > $tmp->getPosition()) {
                 $this->children[$j + 1] = $this->children[$j];
-                $j = $j - 1;
+                $j--;
             }
             $this->children[$j + 1] = $tmp;
         }
         
-        foreach ($this->children as $child) {
-            if (count($child->children) > 0) {
-                $child->sortChildren($reposition);
+        foreach($this->children as $child) {
+            if(count($child->children) > 0) {
+                $child->sortChildren($reindexation);
             }
         }
 
         // nouvelles positions (tableau $children => BDD)
-        if($reposition){
+        if($reindexation){
             $i = 1;
             foreach($this->children as $child){
                 $child->setPosition($i);

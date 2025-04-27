@@ -170,7 +170,8 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 }
 
 // détection des requêtes d'upload d'image de tinymce
-if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_GET['action']) && $_GET['action'] === 'upload_image'){
+if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_GET['action']) && $_GET['action'] === 'upload_image')
+{
 	if (isset($_FILES['file'])) {
         $file = $_FILES['file'];
         $dest = 'images/';
@@ -210,6 +211,90 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
 	$data = file_get_contents('php://input');
 	$json = json_decode($data, true);
 	Director::$menu_data = new Menu($entityManager);
+
+	// flèche gauche <=: position = position du parent + 1, parent = grand-parent, recalculer les positions
+	if($_GET['menu_edit'] === 'move_one_level_up' && isset($json['id'])){
+		$id = $json['id'];
+		$page = Director::$menu_data->findPageById((int)$id);
+
+        $parent = $page->getParent(); // peut être null
+        if($parent === null){
+            // 1er niveau: ne rien faire
+            echo json_encode(['success' => false]);
+            die;
+        }
+        // BDD
+        else{
+            $page->setPosition($parent->getPosition() + 1); // nouvelle position
+
+            // 2ème niveau: le parent devient $menu_data, puis null après tri
+            if($parent->getParent() === null){
+                // connexion dans les deux sens
+                $page->setParent(Director::$menu_data); // => pour la persistance
+                
+                //Director::$menu_data->addChild($page); // => pour sortChildren
+                $page->getParent()->addChild($page); // => pour sortChildren
+                //Director::$menu_data->sortChildren(true); // positions décaléees des nouveaux petits frères
+                $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
+                $page->setParent(null);
+
+                // affichage
+                $page->setPagePath($page->getEndOfPath());
+                $page->fillChildrenPagePath();
+            }
+            // 3ème niveau et plus
+            else{
+                $page->setParent($parent->getParent()); // nouveau parent
+                $page->getParent()->addChild($page); // => pour sortChildren
+                $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
+                $page->fillChildrenPagePath($page->getParent()->getPagePath());
+            }
+            //$parent->sortChildren(true); // positions des enfants restants, inutile si la fonction est récursive?
+            $entityManager->flush();
+            
+            // affichage
+            $parent->removeChild($page);
+            $nav_builder = new NavBuilder();
+	        $menu_builder = new MenuBuilder(null, false);
+			echo json_encode(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
+			die;
+        }
+	}
+
+	// flèche droite =>: position = nombre d'éléments de la fraterie + 1, l'élément précédent devient le parent
+	if($_GET['menu_edit'] === 'move_one_level_down' && isset($json['id'])){
+		$id = $json['id'];
+		$page = Director::$menu_data->findPageById((int)$id);
+
+        $parent = $page->getParent(); // peut être null
+        if($parent == null){
+            $parent = Director::$menu_data;
+        }
+
+        // BDD
+        $parent->sortChildren(true); // trie et réindexe par sécurité: 1, 2, 3...
+        if($page->getPosition() > 1){
+            foreach($parent->getChildren() as $child){
+                //echo $child->getPageName();
+                if($child->getPosition() === $page->getPosition() - 1){
+                    $page->setParent($child);
+                    break;
+                }
+            }
+            $page->setPosition(count($page->getParent()->getChildren()) + 1);
+        }
+        $entityManager->flush();
+
+        // affichage
+		$parent->removeChild($page);
+        $page->getParent()->addChild($page);
+        $page->fillChildrenPagePath($page->getParent()->getPagePath()); // variable non mappée $page_path
+        $nav_builder = new NavBuilder();
+		$menu_builder = new MenuBuilder(null, false);
+
+		echo json_encode(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
+		die;
+	}
 
 	if($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
 	{

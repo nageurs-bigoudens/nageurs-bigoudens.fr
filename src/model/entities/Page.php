@@ -75,6 +75,10 @@ class Page
     {
         return $this->page_path;
     }
+    public function setPagePath(string $path):void
+    {
+        $this->page_path = $path;
+    }
     public function getEndOfPath(): string
     {
         return $this->end_of_path;
@@ -107,6 +111,10 @@ class Page
     {
         return $this->parent;
     }
+    public function setParent(?Page $parent): void
+    {
+        $this->parent = $parent;
+    }
     public function getChildren(): Collection
     {
         return $this->children;
@@ -124,6 +132,14 @@ class Page
     {
         $this->children[] = $child;
         $this->sortChildren(false);
+    }
+    public function removeChild(self $child): void
+    {
+        foreach($this->children as $index => $candidate){
+            if($candidate === $child){
+                unset($this->children[$index]);
+            }
+        }
     }
 
     public function findPageById(int $id): ?Page
