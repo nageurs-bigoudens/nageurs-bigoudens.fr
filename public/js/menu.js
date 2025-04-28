@@ -238,3 +238,14 @@ function checkMenuEntry(page_id){
         console.error('Erreur:', error);
     });
 }
+
+
+function editUrlEntry(page_id){
+	const selected_div = document.getElementById(page_id);
+	console.log(selected_div.id);
+}
+
+function deleteUrlEntry(page_id){
+	const selected_div = document.getElementById(page_id);
+	console.log(selected_div.id);
+}

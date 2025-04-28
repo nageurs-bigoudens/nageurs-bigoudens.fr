@@ -28,7 +28,7 @@ class FooterBuilder extends AbstractBuilder
                 $div_admin = 'logged_in';
                 $empty_admin_zone = 'empty_admin_zone';
                 $link_edit_page = new URL(['page' => CURRENT_PAGE, 'action' => 'modif_page']);
-                $link_new_page = new URL(['from' => CURRENT_PAGE, 'page' => 'nouvelle_page']);
+                $link_new_page = new URL(['page' => 'nouvelle_page']);
                 $link_change_paths = new URL(['page' => 'menu_chemins']);
                 
                 $link_change_password = new URL(['from' => CURRENT_PAGE, 'action' => 'modif_mdp']);

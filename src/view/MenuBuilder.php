@@ -9,6 +9,7 @@ use App\Entity\Page;
 class MenuBuilder extends AbstractBuilder
 {
     //private int $margin_left_multiplier = 29;
+    private string $options = '';
 
     public function __construct(Node $node = null, bool $template = true)
     {
@@ -23,7 +24,11 @@ class MenuBuilder extends AbstractBuilder
             }*/
 
             if($_SESSION['admin']){
-                $this->unfoldMenu(Director::$menu_data/*, 0 - $this->margin_left_multiplier*/);
+                $this->unfoldMenu(Director::$menu_data);
+                
+                if($template){
+                    $this->unfoldOptions(Director::$menu_data);
+                }
             }
             else{
                 header('Location: ' . new URL);
@@ -39,11 +44,11 @@ class MenuBuilder extends AbstractBuilder
         }
     }
 
-    private function unfoldMenu(Page $menu): void
+    private function unfoldMenu(Page $page): void
     {
         $this->html .= '<div class="level">' . "\n";
 
-        foreach($menu->getChildren() as $entry)
+        foreach($page->getChildren() as $entry)
         {
             $checked = $entry->isHidden() ? '' : 'checked';
             $this->html .= '<div id="' . $entry->getId() . '" class="menu_edit_entry">
@@ -57,9 +62,9 @@ class MenuBuilder extends AbstractBuilder
                 <button>' . $entry->getPageName() . '</button>';
 
             if(str_starts_with($entry->getEndOfPath(), 'http')){
-                $this->html .= '<span id="edit-i..."><img class="move_entry_icon" src="assets/edit.svg" onclick="openEditor(\'i...\')"></span>
+                $this->html .= '<span id="edit-i..."><img class="move_entry_icon" src="assets/edit.svg" onclick="editUrlEntry(' . $entry->getId() . ')"></span>
                     <i class="url">' . $entry->getEndOfPath() . '</i>
-                    <span id="delete-i..."><img class="move_entry_icon" src="assets/delete-bin.svg" onclick="delete(\'i...\')"></span>';
+                    <span id="delete-i..."><img class="move_entry_icon" src="assets/delete-bin.svg" onclick="deleteUrlEntry(' . $entry->getId() . ')"></span>';
             }
             else{
                 $this->html .= '<i class="path">' . $entry->getPagePath() . '</i>';
@@ -71,5 +76,15 @@ class MenuBuilder extends AbstractBuilder
             $this->html .= '</div>' . "\n";
         }
         $this->html .= "</div>\n";
+    }
+
+    private function unfoldOptions(Page $page): void
+    {
+        foreach($page->getChildren() as $entry){
+            $this->options .= '<option value="' . $entry->getId() . '">' . $entry->getPageName() . "</options>\n";
+            if(count($entry->getChildren()) > 0){
+                $this->unfoldOptions($entry);
+            }
+        }
     }
 }

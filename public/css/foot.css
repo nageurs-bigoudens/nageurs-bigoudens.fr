@@ -6,6 +6,7 @@ footer
 	background-color: #B7E9FE;
 	/*width: 1200px;*/
 	margin: auto;
+	padding: 0 20px;
 	
 }
 footer > div
@@ -71,6 +72,20 @@ footer > div
 .footer_logo img
 {
 	max-width: 288px;
+}
+@media screen and (max-width: 1000px)
+{
+	.footer .contact
+	{
+		width: 70px;
+	}
+}
+@media screen and (max-width: 800px)
+{
+	footer > div
+	{
+		flex-direction: column;
+	}
 }
 
 .breadcrumb a

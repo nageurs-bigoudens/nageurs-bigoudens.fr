@@ -8,32 +8,56 @@
 {
 	margin-left: 29px;
 }
-.menu img
+.menu .new_page_button
 {
-	width: 20px;
-	vertical-align: middle;
-}
-.menu form
-{
-	display: inline;
-}
-
-/* explications pour l'utiisateur */
-.menu aside
-{
-	display: flex;
-	flex-wrap: wrap;
 	background-color: white;
 	padding: 10px;
 }
-.menu aside p
+.menu img
+{
+	width: 20px;
+}
+/*.menu form
+{
+	display: inline;
+}*/
+.menu p
 {
 	margin: 5px;
+}
+
+/* explications pour l'utilisateur */
+.menu aside
+{
+	background-color: white;
+	padding: 10px;
+	margin-top: 10px;
+}
+.menu aside .controls_explanations
+{
+	display: flex;
+	flex-wrap: wrap;
+}
+.menu aside .controls_explanations p
+{
 	font-size: smaller;
+}
+.menu aside img
+{
+	vertical-align: bottom;
 }
 .menu aside input
 {
 	pointer-events: none; /* case non clicable, sauf action au clavier... */
+	vertical-align: bottom;
+}
+.menu #location, .menu input[type=submit]
+{
+	color: #ff1d04;
+	font-size: medium;
+	border-radius: 4px;
+	background-color: white;
+	border: lightgrey 2px outset;
 }
 
 .menu button
@@ -54,7 +78,7 @@ input
 	vertical-align: middle;
 	border: 2px #e3f3ff solid;
 }
-.move_entry_icon:hover
+.menu #location:hover, .menu input[type=submit]:hover, .move_entry_icon:hover
 {
 	background-color: #ffff00;
 	border-radius: 4px;
@@ -62,15 +86,35 @@ input
 	cursor: pointer;
 }
 
-.menu .new_entry_buttons
+.menu form
+{
+	padding: 10px;
+	background-color: #f0f0f0f0;
+}
+.menu .url_form_zone
 {
 	background-color: white;
 	padding: 10px;
 	margin-top: 10px;
 }
-.menu .new_entry_buttons p
+/*.menu .url_form_zone div
+{
+	display: flex;
+}*/
+.menu .url_form_zone label
+{
+	text-wrap: nowrap;
+	margin-right: 5px;
+}
+.menu .url_form_zone #url_input
+{
+	width: 100%;
+}
+.menu .url_form_zone p
 {
 	margin: 5px;
+	display: flex;
+	align-items: center;
 }
 
 @media screen and (min-width: 80rem) {
