@@ -64,10 +64,6 @@
 {
 	margin: 5px;
 }
-input
-{
-	vertical-align: middle;
-}
 .menu_entry_checkbox
 {
 	margin-left: 2px;
@@ -86,7 +82,7 @@ input
 	cursor: pointer;
 }
 
-.menu form
+.menu .url_form_zone form
 {
 	padding: 10px;
 	background-color: #f0f0f0f0;

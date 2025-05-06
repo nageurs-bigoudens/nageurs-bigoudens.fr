@@ -7,12 +7,12 @@
 		<p>Ajouter au menu un lien vers un site web quelconque avec le formulaire ci-dessous:</p>
 		<form method="post" action="<?= new URL(['from' => 'menu_chemins']) ?>">
 			<p>
-				<label for="url_input">Adresse URL:</label>
-				<input id="url_input" type="url" name="url_input">
-			</p>
-			<p>
 				<label for="label_input">Nom:</label>
 				<input id="label_input" type="text" name="label_input">
+			</p>
+			<p>
+				<label for="url_input">Adresse URL:</label>
+				<input id="url_input" type="url" name="url_input">
 			</p>
 			<p>
 				<label>Placer le lien juste après cette entrée:</label>

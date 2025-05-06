@@ -62,9 +62,12 @@ class MenuBuilder extends AbstractBuilder
                 <button>' . $entry->getPageName() . '</button>';
 
             if(str_starts_with($entry->getEndOfPath(), 'http')){
-                $this->html .= '<span id="edit-i..."><img class="move_entry_icon" src="assets/edit.svg" onclick="editUrlEntry(' . $entry->getId() . ')"></span>
+                $this->html .= '<span id="edit-i' . $entry->getId() . '"><img class="move_entry_icon" src="assets/edit.svg" onclick="editUrlEntry(' . $entry->getId() . ')"></span>
                     <i class="url">' . $entry->getEndOfPath() . '</i>
-                    <span id="delete-i..."><img class="move_entry_icon" src="assets/delete-bin.svg" onclick="deleteUrlEntry(' . $entry->getId() . ')"></span>';
+                    <form style="display: inline;" id="delete-i' . $entry->getId() . '" method="post" action="' . new URL(['from' => 'menu_chemins']) . '">
+                        <input type="hidden" name="delete" value="' . $entry->getId() . '">
+                        <input type="image" class="move_entry_icon" src="assets/delete-bin.svg" alt="delete link button">
+                    </form>';
             }
             else{
                 $this->html .= '<i class="path">' . $entry->getPagePath() . '</i>';

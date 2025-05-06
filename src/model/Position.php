@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 trait Position
 {
+    // tri par insertion du tableau des enfants
 	public function sortChildren(bool $reindexation = false): void
     {
-        // tri par insertion du tableau des enfants
         for($i = 1; $i < count($this->children); $i++)
         {
             $tmp = $this->children[$i];
@@ -29,31 +29,18 @@ trait Position
             }
         }
 
-        // nouvelles positions (tableau $children => BDD)
         if($reindexation){
-            $i = 1;
-            foreach($this->children as $child){
-                $child->setPosition($i);
-                $i++;
-            }
+            $this->reindex();
         }
     }
 
-    /*private function sortChildren(): void
+    // nouvelles positions (tableau $children => BDD)
+    public function reindex(): void
     {
-        $iteration = count($this->children);
-        while($iteration > 1)
-        {
-            for($i = 0; $i < $iteration - 1; $i++)
-            {
-                if($this->children[$i]->getPosition() > $this->children[$i + 1]->getPosition())
-                {
-                    $tmp = $this->children[$i];
-                    $this->children[$i] = $this->children[$i + 1];
-                    $this->children[$i + 1] = $tmp;
-                }
-            }
-            $iteration--;
+        $i = 1;
+        foreach($this->children as $child){
+            $child->setPosition($i);
+            $i++;
         }
-    }*/
+    }
 }

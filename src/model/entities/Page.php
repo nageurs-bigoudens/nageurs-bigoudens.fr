@@ -135,11 +135,9 @@ class Page
     }
     public function removeChild(self $child): void
     {
-        foreach($this->children as $index => $candidate){
-            if($candidate === $child){
-                unset($this->children[$index]);
-            }
-        }
+        $this->children->removeElement($child);
+        $this->children = new ArrayCollection(array_values($this->children->toArray())); // réindexer en passant par un tableau
+        $this->sortChildren(false);
     }
 
     public function findPageById(int $id): ?Page
