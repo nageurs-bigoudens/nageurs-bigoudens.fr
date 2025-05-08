@@ -69,8 +69,9 @@ class MainBuilder extends AbstractBuilder
         </aside>' . "\n";*/
 
         // ajout d'un nouveau bloc
-        $this->html .= '<div class="new_bloc">
-            <p>Ajouter un bloc dans la page:</p>
+        $this->html .= '<div class="edit_bloc_zone">
+        <div class="new_bloc">
+            <p>Ajouter un bloc de page</p>
             <form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
                 <p><label for="bloc_title">Titre</label>
                 <input type="text" id="bloc_title" name="bloc_title" required></p>
@@ -78,11 +79,30 @@ class MainBuilder extends AbstractBuilder
                 <select id="bloc_select" name="bloc_select" required>'
                 . $options . 
                 '</select>
+                <input type="hidden" name="bloc_title_hidden">
                 <input type="submit" value="Valider"></p>
             </form>
         </div>' . "\n";
+        $this->html .= '<div class="modify_bloc">
+            <p>Modifier un bloc</p>';
         foreach($node->getChildren() as $child_node){
-            //$this->html .=
+            // renommage d'un bloc
+            $this->html .= '<div>
+                <p><label for="bloc_rename_title">Titre</label>
+                <input type="text" id="bloc_rename_' . $child_node->getId() . '" name="bloc_rename_title" value="' . $child_node->getNodeData()->getdata()['title'] . '" required>
+                <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>'. "\n";
+            // déplacement d'un bloc
+            $this->html .= '<img class="action_icon" onclick="switchBlocPositions(' . $child_node->getId() . ', \'up\')" src="assets/arrow-up.svg">
+                <img class="action_icon" onclick="switchBlocPositions(' . $child_node->getId() . ', \'down\')" src="assets/arrow-down.svg">' . "\n";
+            // suppression d'un bloc
+            $this->html .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
+                    <input type="hidden" name="delete_bloc_id" value="' . $child_node->getId() . '">
+                    <input type="hidden" name="delete_bloc_hidden">
+                    <input type="submit" value="Supprimer"></p>
+                </form>
+            </div>'. "\n";
         }
+        $this->html .= "</div>
+        </div>\n";
     }
 }

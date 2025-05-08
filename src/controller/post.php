@@ -15,10 +15,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
         /* -- mode Modification d'une page -- */
 
         // ajout d'un bloc dans une page
-        if(isset($_POST['bloc_title']) && isset($_POST['bloc_select'])){
+        if(isset($_POST['bloc_title']) && $_POST['bloc_title'] !== null && isset($_POST['bloc_select']) && $_POST['bloc_select'] !== null
+            && isset($_POST['bloc_title_hidden']) && $_POST['bloc_title_hidden'] === '') // contrôle anti-robot avec input hidden
+        {
             $director = new Director($entityManager, true); // on a besoin de page_path qui dépend de menu_data
             $page = Director::$page_path->getLast();
-            $director->findNodeByName('main');
+            $director->findUniqueNodeByName('main');
+            $director->findItsChildren();
             $main = $director->getNode();
             $position = count($main->getChildren()) + 1; // position dans la fraterie
 
@@ -37,7 +40,30 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $entityManager->flush();
             header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));
         }
+        // suppression d'un bloc de page
+        elseif(isset($_POST['delete_bloc_id']) && $_POST['delete_bloc_id'] !== null
+            && isset($_POST['delete_bloc_hidden']) && $_POST['delete_bloc_hidden'] === '') // contrôle anti-robot avec input hidden
+        {
+            $director = new Director($entityManager, true);
+            $director->findUniqueNodeByName('main');
+            $director->findItsChildren();
+            //$director->findNodeById((int)$_POST['delete_bloc_id']);
+            $main = $director->getNode();
+            $bloc;
+            foreach($main->getChildren() as $child){
+                if($child->getId() === (int)$_POST['delete_bloc_id']){
+                    $bloc = $child;
+                    break;
+                }
+            }
+            $main->removeChild($bloc); // réindex le tableau $children au passage
+            $main->reindexPositions();
 
+            $entityManager->remove($bloc); // suppression en BDD
+            $entityManager->flush();
+            header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));
+        }
+        
 
         /* -- page Menu et chemins -- */
 
@@ -60,7 +86,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
                 $parent = Director::$menu_data;
             }
             $parent->addChild($page); // true pour réindexer les positions en BDD
-            $parent->reindex();
+            $parent->reindexPositions();
 
             $entityManager->persist($page);
             $entityManager->flush();
@@ -76,7 +102,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             }
 
             $parent->removeChild($page); // suppression de $children avant de trier
-            $parent->reindex();
+            $parent->reindexPositions();
 
             $entityManager->remove($page); // suppression en BDD
             $entityManager->flush();

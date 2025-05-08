@@ -11,14 +11,24 @@ section > h3
 	margin: 0;
 	text-align: center;
 }
-section > p /* boutons spéciaux mode admin */
-{
-	/*margin-left: 15px;*/
-}
 .grid_columns
 {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
+}
+@media screen and (max-width: 800px)
+{
+	.grid_columns
+	{
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media screen and (max-width: 550px)
+{
+	.grid_columns
+	{
+		display: block;
+	}
 }
 .galery_photos
 {
@@ -148,23 +158,35 @@ article a:hover
 	flex-wrap: wrap;
 	font-size: smaller;
 }*/
-.new_bloc
+.edit_bloc_zone
 {
 	background-color: white;
 	padding: 10px;
-	margin: 10px 20px;
-
+	margin: 10px 15px;
+	display: flex;
+	justify-content: space-evenly;
+	flex-wrap: wrap;
 }
-.new_bloc p
+.edit_bloc_zone p
 {
 	margin: 5px;
 }
+.new_bloc, .modify_bloc
+{
+	/*background-color: white;
+	padding: 10px;
+	margin: 10px 20px;*/
+}
+.new_bloc p
+{
+	/*margin: 5px;*/
+}
 .new_bloc #bloc_title
 {
-	width: 100%;
+	width: 70%;
 	max-width: 300px;
 }
-.new_bloc form select, .new_bloc form input[type=submit]
+.new_bloc form select, .new_bloc form input[type=submit], .modify_bloc form input[type=submit]
 {
 	color: #ff1d04;
 	font-size: medium;
@@ -176,9 +198,18 @@ select:hover
 {
 	cursor: pointer;
 }
-.new_bloc form input[type=submit]:hover
+.new_bloc form input[type=submit]:hover, .modify_bloc form input[type=submit]:hover
 {
 	background-color: #ffff00;
 	border-radius: 4px;
 	cursor: pointer;
+}
+.modify_bloc > div
+{
+	display: flex;
+	align-items: baseline;
+}
+.modify_bloc img
+{
+	vertical-align: middle;
 }

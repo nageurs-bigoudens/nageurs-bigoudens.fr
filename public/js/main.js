@@ -203,3 +203,32 @@ function findParent(element, tag_name){
     }
     return null;
 }
+
+
+/* -- mode Modification d'une page -- */
+function renamePageBloc(bloc_id){
+	const input = document.getElementById("bloc_rename_" + bloc_id);
+	const title = document.getElementById(bloc_id).querySelector("h3");
+
+	fetch('index.php?bloc_edit=rename_page_bloc', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({bloc_title: input.value, bloc_id: bloc_id})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+        	title.innerHTML = data.title;
+        	console.log(data.title);
+        	toastNotify('Le bloc a été renommé: ' + data.title);
+        }
+        else{
+            console.error('Erreur au renommage du titre.');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}

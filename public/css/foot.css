@@ -6,7 +6,7 @@ footer
 	background-color: #B7E9FE;
 	/*width: 1200px;*/
 	margin: auto;
-	padding: 0 20px;
+	/*padding: 0 20px;*/
 	
 }
 footer > div
@@ -39,7 +39,7 @@ footer > div
 	/*max-width: 45%;*/
 	/*margin-right: 10px;*/
 	/*margin: 16px 0;*/ /* = p */
-	padding: 10px;
+	padding: 15px;
 	list-style: none; /* retirer les puces */
 	font-size: small;
 	text-align: right;
@@ -69,6 +69,11 @@ footer > div
 	margin: 0 3px;
 }*/
 
+.contact
+{
+	padding: 0 15px;
+}
+
 .footer_logo img
 {
 	max-width: 288px;
@@ -85,6 +90,7 @@ footer > div
 	footer > div
 	{
 		flex-direction: column;
+		align-items: center;
 	}
 }
 
@@ -95,6 +101,17 @@ footer > div
 }
 
 /* zone admin */
+.admin_buttons_zone
+{
+	margin: 5px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.admin_buttons_zone p
+{
+	margin: 0;
+}
 .logged_out
 {
 	/*display: none;*/
@@ -107,22 +124,16 @@ footer > div
 }
 .empty_admin_zone
 {
-	height: 32px;
+	height: 70px;
 }
 .logged_in
 {
-	height: 32px;
-	width: 1200px;
+	/*height: 70px;*/
+	width: 100%;
 	margin: auto;
 	background-color: #ffff00;
 	position: fixed;
 	bottom: 0px;
-}
-.logged_in > p
-{
-	margin: 5px 0;
-	display: flex;
-	justify-content: center;
 }
 .logged_in button
 {
@@ -132,6 +143,7 @@ footer > div
 	border: lightgrey 2px outset;
 	border-radius: 4px;
 	background-color: white;
+	margin: 2px;
 }
 .logged_in button:hover
 {
@@ -139,6 +151,11 @@ footer > div
 	background-color: #ffff00;
 	border-radius: 4px;
 }
+.modif_mode
+{
+	background-color: #ffae1a; /* orange clair soupe de poisson */
+}
+
 
 .toast {
     visibility: hidden;

@@ -36,6 +36,7 @@ class Director
         return $this->article;
     }
 
+    // affichage d'une page ordinaire
 	public function makeRootNode(string $id = ''): void
     {
         // on récupère toutes les entrées
@@ -91,6 +92,12 @@ class Director
         }
     }
 
+    // le basique
+    public function findNodeById(int $id): void
+    {
+        $this->node = $this->entityManager->find('App\Entity\Node', $id);
+    }
+
     // récupération d'un article pour modification
     public function makeArticleNode(string $id = '', bool $get_section = false): bool
     {
@@ -112,7 +119,8 @@ class Director
 
         if($get_section){
             $this->article = $bulk_data[0];
-            $this->makeSectionNode($bulk_data[0]->getParent()->getId());
+            $this->findNodeById($bulk_data[0]->getParent()->getId());
+            $this->makeSectionNode();
         }
         else{
             $this->article = $bulk_data[0];
@@ -122,31 +130,30 @@ class Director
     }
 
     // récupération des articles d'un bloc <section> à la création d'un article
-    public function makeSectionNode(int $section_id): bool
+    public function makeSectionNode(): bool
     {
-        $section = $this->entityManager->find('App\Entity\Node', (string)$section_id);
-        
         $bulk_data = $this->entityManager
             ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.parent = :parent')
-            ->setParameter('parent', $section)
+            ->setParameter('parent', $this->node)
             ->getResult();
 
         foreach($bulk_data as $article){
-            $section->addChild($article); // pas de flush, on ne va pas écrire dans la BDD à chaque nouvelle page
+            $this->node->addChild($article); // pas de flush, on ne va pas écrire dans la BDD à chaque nouvelle page
         }
-        $this->node = $section;
         return true;
     }
 
-    public function findNodeByName(string $name): void
+    public function findUniqueNodeByName(string $name): void // = unique en BDD, donc sans "page" associée
     {
         $bulk_data = $this->entityManager
             ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.name_node = :name')
             ->setParameter('name', $name)
             ->getResult();
         $this->node = $bulk_data[0];
-        echo $this->page->getPageName() . ' ';
+    }
 
+    public function findItsChildren(): void
+    {
         $bulk_data = $this->entityManager
             ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.parent = :parent AND n.page = :page')
             ->setParameter('parent', $this->node)
@@ -154,7 +161,6 @@ class Director
             ->getResult();
         foreach($bulk_data as $child){
             $this->node->addChild($child);
-            echo $child->getName() . ' ';
         }
     }
 }

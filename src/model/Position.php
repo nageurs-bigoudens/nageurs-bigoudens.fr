@@ -30,12 +30,12 @@ trait Position
         }
 
         if($reindexation){
-            $this->reindex();
+            $this->reindexPositions();
         }
     }
 
     // nouvelles positions (tableau $children => BDD)
-    public function reindex(): void
+    public function reindexPositions(): void
     {
         $i = 1;
         foreach($this->children as $child){

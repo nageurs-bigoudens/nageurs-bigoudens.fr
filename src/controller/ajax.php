@@ -35,7 +35,8 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['action']))
 	        if($id[0] === 'n')
 	        {
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
-	        	$director->makeSectionNode($section_id);
+	        	$director->findNodeById($section_id);
+	        	$director->makeSectionNode();
 	        	$node = $director->getNode(); // = <section>
 
 	        	if(is_array($content)){
@@ -205,6 +206,8 @@ if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_
     die;
 }
 
+
+/* -- page Menu et chemins -- */
 if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
 {
 	// récupération des données
@@ -347,7 +350,39 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['menu_edit']))
 	}
 }
 
-// détection des requêtes de type XHR?, pas d'utilité pour l'instant
+
+/* -- mode Modification d'une page -- */
+if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['bloc_edit']))
+{
+	// récupération des données
+	$data = file_get_contents('php://input');
+	$json = json_decode($data, true);
+
+	// renommage d'un bloc
+	if($_GET['bloc_edit'] === 'rename_page_bloc')
+	{
+        if(isset($json['bloc_title']) && $json['bloc_title'] !== null && isset($json['bloc_id']) && is_int($json['bloc_id'])){
+            $director = new Director($entityManager);
+            $director->findNodeById($json['bloc_id']);
+
+            // le titre (du JSON en BDD) est récupéré sous forme de tableau, modifié et renvoyé
+            $data = $director->getNode()->getNodeData()->getData();
+            $data['title'] = htmlspecialchars($json['bloc_title']);
+            $director->getNode()->getNodeData()->setData($data);
+
+            $entityManager->flush();
+            echo json_encode(['success' => true, 'title' => $data['title']]);
+        }
+        else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+    }
+
+}
+
+
+// détection des requêtes de type XHR?, pas d'utilité à priori
 /*elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
 	echo "requête XHR reçue par le serveur";
 	die;
