@@ -1,6 +1,8 @@
 <?php
 // src/view/HeaderBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class HeaderBuilder extends AbstractBuilder

@@ -1,6 +1,8 @@
 <?php
 // src/view/LoginBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class LoginBuilder extends AbstractBuilder

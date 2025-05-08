@@ -1,6 +1,8 @@
 <?php
 // src/view/GaleryBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class GaleryBuilder extends AbstractBuilder

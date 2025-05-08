@@ -57,7 +57,7 @@ article .logo2
 }
 article img
 {
-	max-width: 100%;
+	width: 100%;
 	height: auto;
 }
 
@@ -130,5 +130,55 @@ main button:hover
 
 article a:hover
 {
+	cursor: pointer;
+}
+
+
+
+/* -- mode modification d'une page -- */
+/*.modif_page_explanations
+{
+	background-color: white;
+	padding: 10px;
+	margin: 10px 20px;
+}
+.modif_page_explanations div
+{
+	display: flex;
+	flex-wrap: wrap;
+	font-size: smaller;
+}*/
+.new_bloc
+{
+	background-color: white;
+	padding: 10px;
+	margin: 10px 20px;
+
+}
+.new_bloc p
+{
+	margin: 5px;
+}
+.new_bloc #bloc_title
+{
+	width: 100%;
+	max-width: 300px;
+}
+.new_bloc form select, .new_bloc form input[type=submit]
+{
+	color: #ff1d04;
+	font-size: medium;
+	border-radius: 4px;
+	background-color: white;
+	border: lightgrey 2px outset;
+}
+select:hover
+{
+	cursor: pointer;
+}
+.new_bloc form input[type=submit]:hover
+{
+	background-color: #ffff00;
+	border-radius: 4px;
 	cursor: pointer;
 }

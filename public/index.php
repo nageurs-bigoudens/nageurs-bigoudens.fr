@@ -60,6 +60,12 @@ elseif(isset($_GET['action']) && $_GET['action'] === 'modif_mdp')
 {
     changePassword($entityManager);
 }
+elseif($_SESSION['admin'] && isset($_GET['page']) && isset($_GET['action']) && $_GET['action'] === 'modif_page'
+    && $_GET['page'] !== 'connexion' && $_GET['page'] !== 'article' && $_GET['page'] !== 'menu_chemins')
+{
+    // les contrôles de la 2è ligne devraient utiliser un tableau
+    MainBuilder::$modif_mode = true;
+}
 
 // -- contrôleurs --
 $director = new Director($entityManager, true);

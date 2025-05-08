@@ -1,6 +1,8 @@
 <?php
 // src/view/FooterBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class FooterBuilder extends AbstractBuilder

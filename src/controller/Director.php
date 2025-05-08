@@ -16,11 +16,11 @@ class Director
 	private Node $node;
     private Node $article;
 
-	public function __construct(EntityManager $entityManager, bool $for_display = false)
+	public function __construct(EntityManager $entityManager, bool $get_menu = false)
 	{
 		$this->entityManager = $entityManager;
-        if($for_display){
-            self::$menu_data = new Menu($entityManager); // Menu est un modèle mais pas une entité
+        if($get_menu){
+            self::$menu_data = new Menu($entityManager);
             self::$page_path = new Path();
             $this->page = self::$page_path->getLast();
         }
@@ -136,5 +136,25 @@ class Director
         }
         $this->node = $section;
         return true;
+    }
+
+    public function findNodeByName(string $name): void
+    {
+        $bulk_data = $this->entityManager
+            ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.name_node = :name')
+            ->setParameter('name', $name)
+            ->getResult();
+        $this->node = $bulk_data[0];
+        echo $this->page->getPageName() . ' ';
+
+        $bulk_data = $this->entityManager
+            ->createQuery('SELECT n FROM App\Entity\Node n WHERE n.parent = :parent AND n.page = :page')
+            ->setParameter('parent', $this->node)
+            ->setParameter('page', $this->page)
+            ->getResult();
+        foreach($bulk_data as $child){
+            $this->node->addChild($child);
+            echo $child->getName() . ' ';
+        }
     }
 }

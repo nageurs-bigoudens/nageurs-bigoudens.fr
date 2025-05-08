@@ -1,6 +1,8 @@
 <?php
 // src/view/BreadcrumbBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class BreadcrumbBuilder extends AbstractBuilder

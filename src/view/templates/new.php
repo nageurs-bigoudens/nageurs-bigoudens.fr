@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <article>
     <div class="new_content">
         <div class="article_title_zone">

@@ -1,5 +1,5 @@
 <?php
-// src/controller/Menu.php
+// src/model/Menu.php
 
 declare(strict_types=1);
 

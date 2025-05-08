@@ -3,6 +3,8 @@
 //
 // htmlawed nettoie les entrées de l'utilisateur, en particulier le html de l'éditeur
 
+declare(strict_types=1);
+
 class Security
 {
 	private static $configHtmLawed = array(
@@ -14,10 +16,10 @@ class Security
 	    // liste noire d'attributs HTML
 	    'deny_attribute'=> 'id, class' // on garde 'style'
 	);
-
 	// faire qu'un certain élément puisse n'avoir que certains attributs, regarder la doc
 	private static $specHtmLawed = '';
 
+	// ATTENTION, n'applique pas htmlspecialchars() !!
 	public static function secureString(string $chaine): string
 	{
 	    return trim(htmLawed($chaine, self::$configHtmLawed, self::$specHtmLawed));;

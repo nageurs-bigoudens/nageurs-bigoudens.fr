@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <section class="menu">
 	<h3>Menu et chemins</h3>
 	<div class="new_page_button">

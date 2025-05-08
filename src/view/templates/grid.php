@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <section class="grid" id="<?= $this->id_node ?>">
 	<h3><?= $title ?></h3>
 <?= $new_article ?>

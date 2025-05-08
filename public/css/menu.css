@@ -37,19 +37,15 @@
 {
 	display: flex;
 	flex-wrap: wrap;
-}
-.menu aside .controls_explanations p
-{
 	font-size: smaller;
 }
-.menu aside img
+.menu aside img, .menu aside input
 {
 	vertical-align: bottom;
 }
 .menu aside input
 {
 	pointer-events: none; /* case non clicable, sauf action au clavier... */
-	vertical-align: bottom;
 }
 .menu #location, .menu input[type=submit]
 {

@@ -3,6 +3,8 @@
 //
 // page Menu et chemins en mode admin, fonctionne avec menu.js
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 use App\Entity\Page;
 
@@ -84,7 +86,7 @@ class MenuBuilder extends AbstractBuilder
     private function unfoldOptions(Page $page): void
     {
         foreach($page->getChildren() as $entry){
-            $this->options .= '<option value="' . $entry->getId() . '">' . $entry->getPageName() . "</options>\n";
+            $this->options .= '<option value="' . $entry->getId() . '">' . $entry->getPageName() . "</option>\n";
             if(count($entry->getChildren()) > 0){
                 $this->unfoldOptions($entry);
             }

@@ -7,6 +7,8 @@
 //
 // rajouter la page "créationn du mot de passe"?
 
+declare(strict_types=1);
+
 // insertion du captcha
 ob_start();
 ?>

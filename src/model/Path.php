@@ -1,5 +1,7 @@
 <?php
-// src/controller/Path.php
+// src/model/Path.php
+//
+// attention, cette classe dépend de src/model/Menu.php
 
 declare(strict_types=1);
 
@@ -14,6 +16,7 @@ class Path extends Page
 	{
         $path_array = explode('/', CURRENT_PAGE);
         try{
+        	// parcourir le menu de haut en bas pour obtenir un ou plusieurs objets Page
         	$this->findPage(Director::$menu_data, $path_array); // remplit $this->current_page
         }
 		catch(Exception $e){}

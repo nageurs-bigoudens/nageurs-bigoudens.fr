@@ -1,6 +1,8 @@
 <?php
 // src/view/BlogBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class BlogBuilder extends AbstractBuilder

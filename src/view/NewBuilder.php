@@ -1,6 +1,8 @@
 <?php
 // src/view/NewBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 class NewBuilder extends AbstractBuilder

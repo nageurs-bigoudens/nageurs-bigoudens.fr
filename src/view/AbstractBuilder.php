@@ -1,6 +1,8 @@
 <?php
 // src/view/AbstractBuilder.php
 
+declare(strict_types=1);
+
 use App\Entity\Node;
 
 abstract class AbstractBuilder
