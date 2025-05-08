@@ -68,7 +68,7 @@ class MainBuilder extends AbstractBuilder
             </div>
         </aside>' . "\n";*/
 
-        // ajout d'un nouveau bloc
+        // création d'un bloc
         $this->html .= '<div class="edit_bloc_zone">
         <div class="new_bloc">
             <p>Ajouter un bloc de page</p>
@@ -87,13 +87,13 @@ class MainBuilder extends AbstractBuilder
             <p>Modifier un bloc</p>';
         foreach($node->getChildren() as $child_node){
             // renommage d'un bloc
-            $this->html .= '<div>
-                <p><label for="bloc_rename_title">Titre</label>
+            $this->html .= '<div id="bloc_edit_' . $child_node->getId() . '">
+                <p><label for="bloc_rename_' . $child_node->getId() . '">Titre</label>
                 <input type="text" id="bloc_rename_' . $child_node->getId() . '" name="bloc_rename_title" value="' . $child_node->getNodeData()->getdata()['title'] . '" required>
                 <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>'. "\n";
             // déplacement d'un bloc
-            $this->html .= '<img class="action_icon" onclick="switchBlocPositions(' . $child_node->getId() . ', \'up\')" src="assets/arrow-up.svg">
-                <img class="action_icon" onclick="switchBlocPositions(' . $child_node->getId() . ', \'down\')" src="assets/arrow-down.svg">' . "\n";
+            $this->html .= '<img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'up\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-up.svg">
+                <img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'down\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-down.svg">' . "\n";
             // suppression d'un bloc
             $this->html .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
                     <input type="hidden" name="delete_bloc_id" value="' . $child_node->getId() . '">

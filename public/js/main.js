@@ -232,3 +232,54 @@ function renamePageBloc(bloc_id){
         console.error('Erreur:', error);
     });
 }
+
+function switchBlocsPositions(bloc_id, direction, current_page) {
+	const current_bloc = document.getElementById(bloc_id);
+	const current_bloc_edit_zone = document.getElementById("bloc_edit_" + bloc_id);
+	var other_bloc;
+
+	if(direction == 'down'){
+		other_bloc = current_bloc.nextElementSibling;
+	}
+	else if(direction == 'up'){
+		other_bloc = current_bloc.previousElementSibling;
+	}
+
+	if(other_bloc == null || other_bloc.tagName !== 'SECTION')
+	{
+		console.log('Inversion impossible');
+		return;
+	}
+	const other_bloc_edit_zone = document.getElementById("bloc_edit_" + other_bloc.id);
+	
+    fetch('index.php?page=' + current_page + '&bloc_edit=switch_blocs_positions', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id1: bloc_id, id2: parseInt(other_bloc.id) })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success)
+        {
+        	if(direction == 'down'){
+				current_bloc.parentElement.insertBefore(other_bloc, current_bloc);
+				current_bloc_edit_zone.parentElement.insertBefore(other_bloc_edit_zone, current_bloc_edit_zone);
+				console.log('Inversion réussie');
+			}
+			else if(direction == 'up'){
+				other_bloc.parentElement.insertBefore(current_bloc, other_bloc);
+				other_bloc_edit_zone.parentElement.insertBefore(current_bloc_edit_zone, other_bloc_edit_zone);
+				console.log('Inversion réussie');
+			}
+        }
+        else {
+
+            console.error('Échec de l\'inversion');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}

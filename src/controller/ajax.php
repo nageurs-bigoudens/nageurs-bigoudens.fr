@@ -378,7 +378,43 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json' && isset($_GET['bloc_edit']))
 		}
 		die;
     }
+    // inversion des positions de deux blocs
+    elseif($_GET['bloc_edit'] === 'switch_blocs_positions')
+    {
+    	if(isset($json['id1']) && is_int($json['id1']) && isset($json['id2']) && is_int($json['id2']) && isset($_GET['page'])){
+    		$director = new Director($entityManager, true);
+    		$director->findUniqueNodeByName('main');
+            $director->findItsChildren();
+            $main = $director->getNode();
+            $main->sortChildren(true); // régénère les positions avant inversion
 
+            $bloc1; $bloc2;
+            foreach($main->getChildren() as $child){
+            	if($child->getId() === $json['id1']){
+            		$bloc1 = $child;
+            		break;
+            	}
+            }
+            foreach($main->getChildren() as $child){
+            	if($child->getId() === $json['id2']){
+            		$bloc2 = $child;
+            		break;
+            	}
+            }
+
+	        // inversion
+	        $tmp = $bloc1->getPosition();
+	        $bloc1->setPosition($bloc2->getPosition());
+	        $bloc2->setPosition($tmp);
+
+    		$entityManager->flush();
+            echo json_encode(['success' => true]);
+    	}
+    	else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+    }
 }
 
 
