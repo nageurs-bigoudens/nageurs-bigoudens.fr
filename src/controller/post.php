@@ -13,9 +13,30 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
     if($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
     {
         /* -- mode Modification d'une page -- */
+        if(isset($_POST['page_menu_path']) && $_POST['page_menu_path'] !== null
+            && isset($_POST['page_id']) && $_POST['page_id'] !== null
+            && isset($_POST['page_name_path_hidden']) && $_POST['page_name_path_hidden'] === '')
+        {
+            $director = new Director($entityManager, true);
+            $page = Director::$page_path->getLast();
+            //$page = $entityManager->find('App\Entity\Page', $_POST['page_id']);
+            $path = htmlspecialchars($_POST['page_menu_path']);
 
+            // mise en snake_case: filtre caractères non-alphanumériques, minuscule, doublons d'underscore, trim des underscores
+            $path = trim(preg_replace('/_+/', '_', strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $path))), '_');
+            $page->setEndOfPath($path);
+            foreach(Director::$menu_data->getChildren() as $child){
+                if($child->getEndOfPath() === Director::$page_path->getArray()[0]->getEndOfPath()){
+                    $child->fillChildrenPagePath(); // MAJ de $page_path
+                }
+            }
+            $entityManager->flush();
+            header("Location: " . new URL(['page' => $page->getPagePath(), 'action' => 'modif_page']));
+            die;
+        }
         // ajout d'un bloc dans une page
-        if(isset($_POST['bloc_title']) && $_POST['bloc_title'] !== null && isset($_POST['bloc_select']) && $_POST['bloc_select'] !== null
+        elseif(isset($_POST['bloc_title']) && $_POST['bloc_title'] !== null
+            && isset($_POST['bloc_select']) && $_POST['bloc_select'] !== null
             && isset($_POST['bloc_title_hidden']) && $_POST['bloc_title_hidden'] === '') // contrôle anti-robot avec input hidden
         {
             $director = new Director($entityManager, true); // on a besoin de page_path qui dépend de menu_data
@@ -39,6 +60,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $entityManager->persist($data);
             $entityManager->flush();
             header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));
+            die;
         }
         // suppression d'un bloc de page
         elseif(isset($_POST['delete_bloc_id']) && $_POST['delete_bloc_id'] !== null
@@ -62,8 +84,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $entityManager->remove($bloc); // suppression en BDD
             $entityManager->flush();
             header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));
+            die;
         }
-        
+
 
         /* -- page Menu et chemins -- */
 
@@ -91,6 +114,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $entityManager->persist($page);
             $entityManager->flush();
             header("Location: " . new URL(['page' => $_GET['from']]));
+            die;
         }
         // suppression d'une entrée de menu avec une URL
         elseif(isset($_POST['delete']) && isset($_POST['x']) && isset($_POST['y'])){ // 2 params x et y sont là parce qu'on a cliqué sur une image
@@ -107,9 +131,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $entityManager->remove($page); // suppression en BDD
             $entityManager->flush();
             header("Location: " . new URL(['page' => $_GET['from']]));
+            die;
         }
         else{
             header("Location: " . new URL(['error' => 'paramètres inconnus']));
+            die;
         }
     }
 

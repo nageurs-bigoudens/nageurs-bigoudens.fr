@@ -1,4 +1,4 @@
-/* page "Menu et chemins" uniquement */
+/*-- page "Menu et chemins" uniquement --*/
 
 .menu
 {
@@ -68,7 +68,7 @@
 {
 	width: 20px;
 	vertical-align: middle;
-	border: 2px #e3f3ff solid;
+	border: 2px transparent solid;
 }
 .menu #location:hover, .menu input[type=submit]:hover, .move_entry_icon:hover
 {

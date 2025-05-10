@@ -36,6 +36,7 @@ function toastNotify(message) {
     setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 3000);
 }
 
+
 // complète les fonctions dans tinymce.js
 function switchPositions(article_id, direction)
 {
@@ -202,84 +203,4 @@ function findParent(element, tag_name){
         element = element.parentElement;
     }
     return null;
-}
-
-
-/* -- mode Modification d'une page -- */
-function renamePageBloc(bloc_id){
-	const input = document.getElementById("bloc_rename_" + bloc_id);
-	const title = document.getElementById(bloc_id).querySelector("h3");
-
-	fetch('index.php?bloc_edit=rename_page_bloc', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({bloc_title: input.value, bloc_id: bloc_id})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success){
-        	title.innerHTML = data.title;
-        	console.log(data.title);
-        	toastNotify('Le bloc a été renommé: ' + data.title);
-        }
-        else{
-            console.error('Erreur au renommage du titre.');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
-}
-
-function switchBlocsPositions(bloc_id, direction, current_page) {
-	const current_bloc = document.getElementById(bloc_id);
-	const current_bloc_edit_zone = document.getElementById("bloc_edit_" + bloc_id);
-	var other_bloc;
-
-	if(direction == 'down'){
-		other_bloc = current_bloc.nextElementSibling;
-	}
-	else if(direction == 'up'){
-		other_bloc = current_bloc.previousElementSibling;
-	}
-
-	if(other_bloc == null || other_bloc.tagName !== 'SECTION')
-	{
-		console.log('Inversion impossible');
-		return;
-	}
-	const other_bloc_edit_zone = document.getElementById("bloc_edit_" + other_bloc.id);
-	
-    fetch('index.php?page=' + current_page + '&bloc_edit=switch_blocs_positions', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id1: bloc_id, id2: parseInt(other_bloc.id) })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success)
-        {
-        	if(direction == 'down'){
-				current_bloc.parentElement.insertBefore(other_bloc, current_bloc);
-				current_bloc_edit_zone.parentElement.insertBefore(other_bloc_edit_zone, current_bloc_edit_zone);
-				console.log('Inversion réussie');
-			}
-			else if(direction == 'up'){
-				other_bloc.parentElement.insertBefore(current_bloc, other_bloc);
-				other_bloc_edit_zone.parentElement.insertBefore(current_bloc_edit_zone, other_bloc_edit_zone);
-				console.log('Inversion réussie');
-			}
-        }
-        else {
-
-            console.error('Échec de l\'inversion');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
 }

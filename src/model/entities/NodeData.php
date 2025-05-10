@@ -43,13 +43,21 @@ class NodeData
         $this->images = $images;
     }
 
+    public function getId(): int
+    {
+        return $this->id_node_data;
+    }
     public function getData(): array
     {
         return $this->data;
     }
-    public function setData(array $data): void
+    /*public function setData(array $data): void
     {
         $this->data = $data;
+    }*/
+    public function updateData(string $key, string $value): void
+    {
+        $this->data[$key] = $value;
     }
     /*public function setNode(Node $node): void
     {

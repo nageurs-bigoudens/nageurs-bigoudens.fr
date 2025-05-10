@@ -41,8 +41,8 @@ class BreadcrumbBuilder extends AbstractBuilder
                 $html .= '<span class="arrow"> →</span>' . "\n";
             }
 
-            // fin du chemin
-            $html .= '<span aria-current="page">' . $breadcrumb_array[$nb_of_entries - 1]->getPageName() . "</span>\n";
+            // fin du chemin (=> Thésée)
+            $html .= '<span id="thesee" aria-current="page">' . $breadcrumb_array[$nb_of_entries - 1]->getPageName() . "</span>\n";
             $html .= "</nav>\n";
         }
         return $html;

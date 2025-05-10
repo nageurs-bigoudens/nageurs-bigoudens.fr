@@ -53,7 +53,7 @@ class NavBuilder extends AbstractBuilder
                 {
                     $li_class .= $data->getParent() == null ? 'drop-down' : 'drop-right';
                     
-                    $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a><ul class="sub-menu">' . "\n";
+                    $nav_html .= '<li class="'. $li_class . '">' . $link . '<p id="m_' . $data->getId() . '">' . $data->getPageName() . '</p></a><ul class="sub-menu">' . "\n";
                     $level++;
                     $nav_html .= $this->navMainHTML($data, $current);
                     $level--;
@@ -61,7 +61,7 @@ class NavBuilder extends AbstractBuilder
                 }
                 else
                 {
-                    $nav_html .= '<li class="'. $li_class . '">' . $link . '<p>' . $data->getPageName() . '</p></a></li>' . "\n";
+                    $nav_html .= '<li class="'. $li_class . '">' . $link . '<p id="m_' . $data->getId() . '">' . $data->getPageName() . '</p></a></li>' . "\n";
                 }
             }
             

@@ -28,11 +28,17 @@ class HeadBuilder extends AbstractBuilder
 			{
 				$css .= '<link rel="stylesheet" href="css/' . $name . '.css">' . "\n";
 			}
-			$js = '';
+			
+            $js = '';
 	        foreach($js_array as $name)
 			{
 				$js .= '<script src="js/' . $name . '.js"></script>' . "\n";
 			}
+
+            if(MainBuilder::$modif_mode){
+                $css .= '<link rel="stylesheet" href="css/modif_page.css">' . "\n";
+                $js .= '<script src="js/modif_page.js"></script>' . "\n";
+            }
 
             // tinymce, nécéssite un script de copie dans composer.json
             if($_SESSION['admin']){

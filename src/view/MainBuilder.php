@@ -14,7 +14,7 @@ class MainBuilder extends AbstractBuilder
     {
         $this->html .= "<main>\n";
 
-        // cas particulier de la page article où l'article est greffé sur main
+        // page article: cas particulier où l'article est greffé sur main
         if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
             // pas censé arriver
             if(!isset($_GET['id'])){
@@ -42,14 +42,18 @@ class MainBuilder extends AbstractBuilder
                 $this->viewEditBlocks($node);
             }
 
+            // cas normal
             $this->useChildrenBuilder($node);
         }
 
         $this->html .= "</main>\n";
     }
 
+    // mode modification de page uniquement
     private function viewEditBlocks($node): void
     {
+        $viewFile = self::VIEWS_PATH . $node->getName() . '.php'; // mode modification uniquement
+
         // blocs disponibles
         $blocs = ['Blog', 'Grille', 'Calendrier', 'Galerie']; // générer ça dynamiquement!
         $blocs_true_names = ['blog', 'grid', 'calendar', 'galery'];
@@ -68,41 +72,36 @@ class MainBuilder extends AbstractBuilder
             </div>
         </aside>' . "\n";*/
 
-        // création d'un bloc
-        $this->html .= '<div class="edit_bloc_zone">
-        <div class="new_bloc">
-            <p>Ajouter un bloc de page</p>
-            <form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
-                <p><label for="bloc_title">Titre</label>
-                <input type="text" id="bloc_title" name="bloc_title" required></p>
-                <p><label for="bloc_select">Type</label>
-                <select id="bloc_select" name="bloc_select" required>'
-                . $options . 
-                '</select>
-                <input type="hidden" name="bloc_title_hidden">
-                <input type="submit" value="Valider"></p>
-            </form>
-        </div>' . "\n";
-        $this->html .= '<div class="modify_bloc">
-            <p>Modifier un bloc</p>';
+        //$page_id = Director::$page_path->getLast()->getId();
+        $head_node = null;
+        foreach(ViewBuilder::$root_node->getChildren() as $first_level_node){
+            if($first_level_node->getName() === 'head'){
+                $head_node = $first_level_node; // normallement c'est le 1er enfant
+                break;
+            }
+        }
+        
+        $bloc_edit = '';
         foreach($node->getChildren() as $child_node){
             // renommage d'un bloc
-            $this->html .= '<div id="bloc_edit_' . $child_node->getId() . '">
+            $bloc_edit .= '<div id="bloc_edit_' . $child_node->getId() . '">
                 <p><label for="bloc_rename_' . $child_node->getId() . '">Titre</label>
                 <input type="text" id="bloc_rename_' . $child_node->getId() . '" name="bloc_rename_title" value="' . $child_node->getNodeData()->getdata()['title'] . '" required>
                 <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>'. "\n";
             // déplacement d'un bloc
-            $this->html .= '<img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'up\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-up.svg">
+            $bloc_edit .= '<img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'up\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-up.svg">
                 <img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'down\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-down.svg">' . "\n";
             // suppression d'un bloc
-            $this->html .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
+            $bloc_edit .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
                     <input type="hidden" name="delete_bloc_id" value="' . $child_node->getId() . '">
                     <input type="hidden" name="delete_bloc_hidden">
                     <input type="submit" value="Supprimer"></p>
                 </form>
             </div>'. "\n";
         }
-        $this->html .= "</div>
-        </div>\n";
+
+        ob_start();
+        require $viewFile;
+        $this->html .= ob_get_clean();
     }
 }

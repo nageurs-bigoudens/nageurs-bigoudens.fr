@@ -71,6 +71,10 @@ class Page
     {
         return $this->name_page;
     }
+    public function setPageName(string $name): void
+    {
+        $this->name_page = $name;
+    }
     public function getPagePath(): string
     {
         return $this->page_path;
@@ -82,6 +86,10 @@ class Page
     public function getEndOfPath(): string
     {
         return $this->end_of_path;
+    }
+    public function setEndOfPath(string $end_of_path):void
+    {
+        $this->end_of_path = $end_of_path;
     }
     public function isReachable(): bool
     {

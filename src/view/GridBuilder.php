@@ -69,8 +69,8 @@ class GridBuilder extends AbstractBuilder
             $content = $this->html;
 
             ob_start();
-            require $viewFile;
-            $this->html = ob_get_clean(); // pas de concaténation ici, on écrase
+            require $viewFile; // utilise $content
+            $this->html = ob_get_clean(); // nouveau contenu
         }
     }
 }
