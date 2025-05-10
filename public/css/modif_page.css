@@ -1,0 +1,74 @@
+/* -- mode modification d'une page -- */
+.page_modification
+{
+	background-color: white;
+	padding: 10px;
+	margin: 10px 15px;
+}
+.page_modification form select, .page_modification form input[type=submit]
+{
+	color: #ff1d04;
+	font-size: medium;
+	border-radius: 4px;
+	background-color: white;
+	border: lightgrey 2px outset;
+}
+.page_modificationselect:hover
+{
+	cursor: pointer;
+}
+.page_modification form input[type=submit]:hover
+{
+	background-color: #ffff00;
+	border-radius: 4px;
+	cursor: pointer;
+}
+.edit_page_title_zone
+{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+}
+.edit_page_zone, .edit_bloc_zone
+{
+	background-color: #f0f0f0f0;
+	margin: 5px;
+	padding: 10px;
+}
+#edit_description
+{
+	margin: 5px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 5px;
+}
+#edit_description button
+{
+	vertical-align: top;
+}
+.edit_bloc_zone
+{
+	display: flex;
+	justify-content: space-evenly;
+	flex-wrap: wrap;
+}
+.edit_page_zone p, .edit_bloc_zone p, .edit_page_zone form
+{
+	margin: 5px;
+}
+
+.new_bloc #bloc_title
+{
+	width: 70%;
+	max-width: 300px;
+}
+.modify_bloc > div
+{
+	display: flex;
+	align-items: baseline;
+}
+.modify_bloc img
+{
+	vertical-align: middle;
+}

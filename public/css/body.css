@@ -37,3 +37,148 @@ body
 {
     vertical-align: middle;
 }*/
+
+main
+{
+    margin: auto;
+    /*max-width: 1200px;*/
+    background-color: #E3F3FF;
+    padding: 15px 0;
+}
+section > h3
+{
+    padding: 15px;
+    margin: 0;
+    text-align: center;
+}
+.grid_columns
+{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+@media screen and (max-width: 800px)
+{
+    .grid_columns
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media screen and (max-width: 550px)
+{
+    .grid_columns
+    {
+        display: block;
+    }
+}
+.galery_photos
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.galery_photos .html_from_editor img
+{
+    max-width: 300px;
+    max-height: 200px;
+}
+article
+{
+    /*display: flex;*/
+    background-color: white;
+    margin: 15px;
+    padding: 0 15px;
+    /*min-height: 150px;*/
+}
+article .logo2
+{
+    vertical-align: middle;
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 15px;
+}
+.new_content, .article_content
+{
+    width: 100%;
+}
+.new_content
+{
+    /*max-height: 400;*/
+    overflow: hidden;
+}
+article img
+{
+    max-width: 100%; /* règle compliquée, vérifier selon la page et la taille de l'image */
+    height: auto;
+}
+
+.action_icon
+{
+    width: 24px;
+    vertical-align: bottom;
+    border: transparent 2px solid; /* invisible */
+}
+button .action_icon
+{
+    border: none;
+}
+.action_icon:hover
+{
+    background-color: #ffff00;
+    border-radius: 4px;
+    border: lightgrey 2px outset;
+    cursor: pointer;
+}
+button .action_icon:hover
+{
+    border: none;
+}
+
+.button_zone
+{
+    display: flex;
+}
+
+.share
+{
+    float: right;
+}
+.article_title_zone
+{
+    padding: 10px;
+}
+.under_an_article
+{
+    display: flex;
+    justify-content: space-between;
+    font-size: small;
+}
+.under_an_article img
+{
+    width: 24px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.article_admin_zone
+{
+    display: flex;
+    justify-content: end;
+}
+section button
+{
+    color: #ff1d04;
+    font-size: medium;
+    border-radius: 4px;
+    background-color: white;
+    border: lightgrey 2px outset; /* rend identiques les boutons firefox et chromium */
+}
+section button:hover
+{
+    background-color: #ffff00;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+article a:hover
+{
+    cursor: pointer;
+}
