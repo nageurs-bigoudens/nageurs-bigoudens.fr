@@ -29,7 +29,7 @@
 	flex-wrap: wrap;
 	justify-content: space-evenly;
 }
-.edit_page_zone, .edit_bloc_zone
+.edit_page_zone, .edit_bloc_zone, .delete_page_zone
 {
 	background-color: #f0f0f0f0;
 	margin: 5px;
@@ -71,4 +71,8 @@
 .modify_bloc img
 {
 	vertical-align: middle;
+}
+.delete_page_zone
+{
+	text-align: center;
 }

@@ -28,16 +28,16 @@ class FooterBuilder extends AbstractBuilder
             if($_SESSION['admin'])
             {
                 $empty_admin_zone = 'empty_admin_zone';
+                $link_edit_page = new URL(['page' => CURRENT_PAGE]);
                 if(MainBuilder::$modif_mode){
                     $mode = 'modification de page';
                     $div_admin = 'logged_in modif_mode';
-                    $link_edit_page = new URL(['page' => CURRENT_PAGE]);
                     $link_edit_label = 'Sortir du mode modification';
                 }
                 else{
                     $mode = 'administrateur';
                     $div_admin = 'logged_in';
-                    $link_edit_page = new URL(['page' => CURRENT_PAGE, 'action' => 'modif_page']);
+                    $link_edit_page->addParams(['action' => 'modif_page']);
                     $link_edit_label = 'Modifier la page';
                 }
                 $link_new_page = new URL(['page' => 'nouvelle_page']);
@@ -51,8 +51,8 @@ class FooterBuilder extends AbstractBuilder
 
                 $zone_admin = '<div class="admin_buttons_zone">
                     <p>Vous êtes en mode ' . $mode . ".</p>\n" . 
-                    '<div><a href="' . $link_edit_page . '"><button>' . $link_edit_label . '</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_new_page . '"><button>Nouvelle page</button></a></div>' . "\n" . 
+                    '<div><a href="' . $link_edit_page . '"><button>' . $link_edit_label . '</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_change_paths . '"><button>Menu et chemins</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_change_password . '"><button>Changer de mot de passe</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_logout . '"><button>Déconnexion</button></a></div>' . "\n" . 

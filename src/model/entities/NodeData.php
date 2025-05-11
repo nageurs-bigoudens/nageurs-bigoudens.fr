@@ -67,4 +67,8 @@ class NodeData
     {
         return $this->images;
     }
+    public function setImages(Collection $images): void
+    {
+        $this->images = $images;
+    }
 }

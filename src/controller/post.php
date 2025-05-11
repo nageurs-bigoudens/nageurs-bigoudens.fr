@@ -6,6 +6,8 @@ declare(strict_types=1);
 use App\Entity\Node;
 use App\Entity\NodeData;
 use App\Entity\Page;
+use App\Entity\Image;
+use Doctrine\Common\Collections\ArrayCollection;
 
 if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
 {
@@ -29,7 +31,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
                 trim(htmlspecialchars($_POST["page_name"])),
                 trim(htmlspecialchars($_POST["page_name_path"])),
                 true, true, false,
-                $previous_page->getPosition(), 
+                $previous_page->getPosition(),
                 $parent); // peut et DOIT être null si on est au 1er niveau
 
             // on a donné à la nouvelle entrée la même position qu'à la précédente,
@@ -56,6 +58,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
                 'title' => trim(htmlspecialchars($_POST["page_name"])),
                 'description' => trim(htmlspecialchars($_POST["page_description"]))],
                 $node);
+
+            $bulk_data = $entityManager
+                ->createQuery('SELECT n FROM App\Entity\Image n WHERE n.file_name LIKE :name')
+                ->setParameter('name', '%favicon%')
+                ->getResult();
+            $data->setImages(new ArrayCollection($bulk_data));
             
             $entityManager->persist($page);
             $entityManager->persist($node);
@@ -66,6 +74,28 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             header("Location: " . new URL(['page' => $page->getPagePath(), 'action' => 'modif_page']));
             die;
         }
+        
+        /* -- suppression d'une page -- */
+        elseif(isset($_POST['page_id']) && $_POST['page_id'] !== null
+            && isset($_POST['submit_hidden']) && $_POST['submit_hidden'] === '')
+        {
+            $page = $entityManager->find('App\Entity\Page', (int)$_POST['page_id']);
+            $nodes = $entityManager->getRepository('App\Entity\Node')->findBy(['page' => $page]);
+            $data = [];
+            foreach($nodes as $node){
+                $data[] = $entityManager->getRepository('App\Entity\NodeData')->findOneBy(['node' => $node]);
+                $entityManager->remove($node);
+            }
+            foreach($data as $one_data){
+                $entityManager->remove($one_data);
+            }
+            $entityManager->remove($page); // suppression en BDD
+            
+            $entityManager->flush();
+            header("Location: " . new URL);
+            die;
+        }
+
 
         /* -- mode Modification d'une page -- */
 

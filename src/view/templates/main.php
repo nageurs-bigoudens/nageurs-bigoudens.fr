@@ -24,22 +24,30 @@
         </div>
     </div>
     <div class="edit_bloc_zone">
-    <div class="new_bloc">
-        <p>Ajouter un bloc de page</p>
-        <form method="post" action="<?= new URL(['page' => CURRENT_PAGE]) ?>">
-            <p><label for="bloc_title">Titre</label>
-            <input type="text" id="bloc_title" name="bloc_title" required></p>
-            <p><label for="bloc_select">Type</label>
-            <select id="bloc_select" name="bloc_select" required>
-             <?= $options ?>
-            </select>
-            <input type="hidden" name="bloc_title_hidden">
-            <input type="submit" value="Valider"></p>
-        </form>
-    </div>
-    <div class="modify_bloc">
-        <p>Modifier un bloc</p>
-        <?= $bloc_edit ?>
+        <div class="new_bloc">
+            <p>Ajouter un bloc de page</p>
+            <form method="post" action="<?= new URL(['page' => CURRENT_PAGE]) ?>">
+                <p><label for="bloc_title">Titre</label>
+                <input type="text" id="bloc_title" name="bloc_title" required></p>
+                <p><label for="bloc_select">Type</label>
+                <select id="bloc_select" name="bloc_select" required>
+                 <?= $options ?>
+                </select>
+                <input type="hidden" name="bloc_title_hidden">
+                <input type="submit" value="Valider"></p>
+            </form>
         </div>
+        <div class="modify_bloc">
+            <p>Modifier un bloc</p>
+            <?= $bloc_edit ?>
+        </div>
+    </div>
+    <div class="delete_page_zone">
+        <form method="post" action="<?= new URL ?>">
+            <label>Supprimer cette page</label>
+            <input type="hidden" name="page_id" value="<?= Director::$page_path->getLast()->getId() ?>">
+            <input type="hidden" name="submit_hidden">
+            <input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
+        </form>
     </div>
 </section>
