@@ -12,14 +12,70 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
     /* -- formulaires HTML classiques -- */
     if($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
     {
+        /* -- nouvelle page -- */
+        if(isset($_POST['page_name']) && $_POST['page_name'] !== null
+            && isset($_POST['page_name_path']) && $_POST['page_name_path'] !== null
+            && isset($_POST['page_location']) && $_POST['page_location'] !== null
+            && isset($_POST['page_description']) && $_POST['page_description'] !== null
+            && isset($_POST['new_page_hidden']) && $_POST['new_page_hidden'] === '')
+        {
+            // titre et chemin
+            $director = new Director($entityManager, true);
+            //Director::$menu_data = new Menu($entityManager);
+            $previous_page = Director::$menu_data->findPageById((int)$_POST["page_location"]); // (int) à cause de declare(strict_types=1);
+            $parent = $previous_page->getParent();
+
+            $page = new Page(
+                trim(htmlspecialchars($_POST["page_name"])),
+                trim(htmlspecialchars($_POST["page_name_path"])),
+                true, true, false,
+                $previous_page->getPosition(), 
+                $parent); // peut et DOIT être null si on est au 1er niveau
+
+            // on a donné à la nouvelle entrée la même position qu'à la précédente,
+            // addChild l'ajoute à la fin du tableau "children" puis on trie
+            // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
+            if($parent == null){
+                $parent = Director::$menu_data;
+            }
+            $parent->addChild($page);
+            $parent->reindexPositions();
+
+            $page->setPagePath(ltrim($parent->getPagePath() . '/' . $page->getEndOfPath(), '/'));
+
+            // noeud "head"
+            $node = new Node(
+                'head',
+                null, [],
+                1, // position d'un head = 1
+                null, // pas de parent
+                $page);
+            $node->useDefaultAttributes(); // fichiers CSS et JS
+
+            $data = new NodeData([
+                'title' => trim(htmlspecialchars($_POST["page_name"])),
+                'description' => trim(htmlspecialchars($_POST["page_description"]))],
+                $node);
+            
+            $entityManager->persist($page);
+            $entityManager->persist($node);
+            $entityManager->persist($data);
+            $entityManager->flush();
+
+            // page créée, direction la page en mode modification pour ajouter des blocs
+            header("Location: " . new URL(['page' => $page->getPagePath(), 'action' => 'modif_page']));
+            die;
+        }
+
         /* -- mode Modification d'une page -- */
-        if(isset($_POST['page_menu_path']) && $_POST['page_menu_path'] !== null
+
+        // modification des titres, chemins et descriptions
+        elseif(isset($_POST['page_menu_path']) && $_POST['page_menu_path'] !== null
             && isset($_POST['page_id']) && $_POST['page_id'] !== null
             && isset($_POST['page_name_path_hidden']) && $_POST['page_name_path_hidden'] === '')
         {
             $director = new Director($entityManager, true);
             $page = Director::$page_path->getLast();
-            //$page = $entityManager->find('App\Entity\Page', $_POST['page_id']);
             $path = htmlspecialchars($_POST['page_menu_path']);
 
             // mise en snake_case: filtre caractères non-alphanumériques, minuscule, doublons d'underscore, trim des underscores
@@ -101,9 +157,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
                 filter_var($_POST["url_input"], FILTER_VALIDATE_URL),
                 true, true, false,
                 $previous_page->getPosition(),
-                $parent);
+                $parent); // peut et DOIT être null si on est au 1er niveau
 
-            // on indique pour la nouvelle entrée la même position que la précédente, puis addChild l'ajoute à la fin du tableau "children" avant de déclencher un tri
+            // on a donné à la nouvelle entrée la même position qu'à la précédente,
+            // addChild l'ajoute à la fin du tableau "children" puis on trie
             // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
             if($parent == null){
                 $parent = Director::$menu_data;

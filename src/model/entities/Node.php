@@ -55,6 +55,7 @@ class Node
     
     private array $children = []; // tableau de Node
     private ?self $adopted = null; // = "new" est un enfant de "main" lorsque la page est "article"
+    static private array $default_attributes = ['css_array' => ['body', 'head', 'nav', 'foot'],'js_array' => ['main']];
 
     public function __construct(string $name = '', ?string $article_timestamp = null, array $attributes = [], int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
     {
@@ -88,9 +89,34 @@ class Node
     {
         return $this->attributes;
     }
-    /*public function setAttributes(array $attributes): void
+    public function setDefaultAttributes(array $attributes): void
     {
         $this->attributes = $attributes;
+    }
+    public function useDefaultAttributes(): void
+    {
+        $this->attributes = self::$default_attributes;
+    }
+    /*public function addAttribute(string $key, string $value): void
+    {
+        if(!isset($this->attributes[$key])) { // sécurité $key inexistante
+            $this->attributes[$key] = [];
+        }
+        $this->attributes[$key][] = $value;
+    }*/
+    /*public function removeAttribute(string $key, string $value): void
+    {
+        if(isset($this->attributes[$key]))  // sécurité $key inexistante
+        {
+            // supprime et réindex avec un nouveau tableau
+            $tmp_array = $this->attributes[$key];
+            $this->attributes[$key] = [];
+            foreach($tmp_array as $entry){
+                if($entry !== $value){
+                    $this->attributes[$key][] = $entry;
+                }
+            }
+        }
     }*/
     public function getParent(): ?self
     {

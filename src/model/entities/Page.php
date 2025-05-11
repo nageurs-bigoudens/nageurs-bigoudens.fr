@@ -26,7 +26,7 @@ class Page
     #[ORM\Column(type: "string", length: 255)]
     private string $end_of_path; // morceau d'URL plus exactement
 
-    private string $page_path;
+    private string $page_path = '';
 
     #[ORM\Column(type: "boolean")]
     private bool $reachable;
@@ -128,6 +128,7 @@ class Page
         return $this->children;
     }
 
+    // utilisée par $menu_path
     public function fillChildrenPagePath(string $parent_path = ''): void
     {
         $this->page_path = $parent_path != '' ? $parent_path . '/' . $this->end_of_path : $this->end_of_path;
