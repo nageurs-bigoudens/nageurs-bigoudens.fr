@@ -35,6 +35,7 @@ class HeaderBuilder extends AbstractBuilder
         if(file_exists($viewFile))
         {
             // titre et description
+            // => retourne $titre, $description et le tableau associatif: $social
             if(!empty($node->getNodeData()->getData()))
             {
                 extract($node->getNodeData()->getData());
@@ -46,23 +47,26 @@ class HeaderBuilder extends AbstractBuilder
                 extract($node->getAttributes());
             }
 
-            // header logo + réseaux sociaux
-            $targets = ['logo', 'facebook', 'instagram', 'fond_piscine'];
-            $i = 0;
+            // réseaux sociaux + logo dans l'entête
+            $keys = array_keys($social);
+            $social_networks = '';
+            $head_logo = '';
             foreach($node->getNodeData()->getImages() as $image)
             {
-                if(str_contains($image->getFileName(), $targets[$i]))
+                for($i = 0; $i < count($keys); $i++)
                 {
-                    $var = $targets[$i];
-                    $$var = rtrim($image->getFilePathMini(), '/');
-                    $var .= '_alt'; // ex: logo_alt
-                    $$var = $image->getAlt();
+                    if(str_contains($image->getFileName(), $keys[$i])){
+                        $social_networks .= '<a href="' . $social[$keys[$i]] . '" target="_blank" rel="noopener noreferrer">
+                        <img src="' . rtrim($image->getFilePathMini(), '/') . '" alt="' . $social[$keys[$i]] . '_alt"></a>';
+                        break;
+                    }
+                    if(str_contains($image->getFileName(), 'logo'))
+                    {
+                        $logo = rtrim($image->getFilePathMini(), '/');
+                        break;
+                    }
                 }
-                $i++;
             }
-
-            // générer HTML réseaux sociaux
-            //
 
             ob_start();
             require $viewFile;
