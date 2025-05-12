@@ -34,7 +34,7 @@ class Article
     // liaison avec table intermédiaire
     #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "article")]
     #[ORM\JoinTable(
-        name: "nb_article_image",
+        name: TABLE_PREFIX . "article_image",
         joinColumns: [new ORM\JoinColumn(name: "article_id", referencedColumnName: "id_article", onDelete: "CASCADE")],
         inverseJoinColumns: [new ORM\JoinColumn(name: "image_id", referencedColumnName: "id_image", onDelete: "CASCADE")]
     )]
