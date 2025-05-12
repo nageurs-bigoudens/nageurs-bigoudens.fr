@@ -57,7 +57,7 @@ class HeaderBuilder extends AbstractBuilder
                 {
                     if(str_contains($image->getFileName(), $keys[$i])){
                         $social_networks .= '<a href="' . $social[$keys[$i]] . '" target="_blank" rel="noopener noreferrer">
-                        <img src="' . rtrim($image->getFilePathMini(), '/') . '" alt="' . $social[$keys[$i]] . '_alt"></a>';
+                        <img src="' . rtrim($image->getFilePathMini(), '/') . '" alt="' . $keys[$i] . '_alt"></a>';
                         break;
                     }
                     if(str_contains($image->getFileName(), 'logo'))
