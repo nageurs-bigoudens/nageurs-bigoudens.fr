@@ -175,7 +175,7 @@ function submitArticle(id, page = '', clone = null)
     // clic sur "tout enregistrer"
     if(id[0] === 'n' && page === 'article'){
         const prefixes = ['t', 'p', 'i', 'd'];
-        const allElemsWithId = document.querySelectorAll('[class="data"]');
+        const allElemsWithId = document.querySelectorAll('.data');
         content = {};
         var id_from_builder;
 

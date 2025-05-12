@@ -95,9 +95,9 @@ function makeStartPage(EntityManager $entityManager){
 	$breadcrumb = new Node('breadcrumb', NULL, [], 2, $header, NULL, NULL);
 	$head_login = new Node('head', NULL, ["stop" => true, 'css_array' => ['body', 'head', 'nav'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
 	$login = new Node('login', NULL, [], 1, $main, $connection, NULL);
-	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'menu'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
+	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'menu', 'foot'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
 	$bloc_edit_menu = new Node('menu', NULL, [], 1, $main, $menu_paths, NULL);
-	$head_new_page = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'new_page'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
+	$head_new_page = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
 	$bloc_new_page = new Node('new_page', NULL, [], 1, $main, $new_page, NULL);
 
 	/* -- table image -- */

@@ -105,6 +105,15 @@ article .logo2
     /*max-height: 400;*/
     overflow: hidden;
 }
+.new_content button
+{
+    cursor: pointer;
+}
+.new_content button:hover
+{
+    background-color: #ffff00;
+    border-radius: 4px;
+}
 article img
 {
     max-width: 100%; /* règle compliquée, vérifier selon la page et la taille de l'image */
