@@ -40,7 +40,8 @@ header h2
 header img
 {
 	vertical-align: bottom; /* supprime espace sous l'image */
-	max-width: 120px;
+	max-width: 150px;
+	max-height: 75px;
 }
 header a
 {

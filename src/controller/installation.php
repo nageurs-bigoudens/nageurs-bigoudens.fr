@@ -107,12 +107,13 @@ function makeStartPage(EntityManager $entityManager){
 	$facebook = new Image("facebook.svg", NULL, "assets/facebook.svg", "image/svg+xml", "facebook");
 	$instagram = new Image("instagram.svg", NULL, "assets/instagram.svg", "image/svg+xml", "instagram");
 	$linkedin = new Image("linkedin.svg", NULL, "assets/linkedin.svg", "image/svg+xml", "linkedin");
+	$github = new Image("github.svg", NULL, "assets/github.svg", "image/svg+xml", "github");
 	$fond_piscine = new Image("fond-piscine.jpg", "assets/fond-piscine.jpg", NULL, "images/jpg", "fond-piscine");
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
 	$head_accueil_data = new NodeData(["description" => "Club, École de natation et Perfectionnement", "title" => "Les Nageurs Bigoudens"], $head_accueil, new ArrayCollection([$favicon]));
-	$header_data = new NodeData(["description" => "Club, École de natation et Perfectionnement", "social" => ["title" => "Les Nageurs Bigoudens", "facebook_link" => "https://www.facebook.com/nageursbigoudens29120", "instagram_link" => "https://www.instagram.com/nageursbigoudens/"]], $header, new ArrayCollection([$logo, $facebook, $instagram, $linkedin, $fond_piscine]));
+	$header_data = new NodeData(["description" => "Club, École de natation et Perfectionnement", "social" => ["title" => "Les Nageurs Bigoudens", "facebook_link" => "https://www.facebook.com/nageursbigoudens29120", "instagram_link" => "https://www.instagram.com/nageursbigoudens/"]], $header, new ArrayCollection([$logo, $facebook, $instagram, $linkedin, $github, $fond_piscine]));
 	$footer_data = new NodeData(["adresse" => "17, rue Raymonde Folgoas Guillou, 29120 Pont-l’Abbé", "contact_nom" => "Les Nageurs Bigoudens", "e_mail" => "nb.secretariat@orange.fr", "logo_footer" => "assets/logo-nb-et-ffn.png"], $footer);
 	$head_login_data = new NodeData(["description" => "Connexion", "title" => "Connexion"], $head_login, new ArrayCollection([$favicon]));
 	$head_article_data = new NodeData(["description" => "", "title" => ""], $head_article, new ArrayCollection([$favicon]));

@@ -68,7 +68,7 @@ class MenuBuilder extends AbstractBuilder
                     <i class="url">' . $entry->getEndOfPath() . '</i>
                     <form style="display: inline;" id="delete-i' . $entry->getId() . '" method="post" action="' . new URL(['from' => 'menu_chemins']) . '">
                         <input type="hidden" name="delete" value="' . $entry->getId() . '">
-                        <input type="image" class="move_entry_icon" src="assets/delete-bin.svg" alt="delete link button">
+                        <input type="image" class="move_entry_icon" src="assets/delete-bin.svg" alt="delete link button" onclick="return confirm(\'Voulez-vous vraiment supprimer cette entrée?\');">
                     </form>';
             }
             else{
