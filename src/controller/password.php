@@ -61,7 +61,6 @@ function createPassword(EntityManager $entityManager)
 	}
 	else
 	{
-		// -> caractères HTML dangereux supprimés
 		$login = Security::secureString($_POST['login']);
 		$password = Security::secureString($_POST['password']);
 		
@@ -85,6 +84,8 @@ function createPassword(EntityManager $entityManager)
 		else
 		{
 			$error = 'bad_password';
+
+			// compteur dans la session et blocage de compte
 		}
 	}
 	
@@ -154,14 +155,15 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 	}
 	else // c'est OK
 	{
-		$login = $_POST['login'];
-		$password = htmlspecialchars($_POST['password']);
+		$login = Security::secureString($_POST['login']);
+		$password = Security::secureString($_POST['password']);
 		$user = getUser($login, $entityManager);
 
 		// enregistrement et redirection
 		if(!empty($user) && $login === $user->getLogin() && password_verify($password, $user->getPassword()))
 		{
 			session_start();
+			session_regenerate_id(true); // protection fixation de session, si l'attaquant a créé un cookie de session (attaque XSS), il est remplacé
 			$_SESSION['user'] = $login;
 			$_SESSION['admin'] = true;
 			$link = new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
