@@ -155,7 +155,7 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 	else // c'est OK
 	{
 		$login = $_POST['login'];
-		$password = $_POST['password'];
+		$password = htmlspecialchars($_POST['password']);
 		$user = getUser($login, $entityManager);
 
 		// enregistrement et redirection
