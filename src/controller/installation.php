@@ -112,13 +112,13 @@ function makeStartPage(EntityManager $entityManager){
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
-	$head_accueil_data = new NodeData(["description" => "Club, École de natation et Perfectionnement", "title" => "Les Nageurs Bigoudens"], $head_accueil, new ArrayCollection([$favicon]));
+	$head_accueil_data = new NodeData(["description" => "Club, École de natation et Perfectionnement"], $head_accueil, new ArrayCollection([$favicon]));
+	$head_login_data = new NodeData(["description" => "Connexion"], $head_login, new ArrayCollection([$favicon]));
+	$head_article_data = new NodeData(["description" => ""], $head_article, new ArrayCollection([$favicon]));
+	$head_edit_menu_data = new NodeData(["description" => "Menu et chemins"], $head_edit_menu, new ArrayCollection([$favicon]));
+	$head_new_page_data = new NodeData(["description" => "Nouvelle page"], $head_new_page, new ArrayCollection([$favicon]));
 	$header_data = new NodeData(["description" => "Club, École de natation et Perfectionnement", "social" => ["title" => "Les Nageurs Bigoudens", "facebook_link" => "https://www.facebook.com/nageursbigoudens29120", "instagram_link" => "https://www.instagram.com/nageursbigoudens/"]], $header, new ArrayCollection([$logo, $facebook, $instagram, $linkedin, $github, $fond_piscine]));
 	$footer_data = new NodeData(["adresse" => "17, rue Raymonde Folgoas Guillou, 29120 Pont-l’Abbé", "contact_nom" => "Les Nageurs Bigoudens", "e_mail" => "nb.secretariat@orange.fr", "logo_footer" => "assets/logo-nb-et-ffn.png"], $footer);
-	$head_login_data = new NodeData(["description" => "Connexion", "title" => "Connexion"], $head_login, new ArrayCollection([$favicon]));
-	$head_article_data = new NodeData(["description" => "", "title" => ""], $head_article, new ArrayCollection([$favicon]));
-	$head_edit_menu_data = new NodeData(["description" => "Menu et chemins", "title" => "Menu et chemins"], $head_edit_menu, new ArrayCollection([$favicon]));
-	$head_new_page_data = new NodeData(["description" => "Nouvelle page", "title" => "Nouvelle page"], $head_new_page, new ArrayCollection([$favicon]));
 
 	/* -- table page -- */
     $entityManager->persist($accueil);
