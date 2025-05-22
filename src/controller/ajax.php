@@ -369,7 +369,7 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json'){
 		$data = file_get_contents('php://input');
 		$json = json_decode($data, true);
 
-		// tite de la page
+		// titre de la page
 		if($_GET['page_edit'] === 'page_title'){
 			$page = $entityManager->find('App\Entity\Page', $json['page_id']);
 			$page->setPageName(htmlspecialchars($json['title']));

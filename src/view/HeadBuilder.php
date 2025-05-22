@@ -47,7 +47,10 @@ class HeadBuilder extends AbstractBuilder
                 $js .= '<script src="js/tinymce.js"></script>' . "\n";
             }
 
-            // titre et description
+            // titre
+            $title = Director::$page_path->getLast()->getPageName();
+            
+            // description
             if(!empty($node->getNodeData()->getData()))
             {
                 extract($node->getNodeData()->getData());

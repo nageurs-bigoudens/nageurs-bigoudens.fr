@@ -55,7 +55,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $node->useDefaultAttributes(); // fichiers CSS et JS
 
             $data = new NodeData([
-                'title' => trim(htmlspecialchars($_POST["page_name"])),
+                // pas de titre, il est dans $page
                 'description' => trim(htmlspecialchars($_POST["page_description"]))],
                 $node);
 
