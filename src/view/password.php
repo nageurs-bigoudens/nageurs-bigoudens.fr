@@ -10,14 +10,18 @@
 declare(strict_types=1);
 
 // insertion du captcha
-ob_start();
-?>
+$captchaHtml = '';
+if(isset($captcha)) // instance de Captcha?
+{
+    ob_start();
+    ?>
                 <p>Montrez que vous n'êtes pas un robot.<br>
-                    <label for="captcha" >Combien font <?= $captcha[0] ?> fois <?= $captcha[1] ?>?</label>
+                    <label for="captcha" >Combien font <?= $captcha->getA() ?> fois <?= $captcha->getB() ?>?</label>
                     <input required type="text" id="captcha" name="captcha" autocomplete="off" size="1">
                 </p>
-<?php
-$captchaHtml = ob_get_clean();
+    <?php
+    $captchaHtml = ob_get_clean();
+}
 
 
 // formulaire connexion
@@ -70,9 +74,6 @@ ob_start();
                 <input id="new_password" type="password" name="new_password" required autocomplete="off">
                 <br><br>
                 <input type="submit" value="Valider" >
-                <!-- <a href="index.php<?= $from ?>" >
-                    <input type="button" value="Annuler">
-                </a> -->
             </form>
 <?php
 $formulaireModifMDP = ob_get_clean();

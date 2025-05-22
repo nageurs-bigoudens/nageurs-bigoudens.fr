@@ -3,7 +3,9 @@
 
 declare(strict_types=1);
 
-// -- prétraitement --
+
+/* -- partie 1: prétraitement -- */
+
 // une nouvelle classe? taper: composer dump-autoload -o
 require "../vendor/autoload.php";
 
@@ -31,17 +33,15 @@ $_SESSION['admin'] = !isset($_SESSION['admin']) ? false : $_SESSION['admin']; //
 
 // login, mot de passe et captcha
 require '../src/controller/password.php';
-existUsers($entityManager);
+existUsers($entityManager); // si la table user est vide, on en crée un
 
-// -- navigation avec les GET --
-$current_page = 'accueil';
-if(!empty($_GET['page']))
-{
-    $current_page = htmlspecialchars($_GET['page']);
-}
-define('CURRENT_PAGE', $current_page);
 
-// -- traitement des POST (formulaires et AJAX) --
+/* -- partie 2: affichage d'une page ou traitement d'un POST -- */
+
+// navigation avec les GET
+define('CURRENT_PAGE', !empty($_GET['page']) ? htmlspecialchars($_GET['page']) : 'accueil');
+
+// traitement des POST (formulaires et AJAX)
 require '../src/controller/post.php';
 
 // id des articles
@@ -67,11 +67,11 @@ elseif($_SESSION['admin'] && isset($_GET['page']) && isset($_GET['action']) && $
     MainBuilder::$modif_mode = true;
 }
 
-// -- contrôleurs --
+// contrôleur principal
 $director = new Director($entityManager, true);
 $director->makeRootNode($id);
 $node = $director->getNode();
 
-// -- vues --
+// vues
 $view_builder = new ViewBuilder($node);
 echo $view_builder->render(); // et voilà!

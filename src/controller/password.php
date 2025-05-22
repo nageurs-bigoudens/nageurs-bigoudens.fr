@@ -31,18 +31,18 @@ function createPassword(EntityManager $entityManager)
 {
 	// fonction exécutée à priori deux fois d'affilée: affichage puis traitement de la saisie
 
-	// II - traitement
 	unset($_SESSION['user']);
 
 	$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-	$captcha = isset($_POST['captcha']) ? controlCaptchaInput($_POST['captcha']) : 0;
-
+	$captcha_try = isset($_POST['captcha']) ? Captcha::controlInput($_POST['captcha']) : 0;
+	
+	// II - traitement
 	$error = '';
-	if(!isset($_POST['captcha'])) // page rechargée
+	if(!isset($_POST['captcha'])) // page création d'un compte rechargée
 	{
 		//$error = '';
 	}
-	elseif($captcha == 0)
+	elseif($captcha_try == 0)
 	{
 		$error = 'error_non_valid_captcha';
 	}
@@ -50,7 +50,7 @@ function createPassword(EntityManager $entityManager)
 	{
 		//$error = '';
 	}
-	elseif($captcha != $captcha_solution) // le test!
+	elseif($captcha_try != $captcha_solution) // le test!
 	{
 		$error = 'bad_solution_captcha';
 	}
@@ -72,6 +72,8 @@ function createPassword(EntityManager $entityManager)
 		if(isset($password) && isset($login)
 			&& $password == $_POST['password'] && $login == $_POST['login'])
 		{
+			unset($_SESSION['captcha']);
+
 			// enregistrement et redirection
 			$password = password_hash($password, PASSWORD_DEFAULT);
 			$user = new App\Entity\User($login, $password);
@@ -90,9 +92,9 @@ function createPassword(EntityManager $entityManager)
 	}
 	
 	// inséré dans $captchaHtml puis dans $formulaireNouveauMDP
-	$captcha = createCaptcha();
+	$captcha = new Captcha;
 	// enregistrement de la réponse du captcha pour vérification
-	$_SESSION['captcha'] = $captcha[2]; // int
+	$_SESSION['captcha'] = $captcha->getSolution();
 
 
 	// I - affichage
@@ -129,14 +131,14 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 	$_SESSION['admin'] = false;
 
 	$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-	$captcha = isset($_POST['captcha']) ? controlCaptchaInput($_POST['captcha']) : 0;
+	$captcha_try = isset($_POST['captcha']) ? Captcha::controlInput($_POST['captcha']) : 0;
 
 	$error = '';
 	if(!isset($_POST['captcha'])) // page rechargée
 	{
 		//$error = '';
 	}
-	elseif($captcha == 0)
+	elseif($captcha_try == 0)
 	{
 		$error = 'error_non_valid_captcha';
 	}
@@ -144,7 +146,7 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 	{
 		//$error = '';
 	}
-	elseif($captcha != $captcha_solution) // le test!
+	elseif($captcha_try != $captcha_solution) // le test!
 	{
 		$error = 'bad_solution_captcha';
 	}
@@ -162,8 +164,8 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 		// enregistrement et redirection
 		if(!empty($user) && $login === $user->getLogin() && password_verify($password, $user->getPassword()))
 		{
-			session_start();
 			session_regenerate_id(true); // protection fixation de session, si l'attaquant a créé un cookie de session (attaque XSS), il est remplacé
+			//unset($_SESSION['captcha']);
 			$_SESSION['user'] = $login;
 			$_SESSION['admin'] = true;
 			$link = new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
@@ -178,9 +180,9 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 	}
 
 	// inséré dans $captchaHtml puis dans $formulaireNouveauMDP
-	$captcha = createCaptcha();
+	$captcha = new Captcha;
 	// enregistrement de la réponse du captcha pour vérification
-	$_SESSION['captcha'] = $captcha[2]; // int
+	$_SESSION['captcha'] = $captcha->getSolution(); // int
 
 	// I - affichage
 	$title = "Connexion";
@@ -319,36 +321,4 @@ function disconnect()
 	isset($_GET['id']) ? $link->addParams(['id' => $_GET['id']]) : '';
 	header('Location: ' . $link);
 	die;
-}
-
-
-function createCaptcha(): array
-{
-	$a = rand(2, 9);
-	$b = rand(2, 9);
-	return array(toLettersFrench($a), toLettersFrench($b), $a * $b);
-}
-
-function toLettersFrench(int $number): string
-{
-	return match($number)
-	{
-		2 => 'deux',
-		3 => 'trois',
-		4 => 'quatre',
-		5 => 'cinq',
-		6 => 'six',
-		7 => 'sept',
-		8 => 'huit',
-		9 => 'neuf',
-		default => '', // erreur
-	};
-}
-
-// on veut des chiffres
-function controlCaptchaInput(string $captcha = '0'): int
-{
-    // $captcha est un POST donc une chaîne, '2.3' est acceptés
-    // (int) supprime les décimales
-    return (is_numeric($captcha) && $captcha == (int) $captcha) ? (int) $captcha : 0;
 }
