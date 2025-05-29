@@ -44,7 +44,7 @@ class Captcha
 	}
 	static public function controlInput(string $input = '0'): int
 	{
-	    // un POST est une chaîne qu'on doit convertir en nombre si:
+	    // un POST est une chaîne qu'on doit convertir en nombre dans deux conditions:
 	    // test de format: $input est un nombre
 	    // test d'intégrité: supprimer les décimales avec (int) ne change pas la valeur du nombre
 	    return is_numeric($input) && $input == (int)$input ? (int)$input : 0;

@@ -154,7 +154,7 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 	elseif(!isset($_POST['login']) || empty($_POST['login'])
 		|| !isset($_POST['password']) || empty($_POST['password']))
 	{
-		$error = 'bad_password';
+		$error = 'bad_login_or_password';
 	}
 	else // c'est OK
 	{
@@ -179,7 +179,7 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 		}
 		else
 		{
-			$error = 'bad_password';
+			$error = 'bad_login_or_password';
 		}
 	}
 

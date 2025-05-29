@@ -109,7 +109,7 @@ $header = ob_get_clean();
 $error_messages = [
     'error_non_valid_captcha' => '<p class="avertissement" >Erreur au test anti-robot, veuillez saisir un nombre entier.</p>',
     'bad_solution_captcha' => '<p class="avertissement" >Erreur au test anti-robot, veuillez réessayer.</p>',
-    'bad_login_or_password' => '<p class="avertissement" >Saisir un Identifiant (e-mail) et un mot de passe.</p>',
+    'bad_login_or_password' => '<p class="avertissement" >Mauvais identifiant ou mot de passe, veuillez réessayer.</p>',
     'bad_password' => '<p class="avertissement" >Mauvais mot de passe, veuillez réessayer.</p>',
     'forbidden_characters' => '<p class="avertissement" >Caractères interdits: espaces, tabulations, sauts CR/LF.</p>'
 ];
