@@ -36,12 +36,13 @@ class Node
     #[ORM\JoinColumn(name: "parent_id", referencedColumnName: "id_node", onDelete: "SET NULL", nullable: true)]
     private ?self $parent = null;
 
+    // un onDelete: "CASCADE" serait logique ici mais dangereux, on pourrait aussi faire en sorte que les noeuds soient récupérables si la page est brutalement supprimée
     #[ORM\ManyToOne(targetEntity: Page::class)]
-    #[ORM\JoinColumn(name: "page_id", referencedColumnName: "id_page", onDelete: "SET DEFAULT", nullable: true)]
+    #[ORM\JoinColumn(name: "page_id", referencedColumnName: "id_page", nullable: true)]
     private ?Page $page;
 
     #[ORM\ManyToOne(targetEntity: Article::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: "article_id", referencedColumnName: "id_article", onDelete: "SET NULL", nullable: true)]
+    #[ORM\JoinColumn(name: "article_id", referencedColumnName: "id_article", onDelete: "CASCADE", nullable: true)] // supprimer le contenu d'un article supprime les noeuds associés, faux dans l'autre sens
     private ?Article $article = null;
 
     // propriété non mappée dans la table "node", la jointure est décrite dans NodeData

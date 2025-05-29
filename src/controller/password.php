@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
 use App\Entity\User;
+use App\Entity\Log;
 
 // exécutée dans installation.php à l'ouverture de chaque page
 function existUsers(EntityManager $entityManager)
@@ -164,6 +165,9 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 		// enregistrement et redirection
 		if(!empty($user) && $login === $user->getLogin() && password_verify($password, $user->getPassword()))
 		{
+			$log = new Log;
+			$entityManager->persist($log);
+			$entityManager->flush();
 			session_regenerate_id(true); // protection fixation de session, si l'attaquant a créé un cookie de session (attaque XSS), il est remplacé
 			//unset($_SESSION['captcha']);
 			$_SESSION['user'] = $login;
