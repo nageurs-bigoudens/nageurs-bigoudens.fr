@@ -22,7 +22,11 @@ class Log
     //#[ORM\Column(type: 'datetime', columnDefinition: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")]
     private ?\DateTime $date_time ; // le type datetime de doctrine convertit en type \DateTime de PHP
 
-    public function __construct(){
+    #[ORM\Column(type: "boolean")]
+    private bool $success;
+
+    public function __construct(bool $success){
         $this->date_time = new \DateTime();
+        $this->success = $success;
     }
 }

@@ -165,9 +165,10 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 		// enregistrement et redirection
 		if(!empty($user) && $login === $user->getLogin() && password_verify($password, $user->getPassword()))
 		{
-			$log = new Log;
+			$log = new Log(true);
 			$entityManager->persist($log);
 			$entityManager->flush();
+			
 			session_regenerate_id(true); // protection fixation de session, si l'attaquant a créé un cookie de session (attaque XSS), il est remplacé
 			//unset($_SESSION['captcha']);
 			$_SESSION['user'] = $login;
@@ -179,6 +180,9 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 		}
 		else
 		{
+			$log = new Log(false);
+			$entityManager->persist($log);
+			$entityManager->flush();
 			$error = 'bad_login_or_password';
 		}
 	}
