@@ -22,7 +22,7 @@ class Article
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'], unique: true)]
     private ?\DateTime $date_time; // le type datetime de doctrine convertit en type \DateTime de PHP
 
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: "text")] // "string" => varchar(255) => risque HTML non valide
     private string $title;
 
     #[ORM\Column(type: "text")]
