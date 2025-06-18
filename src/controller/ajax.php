@@ -7,10 +7,62 @@ use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\Article;
 
+
+// mettre ça ailleurs
+function imagickCleanImage(string $image_data, string $local_path): bool // "string" parce que file_get_contents...
+{
+    try{
+        $imagick = new Imagick();
+        $imagick->readImageBlob($image_data);
+        $imagick->stripImage(); // nettoyage métadonnées
+        $imagick->setImageFormat('jpeg');
+        $imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
+        $imagick->setImageCompressionQuality(85); // optionnel
+        $imagick->writeImage($local_path); // enregistrement
+        $imagick->clear();
+        $imagick->destroy();
+        return true;
+    }
+    catch(Exception $e){
+        return false;
+    }
+}
+function curlDownloadImage(string $url, $maxRetries = 3, $timeout = 10): string|false
+{
+    $attempt = 0;
+    $imageData = false;
+
+    while($attempt < $maxRetries){
+        $ch = curl_init($url); // instance de CurlHandle
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'TinyMCE-Image-Downloader');
+
+        $imageData = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        //$curlError = curl_error($ch);
+
+        curl_close($ch);
+
+        if($imageData !== false && $httpCode >= 200 && $httpCode < 300){
+            return $imageData;
+        }
+
+        $attempt++;
+        sleep(1);
+    }
+
+    return false; // échec après trois tentatives
+}
+
+
 // détection des requêtes d'upload d'image de tinymce
 if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_GET['action']) && $_GET['action'] === 'upload_image')
 {
-	if (isset($_FILES['file'])) {
+	if(isset($_FILES['file'])){
         $file = $_FILES['file'];
         $dest = 'images/';
         $dest_mini = 'images-mini/';
@@ -26,6 +78,7 @@ if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_
         $filePath = $dest . basename($file['name']);
 
         // créer une miniature de l'image
+        //
 
         if(move_uploaded_file($file['tmp_name'], $filePath)) {
             $image_url = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
@@ -38,6 +91,33 @@ if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_
     }
     else{
         http_response_code(400);
+        echo json_encode(['message' => 'Erreur 400: Bad Request']);
+    }
+    die;
+}
+// cas du collage d'un contenu HTML, réception d'une URL, téléchargement par le serveur et renvoie de l'adresse sur le serveur 
+elseif(isset($_GET['action']) && $_GET['action'] == 'upload_image_url'){
+    $json = json_decode(file_get_contents('php://input'), true);
+    
+    if(isset($json['image_url'])){
+        $image_data = curlDownloadImage($json['image_url']); // téléchargement de l’image par le serveur avec cURL au lieu de file_get_contents
+        
+        if($image_data === false){
+            http_response_code(400);
+            echo json_encode(['message' => "Erreur, le serveur n'a pas réussi à télécharger l'image."]);
+            die;
+        }
+        
+        $local_path = 'images/' . uniqid() . '.jpg';
+        if(imagickCleanImage($image_data, $local_path)){ // recréer l’image pour la nettoyer
+            echo json_encode(['location' => $local_path]); // nouvelle adresse
+        }
+        else{
+            http_response_code(500);
+            echo json_encode(['message' => 'Erreur image non valide']);
+        }
+    }
+    else{
         echo json_encode(['message' => 'Erreur 400: Bad Request']);
     }
     die;
