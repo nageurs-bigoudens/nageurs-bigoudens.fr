@@ -10,20 +10,31 @@ use App\Entity\Image;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 
-function installation(): void
+function phpDependancies()
 {
-	/* -- extensions PHP -- */
-	$extensions = [];
+	$flag = false;
+	//$extensions = ['pdo_mysql', 'mbstring', 'ctype', 'json', 'tokenizer', 'zip', 'dom']; // les 5 premières sont pour doctrine
+	$extensions = ['pdo_mysql', 'mbstring', 'ctype', 'json', 'tokenizer'];
 	foreach($extensions as $extension){
         if(!extension_loaded($extension))
         {
-            echo("l'extension " . $extension . ' est manquante<br>');
+            echo("<p>l'extension <b>" . $extension . '</b> est manquante</p>');
+            $flag = true;
         }
     }
     if(!extension_loaded('imagick') && !extension_loaded('gd')){
-        echo("il manque une de ces extensions au choix: imagick (de préférence) ou gd<br>");
+        echo("<p>il manque une de ces extensions au choix pour le traitement des images: <b>imagick</b> (de préférence) ou <b>gd</b>.</p>");
+        $flag = true;
     }
+    if($flag){
+    	echo '<p>Réalisez les actions nécéssaires sur le serveur ou contactez l\'administrateur du site.<br>
+    		Quand le problème sera résolu, il vous suffira de <a href="#">recharger la page<a>.</p>';
+	    die;
+    }
+}
 
+function installation(): void
+{
     /* -- droits des fichiers et dossiers -- */
     $droits_dossiers = 0700;
     $droits_fichiers = 0600;
@@ -41,7 +52,7 @@ HTACCESS;
         fputs($fichier, $contenu);
         fclose($fichier);
         chmod('../config/.htaccess', $droits_fichiers);
-        //echo("danger<br>pas de .htaccess dans config<br>prévenez le respondable du site");
+        //echo("danger<br>pas de .htaccess dans config<br>prévenez le responsable du site");
 	    //die;
 	}
 

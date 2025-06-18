@@ -14,6 +14,7 @@ Config::load('../config/config.ini');
 
 // les messages d'erreur de déploiement qu'on aime
 require('../src/controller/installation.php');
+phpDependancies();
 //installation(); // des mkdir et chmod, chiant en dev
 
 // $entityManager
