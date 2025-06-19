@@ -48,6 +48,51 @@ function openEditor(id, page = '') {
                     document.querySelector(`#new-${id}`).classList.add('hidden'); // id = new-new-id_node
                 }
             });
+            let skipPastePreProcess = false;
+            editor.on('Paste', function (e){ // déclenchement AVANT PastePreProcess et quelque que soit le contenu collé
+                const clipboardData = (e.clipboardData || e.originalEvent.clipboardData);
+                if(!clipboardData){
+                    return;
+                }
+                const items = clipboardData.items;
+                let foundImage = false;
+
+                for(let i = 0; i < items.length; i++){
+                    let item = items[i];
+
+                    if(item.type.indexOf('image') !== -1){ // test type MIME contenant image
+                        foundImage = true;
+
+                        const file = item.getAsFile(); // presse-papier => fichier lisible
+                        const reader = new FileReader();
+
+                        reader.onload = function (event){ // fonction exécutée lorsque reader.readAsDataURL(file) est terminée
+                            const base64Data = event.target.result; // données de l'image
+
+                            fetch('index.php?action=upload_image_base64', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ image_base64: base64Data })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if(data.location){
+                                    editor.insertContent('<img src="' + data.location + '">');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur lors de l’upload de l’image base64 :', error);
+                            });
+                        };
+                        reader.readAsDataURL(file); // lecture asynchrone du fichier
+                    }
+                }
+
+                if(foundImage){
+                    e.preventDefault(); // supprime le collage automatiue
+                    skipPastePreProcess = true; // désactiver le PastePreProcess pour ce collage
+                }
+            });
             editor.on('PastePreProcess', function (e){ // déclenchement au collage AVANT insertion dans l'éditeur
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(e.content, 'text/html');
@@ -58,9 +103,8 @@ function openEditor(id, page = '') {
                 images.forEach(img => {
                     if(img.src.startsWith('file://')){ // détection d'images non insérables
                         console.warn('Image locale non insérable dans tinymce :', img.src);
-                        img.outerHTML = '<div style="border:1px solid red; padding:10px; margin:5px 0; background-color:#ffe6e6; color:#a94442; font-size:14px;">' +
-"Image locale non insérée (vient-elle de LibreOffice ?). Effacez cet encadré et copiez-collez l'image seule. Ensuite cliquez sur le bouton Insérer une image puis dans la nouvelle fenêtre sur Enregistrer." +
-'</div>';
+                        img.outerHTML = `<div style="border:1px solid red; padding:10px; margin:5px 0; background-color:#ffe6e6; color:#a94442; font-size:14px;">
+                            "Image locale non insérée (vient-elle d'un document LibreOffice ?). Effacez ce message rouge et copiez-collez l'image seule.</div>`;
                     }
                     else if(img.src.startsWith('http')){ // détection d'images web
                         const promise = fetch('index.php?action=upload_image_url', { // promesse d'un fichier téléchargeable sur le serveur

@@ -142,7 +142,46 @@ elseif(isset($_GET['action']) && $_GET['action'] == 'upload_image_url'){
     }
     die;
 }
+// cas du collage d'une image (code base64) non encapsulée dans du HTML
+elseif(isset($_GET['action']) && $_GET['action'] == 'upload_image_base64'){
+    $json = json_decode(file_get_contents('php://input'), true);
+    $dest = 'images/';
 
+    if(!is_dir('images')){
+        mkdir('images', 0777, true);
+    }
+
+    // détection de data:image/ et de ;base64, et capture du format dans $type
+    if(!isset($json['image_base64']) || !preg_match('/^data:image\/(\w+);base64,/', $json['image_base64'], $type)){
+        http_response_code(400);
+        echo json_encode(['message' => 'Données image base64 manquantes ou invalides']);
+        die;
+    }
+
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif'];
+    $extension = strtolower($type[1]);
+    if(!in_array($extension, $allowed_extensions) || $extension === 'jpg'){
+        $extension = 'jpeg';
+    }
+
+    $image_data = base64_decode(substr($json['image_base64'], strpos($json['image_base64'], ',') + 1)); // découpe la chaine à la virgule puis convertit en binaire
+    if($image_data === false){
+        http_response_code(400);
+        echo json_encode(['message' => 'Décodage base64 invalide']);
+        die;
+    }
+    
+    $local_path = $dest . 'pasted_image_' . uniqid() . '.' . $extension;
+
+    if(imagickCleanImage($image_data, $local_path)){
+        echo json_encode(['location' => $local_path]);
+    }
+    else{
+        http_response_code(500);
+        echo json_encode(['message' => 'Erreur image non valide']);
+    }
+    die;
+}
 
 // détection des requêtes de type XHR, y en a pas à priori
 /*elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
