@@ -49,9 +49,9 @@ function openEditor(id, page = '') {
                 }
             });
             editor.on('PastePreProcess', function (e){ // déclenchement au collage AVANT insertion dans l'éditeur
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(e.content, 'text/html');
-                let images = doc.querySelectorAll('img');
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.content, 'text/html');
+                const images = doc.querySelectorAll('img');
                 
                 let downloads_in_progress = [];
                 
@@ -59,11 +59,11 @@ function openEditor(id, page = '') {
                     if(img.src.startsWith('file://')){ // détection d'images non insérables
                         console.warn('Image locale non insérable dans tinymce :', img.src);
                         img.outerHTML = '<div style="border:1px solid red; padding:10px; margin:5px 0; background-color:#ffe6e6; color:#a94442; font-size:14px;">' +
-"Image locale non insérée. Pour insérer une image depuis LibreOffice, copiez l'image seule et recoller." +
+"Image locale non insérée (vient-elle de LibreOffice ?). Effacez cet encadré et copiez-collez l'image seule. Ensuite cliquez sur le bouton Insérer une image puis dans la nouvelle fenêtre sur Enregistrer." +
 '</div>';
                     }
                     else if(img.src.startsWith('http')){ // détection d'images web
-                        let promise = fetch('index.php?action=upload_image_url', { // promesse d'un fichier téléchargeable sur le serveur
+                        const promise = fetch('index.php?action=upload_image_url', { // promesse d'un fichier téléchargeable sur le serveur
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ image_url: img.src })
@@ -75,7 +75,7 @@ function openEditor(id, page = '') {
                             }
                         })
                         .catch(error => {
-                            console.error('Erreur lors de l’upload de l’image :', error);
+                            console.error('Erreur lors de l’upload de l’image distante:', error);
                         });
                         
                         downloads_in_progress.push(promise);
@@ -96,7 +96,7 @@ function openEditor(id, page = '') {
                 }
             }); // fin editor.on('PastePreProcess'...
         },
-        // upload d'image
+        // upload d'image natif de tinymce avec le bouton "Insérer une image"
         images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
             const formData = new FormData();
             formData.append("file", blobInfo.blob());
@@ -107,7 +107,7 @@ function openEditor(id, page = '') {
             })
             .then(response => response.json())
             .then(data => {
-                if (data.location) {
+                if(data.location) {
                     resolve(data.location);
                 }
                 else {

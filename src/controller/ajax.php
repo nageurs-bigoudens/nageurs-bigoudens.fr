@@ -9,15 +9,17 @@ use App\Entity\Article;
 
 
 // mettre ça ailleurs
-function imagickCleanImage(string $image_data, string $local_path): bool // "string" parce que file_get_contents...
+function imagickCleanImage(string $image_data, string $local_path, string $format = 'jpeg'): bool // "string" parce que file_get_contents...
 {
     try{
         $imagick = new Imagick();
         $imagick->readImageBlob($image_data);
         $imagick->stripImage(); // nettoyage métadonnées
-        $imagick->setImageFormat('jpeg');
-        $imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
-        $imagick->setImageCompressionQuality(85); // optionnel
+        $imagick->setImageFormat($format);
+        if($format === 'jpeg'){
+            $imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
+            $imagick->setImageCompressionQuality(85); // optionnel
+        }
         $imagick->writeImage($local_path); // enregistrement
         $imagick->clear();
         $imagick->destroy();
@@ -75,18 +77,23 @@ if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_
             mkdir($dest_mini, 0700, true);
         }
         
-        $filePath = $dest . basename($file['name']);
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif'];
+        $name = Security::secureFileName(pathinfo($file['name'], PATHINFO_FILENAME));
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if(!in_array($extension, $allowed_extensions) || $extension === 'jpg'){
+            $extension = 'jpeg';
+        }
+        $file_path = $dest . $name . '_' . uniqid() . '.' . $extension;
 
         // créer une miniature de l'image
         //
 
-        if(move_uploaded_file($file['tmp_name'], $filePath)) {
-            $image_url = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
-            echo json_encode(['location' => $image_url . $filePath]); // renvoyer l'URL de l'image téléchargée
+        if(imagickCleanImage(file_get_contents($file['tmp_name']), $file_path, $extension)){ // recréer l’image pour la nettoyer
+            echo json_encode(['location' => $file_path]); // renvoyer l'URL de l'image téléchargée
         }
         else{
             http_response_code(500);
-            echo json_encode(['message' => 'Erreur 500: Internal Server Error']);
+            echo json_encode(['message' => 'Erreur image non valide']);
         }
     }
     else{
@@ -101,15 +108,28 @@ elseif(isset($_GET['action']) && $_GET['action'] == 'upload_image_url'){
     
     if(isset($json['image_url'])){
         $image_data = curlDownloadImage($json['image_url']); // téléchargement de l’image par le serveur avec cURL au lieu de file_get_contents
+        $dest = 'images/';
         
+        if(!is_dir($dest)) { // Vérifier si le répertoire existe, sinon le créer
+            mkdir($dest, 0777, true);
+        }
+
         if($image_data === false){
             http_response_code(400);
             echo json_encode(['message' => "Erreur, le serveur n'a pas réussi à télécharger l'image."]);
             die;
         }
         
-        $local_path = 'images/' . uniqid() . '.jpg';
-        if(imagickCleanImage($image_data, $local_path)){ // recréer l’image pour la nettoyer
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif'];
+        $url_path = parse_url($json['image_url'], PHP_URL_PATH);
+        $name = Security::secureFileName(pathinfo($url_path, PATHINFO_FILENAME));
+        $extension = strtolower(pathinfo($url_path, PATHINFO_EXTENSION));
+        if(!in_array($extension, $allowed_extensions) || $extension === 'jpg'){
+            $extension = 'jpeg';
+        }
+        $local_path = $dest . $name . '_' . uniqid() . '.' . $extension;
+        
+        if(imagickCleanImage($image_data, $local_path, $extension)){ // recréer l’image pour la nettoyer
             echo json_encode(['location' => $local_path]); // nouvelle adresse
         }
         else{

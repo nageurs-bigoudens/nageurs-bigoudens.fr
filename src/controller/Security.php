@@ -59,11 +59,15 @@ class Security
 		// => on remplace tout par des _
 		// filtrer / et \ semble inutile
 
-		$cibles = [' ', '/', '\\', ':', '*', '?', '<', '>', '|', '=', "'", '`', '"', '%22', '#'];
+		/*$cibles = [' ', '/', '\\', ':', '*', '?', '<', '>', '|', '=', "'", '`', '"', '%22', '#'];
 		$chaine = str_replace($cibles, '_', $chaine); // nécéssite l'extension mbstring
 		$chaine = mb_strtolower($chaine);
-		return($chaine);
-		
+		return($chaine);*/
+
+		$chaine = preg_replace('/[^a-zA-Z0-9_-]/', '_', $chaine); // ne garder que les lettres, chiffres, tirets et underscores
+	    $chaine = preg_replace('/_+/', '_', $chaine); // doublons d'underscores
+	    return trim($chaine, '_');
+	    
 		// les problèmes avec \ persistent !!
 		// => javascript
 		// malheureusement document.getElementById('upload').files[0].name = chaine; ne marche pas! interdit!
