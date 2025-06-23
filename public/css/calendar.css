@@ -2,15 +2,16 @@
     border: 2px double;
     border-radius: 5px;
     width: max-content;
+    padding: 5px;
 }
 #calendar_zone{
     display: flex;
-    gap: 15px;
+    gap: 5px;
     padding: 15px;
     /*max-width: 1000px;*/
 }
 #calendar{
-    width: -moz-available;
+    width: 1170px;
 }
 .event_title_box{
     display: flex;
@@ -48,4 +49,20 @@ td .fc-timegrid-axis{
     color: white;
     background-color: #00679e;
     border-radius: 5px;
+}
+
+@media screen and (max-width: 900px){
+    #calendar_zone{
+        padding: 0;
+    }
+    .fc-toolbar-title{
+        font-size: large !important;
+    }
+}
+@media screen and (max-width: 650px){
+    .fc-toolbar-chunk{
+        font-size: smaller;
+    }
+}
+@media screen and (max-width: 550px){
 }

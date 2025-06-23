@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function(){
         headerToolbar:{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-            //right: 'dayGridMonth,timeGridWeek'
+            //right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            right: 'dayGridMonth,timeGridWeek,listWeek'
         },
         slotMinWidth: 70,
         defaultAllDay: false,
@@ -62,20 +62,25 @@ document.addEventListener('DOMContentLoaded', function(){
             const start = formatDate(info.event.start);
             const start_date = start.split('T')[0];
             const start_hour = (info.event.allDay ? '' : '<br>à ' + start.split('T')[1]).replace(":", "h");
-            const formated_start = 'le ' + start_date.split('-')[2] + '/' + start_date.split('-')[1] + '/' + start_date.split('-')[0] + start_hour;
+            const formated_start = start_date.split('-')[2] + '/' + start_date.split('-')[1] + '/' + start_date.split('-')[0] + start_hour;
             const end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end, info.event.allDay);
             const end_date = end.split('T')[0];
             const end_hour = (info.event.allDay ? '' : '<br>à ' + end.split('T')[1]).replace(":", "h");
-            const formated_end = 'le ' + end_date.split('-')[2] + '/' + end_date.split('-')[1] + '/' + end_date.split('-')[0] + end_hour;
+            const formated_end = end_date.split('-')[2] + '/' + end_date.split('-')[1] + '/' + end_date.split('-')[0] + end_hour;
 
-            const aside_content = `<div class="event" style="border-color: ` + info.event.backgroundColor +`;">
-                        <h3>` + info.event.title + `</h3>
-                        <p><i>` + info.event.extendedProps.description + `</i></p>
-                        <p>Journée entière: <br>` + (checked ? 'oui' : 'non') + `</p>
-                        <p>Début: <br>` + formated_start + `</p>
-                        <p>Fin: <br> ` + formated_end + `</p>
+            let aside_content = `<div class="event" style="border-color: ` + info.event.backgroundColor +`;">
+                    <h3>` + info.event.title + `</h3>
+                    <p><i>` + info.event.extendedProps.description + `</i></p>`;
+            if(checked && (formated_start === formated_end)){ // affichage simplifié évènement d'un jour
+                aside_content = aside_content + `<p>le ` + formated_start + `</p>
                     </div>`;
-
+            }
+            else{
+                aside_content = aside_content + `<p>du ` + formated_start + `</p>
+                        <p>au ` + formated_end + `</p>
+                    </div>`;
+            }
+            
             aside.innerHTML = aside_content;
             calendar.updateSize();
         },
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     document.addEventListener('keydown', function(event){
-        if(event.key === 'Escape') {
+        if(event.key === 'Escape'){
             hideModal();
         }
     });

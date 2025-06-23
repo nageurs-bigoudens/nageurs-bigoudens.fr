@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function(){
         headerToolbar:{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-            //right: 'dayGridMonth,timeGridWeek'
+            //right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            right: 'dayGridMonth,timeGridWeek,listWeek'
         },
         slotMinWidth: 70,
         defaultAllDay: false,

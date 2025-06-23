@@ -134,6 +134,7 @@ footer > div
 	background-color: #ffff00;
 	position: fixed;
 	bottom: 0px;
+	z-index: 1; /* augmenter la valeur si nécessaire */
 }
 .logged_in button
 {
