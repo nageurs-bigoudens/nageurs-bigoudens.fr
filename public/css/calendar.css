@@ -1,0 +1,51 @@
+.event{
+    border: 2px double;
+    border-radius: 5px;
+    width: max-content;
+}
+#calendar_zone{
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    /*max-width: 1000px;*/
+}
+#calendar{
+    width: -moz-available;
+}
+.event_title_box{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.event_close_button{
+    height: fit-content;
+}
+.fc-toolbar-title{
+    font-size: x-large !important;
+}
+.fc-button{
+    padding: 0.2em 0.4em !important;
+}
+td .fc-timegrid-axis{
+    font-size: small;
+    text-align: center;
+}
+.fc-day-other{
+    background-color: #f0f0f0;
+}
+.fc-daygrid-day-top{
+    justify-content: center;
+}
+.fc-day-today .fc-daygrid-day-number{ /* vue mois */
+    color: white;
+    background-color: #00679e;
+    border-radius: 5px;
+    height: 27px;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+}
+.fc-day-today .fc-col-header-cell-cushion{ /* vue semaine */
+    color: white;
+    background-color: #00679e;
+    border-radius: 5px;
+}

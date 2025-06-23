@@ -23,6 +23,14 @@
             </div>
         </div>
     </div>
+    <div class="delete_page_zone">
+        <form method="post" action="<?= new URL ?>">
+            <label>Supprimer cette page</label>
+            <input type="hidden" name="page_id" value="<?= Director::$page_path->getLast()->getId() ?>">
+            <input type="hidden" name="submit_hidden">
+            <input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
+        </form>
+    </div>
     <div class="edit_bloc_zone">
         <div class="new_bloc">
             <p>Ajouter un bloc de page</p>
@@ -41,13 +49,5 @@
             <p>Modifier un bloc</p>
             <?= $bloc_edit ?>
         </div>
-    </div>
-    <div class="delete_page_zone">
-        <form method="post" action="<?= new URL ?>">
-            <label>Supprimer cette page</label>
-            <input type="hidden" name="page_id" value="<?= Director::$page_path->getLast()->getId() ?>">
-            <input type="hidden" name="submit_hidden">
-            <input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
-        </form>
     </div>
 </section>

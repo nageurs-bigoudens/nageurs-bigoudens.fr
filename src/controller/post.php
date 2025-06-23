@@ -231,3 +231,4 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
         require '../src/controller/ajax.php';
     }
 }
+require '../src/controller/ajax_calendar.php';
