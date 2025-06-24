@@ -34,6 +34,10 @@ td .fc-timegrid-axis{
 .fc-day-other{
     background-color: #f0f0f0;
 }
+.fc-daygrid-day:not(.fc-day-other, .fc-day-today){
+    background-color: #ffffff;
+}
+
 .fc-daygrid-day-top{
     justify-content: center;
 }

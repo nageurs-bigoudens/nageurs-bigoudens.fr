@@ -86,7 +86,7 @@ function createPassword(EntityManager $entityManager)
 		}
 		else
 		{
-			$error = 'bad_password';
+			$error = 'bad_login_or_password';
 
 			// compteur dans la session et blocage de compte
 		}
@@ -217,15 +217,6 @@ function changePassword(EntityManager $entityManager)
 {
 	// fonction exécutée à priori deux fois d'affilée: affichage puis traitement de la saisie
 
-	// OUT !!
-	if(empty($_SESSION['user']) || !$_SESSION['admin'])
-	{
-		$_SESSION['user'] = '';
-		$_SESSION['admin'] = false;
-		header('Location: index.php');
-		die;
-	}
-
 	// II - traitement
 	$error = '';
 	$success = false;
@@ -254,6 +245,9 @@ function changePassword(EntityManager $entityManager)
 		{
 			$error = 'forbidden_characters';
 		}
+		elseif($login !== $_SESSION['user']){
+			$error = 'bad_login_or_password';
+		}
 		else
 		{
 			$user = getUser($login, $entityManager);
@@ -268,7 +262,7 @@ function changePassword(EntityManager $entityManager)
 			}
 			else
 			{
-				$error = 'bad_password';
+				$error = 'bad_login_or_password';
 			}
 		}
 	}

@@ -220,6 +220,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             header("Location: " . new URL(['page' => $_GET['from']]));
             die;
         }
+        elseif(isset($_GET['action']) && $_GET['action'] === 'modif_mdp'
+            && isset($_POST['login']) && isset($_POST['old_password']) && isset($_POST['new_password'])
+            && isset($_POST['modify_password_hidden']) && empty($_POST['modify_password_hidden']))
+        {
+            changePassword($entityManager);
+            header("Location: " . new URL(['page' => $_GET['from']]));
+            die;
+        }
         else{
             header("Location: " . new URL(['error' => 'paramètres inconnus']));
             die;
@@ -230,5 +238,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
     else{
         require '../src/controller/ajax.php';
     }
+
+    require '../src/controller/ajax_calendar_admin.php';
 }
-require '../src/controller/ajax_calendar.php';
+
+require '../src/controller/ajax_calendar_visitor.php';

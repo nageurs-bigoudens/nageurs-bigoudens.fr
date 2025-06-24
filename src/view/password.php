@@ -72,6 +72,7 @@ ob_start();
                 <input id="old_password" type="password" name="old_password" required ><br><br>
                 <label for="new_password" >Nouveau mot de passe:</label>
                 <input id="new_password" type="password" name="new_password" required autocomplete="off">
+                <input type="hidden" name="modify_password_hidden">
                 <br><br>
                 <input type="submit" value="Valider" >
             </form>
@@ -109,8 +110,7 @@ $header = ob_get_clean();
 $error_messages = [
     'error_non_valid_captcha' => '<p class="avertissement" >Erreur au test anti-robot, veuillez saisir un nombre entier.</p>',
     'bad_solution_captcha' => '<p class="avertissement" >Erreur au test anti-robot, veuillez réessayer.</p>',
-    'bad_login_or_password' => '<p class="avertissement" >Mauvais identifiant ou mot de passe, veuillez réessayer.</p>',
-    'bad_password' => '<p class="avertissement" >Mauvais mot de passe, veuillez réessayer.</p>',
+    'bad_login_or_password' => '<p class="avertissement" >Mauvais identifiant ou mot de passe, veuillez réessayer.</p>', // ne pas indiquer où est l'erreur
     'forbidden_characters' => '<p class="avertissement" >Caractères interdits: espaces, tabulations, sauts CR/LF.</p>'
 ];
 

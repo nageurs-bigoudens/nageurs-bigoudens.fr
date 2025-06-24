@@ -31,6 +31,10 @@ ini_set('session.use_strict_mode', 'On');
 ini_set('session.cookie_secure', 'On');
 session_start();
 $_SESSION['admin'] = !isset($_SESSION['admin']) ? false : $_SESSION['admin']; // intialisation sur faux
+if($_SESSION['admin'] === false || empty($_SESSION['user'])){ // OUT !!
+    $_SESSION['user'] = '';
+    $_SESSION['admin'] = false;
+}
 
 // login, mot de passe et captcha
 require '../src/controller/password.php';
@@ -49,8 +53,8 @@ require '../src/controller/post.php';
 $id = '';
 if(!empty($_GET['id']))
 {
-    //$id = (int)$_GET['id']; // (int) = moyen basique d'éviter les injections
-    $id = Security::secureString($_GET['id']);
+    $id = (int)$_GET['id']; // (int) évite les injections, pas parfait d'après chatgpt
+    //$id = Security::quelqueChose($_GET['id']);
 }
 
 if(isset($_GET['action']) && $_GET['action'] === 'deconnexion')
