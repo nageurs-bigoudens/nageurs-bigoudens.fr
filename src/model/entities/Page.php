@@ -40,7 +40,7 @@ class Page
     #[ORM\Column(type: "integer", nullable: true)] // null si hors menu
     private ?int $position;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: "children")]
     #[ORM\JoinColumn(name: "parent_id", referencedColumnName: "id_page", onDelete: "SET NULL", nullable: true)]
     private ?self $parent = null;
 

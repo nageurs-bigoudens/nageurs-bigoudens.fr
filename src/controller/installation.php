@@ -83,8 +83,9 @@ HTACCESS;
     }
 }
 
-// création de la page d'accueil à la toute 1ère visite du site
-// les informations ici ne sont pas demandées à l'utilisateur pour l'instant (on verra ça plus tard)
+// création d'un site minimal avec une page d'accueil à la toute 1ère visite du site
+// fonctiona appelée après la première requête envoyée en BDD,
+// en l'occurence dans Menu parce que count($bulk_data) === 0
 function makeStartPage(EntityManager $entityManager){
 	/* -- table page -- */
 	// paramètres: name_page, end_of_path, reachable, in_menu, hidden, position, parent
@@ -114,7 +115,7 @@ function makeStartPage(EntityManager $entityManager){
 	/* -- table image -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
 	$favicon = new Image("favicon48x48.png", NULL, "assets/favicon48x48.png", "image/png", "favicon");
-	$logo = new Image("logo-120x75.jpg", NULL, "assets/logo-120x75.jpg", "image/png", "head_logo");
+	$logo = new Image("logo-nb-et-ffn.png", NULL, "assets/logo-nb-et-ffn.png", "image/png", "head_logo");
 	$facebook = new Image("facebook.svg", NULL, "assets/facebook.svg", "image/svg+xml", "facebook");
 	$instagram = new Image("instagram.svg", NULL, "assets/instagram.svg", "image/svg+xml", "instagram");
 	$linkedin = new Image("linkedin.svg", NULL, "assets/linkedin.svg", "image/svg+xml", "linkedin");
@@ -128,7 +129,7 @@ function makeStartPage(EntityManager $entityManager){
 	$head_article_data = new NodeData(["description" => ""], $head_article, new ArrayCollection([$favicon]));
 	$head_edit_menu_data = new NodeData(["description" => "Menu et chemins"], $head_edit_menu, new ArrayCollection([$favicon]));
 	$head_new_page_data = new NodeData(["description" => "Nouvelle page"], $head_new_page, new ArrayCollection([$favicon]));
-	$header_data = new NodeData(["description" => "Club, École de natation et Perfectionnement", "social" => ["title" => "Les Nageurs Bigoudens", "facebook_link" => "https://www.facebook.com/nageursbigoudens29120", "instagram_link" => "https://www.instagram.com/nageursbigoudens/"]], $header, new ArrayCollection([$logo, $facebook, $instagram, $linkedin, $github, $fond_piscine]));
+	$header_data = new NodeData(["title" => "Les Nageurs Bigoudens", "description" => "Club, École de natation et Perfectionnement", "social" => ["facebook_link" => "https://www.facebook.com/nageursbigoudens29120", "instagram_link" => "https://www.instagram.com/nageursbigoudens/"]], $header, new ArrayCollection([$logo, $facebook, $instagram, $linkedin, $github, $fond_piscine]));
 	$footer_data = new NodeData(["adresse" => "17, rue Raymonde Folgoas Guillou, 29120 Pont-l’Abbé", "contact_nom" => "Les Nageurs Bigoudens", "e_mail" => "nb.secretariat@orange.fr", "logo_footer" => "assets/logo-nb-et-ffn.png"], $footer);
 
 	/* -- table page -- */
@@ -159,6 +160,8 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($logo);
 	$entityManager->persist($facebook);
 	$entityManager->persist($instagram);
+	$entityManager->persist($linkedin);
+	$entityManager->persist($github);
 	$entityManager->persist($fond_piscine);
 	
 	/* -- table node_data -- */

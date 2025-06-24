@@ -28,7 +28,7 @@ class NodeData
     private array $data;
 
     // liaison avec table intermédiaire
-    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "id_image")]
+    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "node_data")]
     #[ORM\JoinTable(
         name: TABLE_PREFIX . "node_image",
         joinColumns: [new ORM\JoinColumn(name: "node_data_id", referencedColumnName: "id_node_data", onDelete: "CASCADE")],

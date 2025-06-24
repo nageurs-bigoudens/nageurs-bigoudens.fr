@@ -28,7 +28,7 @@
             <label>Supprimer cette page</label>
             <input type="hidden" name="page_id" value="<?= Director::$page_path->getLast()->getId() ?>">
             <input type="hidden" name="submit_hidden">
-            <input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
+            <input type="submit" value="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
         </form>
     </div>
     <div class="edit_bloc_zone">
