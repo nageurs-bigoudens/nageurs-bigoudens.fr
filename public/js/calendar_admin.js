@@ -206,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 event_start = new Date(event_start).toISOString();
                 event_end = new Date(event_end).toISOString();
             }
-            console.log(event_end);
 
             if(event_start > event_end || (!event_all_day && event_start == event_end)){
                 return;

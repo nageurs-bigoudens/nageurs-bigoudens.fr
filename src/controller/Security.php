@@ -22,7 +22,7 @@ class Security
 	// ATTENTION, n'applique pas htmlspecialchars() !!
 	public static function secureString(string $chaine): string
 	{
-	    return trim(htmLawed($chaine, self::$configHtmLawed, self::$specHtmLawed));;
+	    return trim(htmLawed($chaine, self::$configHtmLawed, self::$specHtmLawed));
 	}
 
 	public static function secureFileName(string $chaine): string

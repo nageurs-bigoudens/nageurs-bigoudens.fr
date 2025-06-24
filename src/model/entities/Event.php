@@ -39,23 +39,27 @@ class Event
     #[ORM\Column(type: 'string', length: 7, nullable: true)]
     private ?string $color = null;
 
-    public function __construct(string $title, string|\DateTimeInterface $start, string|\DateTimeInterface $end, bool $all_day, string $description = '', string $color = null){
-        $this->title = $title;
-        $this->description = $description;
-        $this->start = gettype($start) === 'string' ? new \DateTime($start) : $start;
-        $this->end = gettype($end) === 'string' ? new \DateTime($end) : $end;
-        $this->all_day = $all_day;
-        $this->color = $color;
+    public function __construct(array $json){
+        $this->securedUpdateFromJSON($json);
     }
 
-    public function updateFromJSON(array $json): void
+    public function securedUpdateFromJSON(array $json): void
     {
-        $this->title = $json['title'];
-        $this->description = $json['description'];
-        $this->start = new \DateTime($json['start']);
-        $this->end = new \DateTime($json['end']);
-        $this->all_day = $json['allDay'];
-        $this->color = $json['color'];
+        $this->title = htmlspecialchars($json['title']);
+        $this->description = htmlspecialchars($json['description']);
+        try{
+            $this->start = new \Datetime($json['start']);
+            $this->end = new \Datetime($json['end']);
+        }
+        catch(\Exception $e){
+            throw new \InvalidArgumentException('Bad date input');
+        }
+        $all_day = filter_var($json['allDay'] ?? null, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if(!is_bool($all_day)){
+            throw new \InvalidArgumentException('Bad checkbox input');
+        }
+        $this->all_day = $all_day;
+        $this->color = isset($json['color']) ? htmlspecialchars($json['color']) : null;
     }
 
     public function getId(): int

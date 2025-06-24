@@ -46,22 +46,35 @@ elseif(isset($_SESSION['admin']) && $_SESSION['admin'] === true
 	$json = json_decode($data, true);
 	
 	if($_GET['action'] === 'new_event'){
-        $event = new Event($json['title'], $json['start'], $json['end'], $json['allDay'], $json["description"], $json['color']);
-        
+        try{
+            $event = new Event($json);
+        }
+        catch(InvalidArgumentException $e){
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            http_response_code(400);
+            die;
+        }
         $entityManager->persist($event);
         $entityManager->flush();
 		
 		echo json_encode(['success' => true, 'id' => $event->getId()]);
 	}
 	elseif($_GET['action'] === 'update_event'){
-        $event = $entityManager->find('App\Entity\Event', $json['id']);
-        $event->updateFromJSON($json);
+        $event = $entityManager->find('App\Entity\Event', (int)$json['id']);
+        try{
+            $event->securedUpdateFromJSON($json);
+        }
+        catch(InvalidArgumentException $e){
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            http_response_code(400);
+            die;
+        }
         $entityManager->flush();
 
 		echo json_encode(['success' => true]);
 	}
 	elseif($_GET['action'] === 'remove_event'){
-        $event = $entityManager->find('App\Entity\Event', $json['id']);
+        $event = $entityManager->find('App\Entity\Event', (int)$json['id']);
         $entityManager->remove($event);
         $entityManager->flush();
 
