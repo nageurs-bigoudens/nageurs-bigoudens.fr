@@ -53,8 +53,7 @@ require '../src/controller/post.php';
 $id = '';
 if(!empty($_GET['id']))
 {
-    $id = (int)$_GET['id']; // (int) évite les injections, pas parfait d'après chatgpt
-    //$id = Security::quelqueChose($_GET['id']);
+    $id = htmlspecialchars($_GET['id']);
 }
 
 if(isset($_GET['action']) && $_GET['action'] === 'deconnexion')
