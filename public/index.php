@@ -53,7 +53,7 @@ require '../src/controller/post.php';
 $id = '';
 if(!empty($_GET['id']))
 {
-    $id = htmlspecialchars($_GET['id']);
+    $id = htmlspecialchars($_GET['id']); // nettoyage qui n'abime pas les id du genre "n16"
 }
 
 if(isset($_GET['action']) && $_GET['action'] === 'deconnexion')

@@ -55,8 +55,8 @@ class MainBuilder extends AbstractBuilder
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php'; // mode modification uniquement
 
         // blocs disponibles
-        $blocs = ['Blog', 'Grille', 'Calendrier', 'Galerie']; // générer ça dynamiquement!
-        $blocs_true_names = ['blog', 'grid', 'calendar', 'galery'];
+        $blocs = ['Blog', 'Grille', 'Calendrier', 'Galerie', 'Formulaire']; // générer ça dynamiquement!
+        $blocs_true_names = ['blog', 'grid', 'calendar', 'galery', 'form']; // même liste dans post.php
 
         $options = '';
         for($i = 0; $i < count($blocs); $i++){
@@ -85,7 +85,8 @@ class MainBuilder extends AbstractBuilder
         foreach($node->getChildren() as $child_node){
             // renommage d'un bloc
             $bloc_edit .= '<div id="bloc_edit_' . $child_node->getId() . '">
-                <p><label for="bloc_rename_' . $child_node->getId() . '">Titre</label>
+                <p><label>Type <i>' . $child_node->getName() . '</i>, </label>
+                <label for="bloc_rename_' . $child_node->getId() . '">Titre</label>
                 <input type="text" id="bloc_rename_' . $child_node->getId() . '" name="bloc_rename_title" value="' . $child_node->getNodeData()->getdata()['title'] . '" required>
                 <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>'. "\n";
             // déplacement d'un bloc
@@ -95,7 +96,7 @@ class MainBuilder extends AbstractBuilder
             $bloc_edit .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
                     <input type="hidden" name="delete_bloc_id" value="' . $child_node->getId() . '">
                     <input type="hidden" name="delete_bloc_hidden">
-                    <input type="submit" value="Supprimer"></p>
+                    <input type="submit" value="Supprimer" onclick="return confirm(\'Voulez-vous vraiment supprimer cette page?\');"></p>
                 </form>
             </div>'. "\n";
         }

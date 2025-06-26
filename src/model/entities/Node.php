@@ -98,13 +98,15 @@ class Node
     {
         $this->attributes = self::$default_attributes;
     }
-    /*public function addAttribute(string $key, string $value): void
+    public function addAttribute(string $key, string $value): void
     {
         if(!isset($this->attributes[$key])) { // sécurité $key inexistante
             $this->attributes[$key] = [];
         }
-        $this->attributes[$key][] = $value;
-    }*/
+        if(!in_array($value, $this->attributes[$key])){
+            $this->attributes[$key][] = $value;
+        }
+    }
     /*public function removeAttribute(string $key, string $value): void
     {
         if(isset($this->attributes[$key]))  // sécurité $key inexistante

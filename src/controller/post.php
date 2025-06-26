@@ -132,8 +132,32 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['admin'] === true)
             $main = $director->getNode();
             $position = count($main->getChildren()) + 1; // position dans la fraterie
 
+            $blocs_true_names = ['blog', 'grid', 'calendar', 'galery', 'form']; // même liste dans FormBuilder.php
+            if(!in_array($_POST["bloc_select"], $blocs_true_names, true)) // 3è param: contrôle du type
+            {
+                header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'bad_bloc_type']));
+                die;
+            }
+
+            if($_POST["bloc_select"] === 'calendar'){
+                $dql = 'SELECT n FROM App\Entity\Node n WHERE n.page = :page AND n.name_node = :name'; // noeud 'head' de la page
+                $bulk_data = $entityManager
+                ->createQuery($dql)
+                ->setParameter('page', $page)
+                ->setParameter('name', 'head')
+                ->getResult();
+
+                if(count($bulk_data) != 1){ // 1 head par page
+                    header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'head_node_not_found']));
+                    die;
+                }
+
+                $bulk_data[0]->addAttribute('css_array', 'calendar');
+                $entityManager->persist($bulk_data[0]);
+            }
+
             $bloc = new Node(
-                trim(htmlspecialchars($_POST["bloc_select"])),
+                $_POST["bloc_select"],
                 null, [],
                 $position,
                 $main,
