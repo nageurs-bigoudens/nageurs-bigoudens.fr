@@ -54,13 +54,25 @@ class MainBuilder extends AbstractBuilder
     {
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php'; // mode modification uniquement
 
-        // blocs disponibles
-        $blocs = ['Blog', 'Grille', 'Calendrier', 'Galerie', 'Formulaire']; // générer ça dynamiquement!
-        $blocs_true_names = ['blog', 'grid', 'calendar', 'galery', 'form']; // même liste dans post.php
+        // blocs disponibles, même liste dans post.php
+        $blocks = [ // créer une classe pour ça?
+            ['type' => 'blog', 'name' => 'Blog'],
+            ['type' => 'grid', 'name' => 'Grille'],
+            ['type' => 'calendar', 'name' => 'Calendrier'],
+            ['type' => 'galery', 'name' => 'Galerie'],
+            ['type' => 'form', 'name' => 'Formulaire']];
+
+        function getBlockName(array $blocks, string $type){ // créer une classe pour ça?
+            for($i=0; $i < count($blocks); $i++){ 
+                if($blocks[$i]['type'] === $type){
+                    return $blocks[$i]['name'];
+                }
+            }
+        }
 
         $options = '';
-        for($i = 0; $i < count($blocs); $i++){
-            $options .= '<option value= "' . $blocs_true_names[$i] . '">' . $blocs[$i] . "</option>\n";
+        for($i = 0; $i < count($blocks); $i++){
+            $options .= '<option value= "' . $blocks[$i]['type'] . '">' . $blocks[$i]['name'] . "</option>\n";
         }
 
         // blabla
@@ -85,8 +97,7 @@ class MainBuilder extends AbstractBuilder
         foreach($node->getChildren() as $child_node){
             // renommage d'un bloc
             $bloc_edit .= '<div id="bloc_edit_' . $child_node->getId() . '">
-                <p><label>Type <i>' . $child_node->getName() . '</i>, </label>
-                <label for="bloc_rename_' . $child_node->getId() . '">Titre</label>
+                <p><label for="bloc_rename_' . $child_node->getId() . '"><b>' . getBlockName($blocks, $child_node->getName()) . '</b></label>
                 <input type="text" id="bloc_rename_' . $child_node->getId() . '" name="bloc_rename_title" value="' . $child_node->getNodeData()->getdata()['title'] . '" required>
                 <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>'. "\n";
             // déplacement d'un bloc

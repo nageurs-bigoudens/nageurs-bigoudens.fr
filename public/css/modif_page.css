@@ -13,10 +13,10 @@
 	background-color: white;
 	border: lightgrey 2px outset;
 }
-.page_modificationselect:hover
+/*.page_modification select:hover
 {
 	cursor: pointer;
-}
+}*/
 .page_modification form input[type=submit]:hover
 {
 	background-color: #ffff00;

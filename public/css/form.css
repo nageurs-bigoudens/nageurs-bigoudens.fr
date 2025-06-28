@@ -1,0 +1,54 @@
+.form form{
+	background-color: white;
+	margin: auto;
+	padding: 10px;
+	max-width: 800px;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 10px;
+	align-items: center; /* vertical */
+}
+.form label{
+	text-align: right;
+}
+.form .full_width_column{
+	grid-column: 1 / span 2;
+}
+.form form input[type=submit]
+{
+	color: #ff1d04;
+	font-size: medium;
+	border-radius: 4px;
+	background-color: white;
+	border: lightgrey 2px outset;
+}
+.form form input[type=submit]:hover
+{
+	background-color: #ffff00;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.no_recipient_warning{
+	color: red;
+	text-align: center;
+}
+
+.form .admin_form{
+	background-color: #f0f0f0;
+	margin: auto;
+	padding: 10px;
+	max-width: 800px;
+}
+
+@media screen and (max-width: 600px){
+	.form form{
+		grid-template-columns: 1fr;
+	}
+	.form label{
+		text-align: left;
+	}
+	.form .full_width_column {
+		grid-column: 1;
+	}
+}
