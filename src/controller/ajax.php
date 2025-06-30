@@ -353,6 +353,24 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json'){
 			echo json_encode(['success' => true]);
 			die;
 		}
+
+		// config formulaire
+		elseif($_GET['action'] === 'recipient_email'){
+			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+			$email = htmlspecialchars(trim($json['email']));
+
+			if(filter_var($email, FILTER_VALIDATE_EMAIL)){
+				$form_data->updateData('email', $json['email']);
+				$entityManager->persist($form_data);
+				$entityManager->flush();
+				echo json_encode(['success' => true]);
+				die;
+			}
+			else{
+				echo json_encode(['success' => false]);
+				die;
+			}
+		}
 	}
 
 

@@ -1,24 +1,23 @@
 //function sendMessage(){}
 
-function changeRecipient(){
+function changeRecipient(id){
 	const email = document.getElementById('recipient').value;
-	const id_form = '';
+    const warning = document.querySelector('.no_recipient_warning');
 
 	fetch('index.php?action=recipient_email', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id_form: id_form, email: email })
+        body: JSON.stringify({ id: id, email: email })
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success)
-        {
+        if(data.success){
+            warning.classList.add('hidden');
         	toastNotify('Adresse e-mail de destination modifiée');
         }
-        else {
-
+        else{
             console.error('Erreur: echec de la modification de l\'adresse e-mail de destination');
         }
     })

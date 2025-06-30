@@ -4,7 +4,7 @@
 	<h3><?= $title ?></h3>
 	<?= $no_recipient_warning ?>
 	<form method="post" action="<?= $action_url ?>">
-		<label for="email">Adresse e-mail</label>
+		<label for="email">Votre e-mail</label>
 		<input type="email" name="email" placeholder="mon-adresse@email.fr" value="" required>
 
 		<label for="subject">Objet</label>

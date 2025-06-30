@@ -56,7 +56,7 @@ class Node
     
     private array $children = []; // tableau de Node
     private ?self $adopted = null; // = "new" est un enfant de "main" lorsque la page est "article"
-    static private array $default_attributes = ['css_array' => ['body', 'head', 'nav', 'foot', 'calendar'],'js_array' => ['main']];
+    static private array $default_attributes = ['css_array' => ['body', 'head', 'nav', 'foot'],'js_array' => ['main']];
 
     public function __construct(string $name = '', ?string $article_timestamp = null, array $attributes = [], int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
     {
