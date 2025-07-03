@@ -7,9 +7,9 @@ class Config
 {
     // BDD
     static public string $db_host = 'localhost';
-    static public string $database = 'nageurs';
+    static public string $database = '';
     static public string $db_driver = 'pdo_mysql';
-    static public string $user = 'root';
+    static public string $user = '';
     static public string $password = '';
     static public string $table_prefix = '';
 
@@ -17,6 +17,16 @@ class Config
     static public string $protocol = 'http';
     static public string $index_path = '';
     static public string $port = '80';
+
+    // e-mails
+    static public string $smtp_host = '';
+    static public string $smtp_username = '';
+    static public string $smtp_password = '';
+    static public string $smtp_secure = 'tls'; // tls (smarttls) ou ssl (smtps)
+    static public string $email_from = '';
+    static public string $email_from_name = 'site web';
+    static public string $email_dest = '';
+    static public string $email_dest_name = 'destinataire formulaire';
 
     // copier dans ce tableau les variables contenant des chemins
     static private array $path_vars = [];

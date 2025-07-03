@@ -1,4 +1,4 @@
-.form form{
+.form_inputs{
 	background-color: white;
 	margin: auto;
 	padding: 10px;
@@ -14,7 +14,7 @@
 .form .full_width_column{
 	grid-column: 1 / span 2;
 }
-.form form input[type=submit]
+.form_inputs input[type=submit]
 {
 	color: #ff1d04;
 	font-size: medium;
@@ -22,7 +22,7 @@
 	background-color: white;
 	border: lightgrey 2px outset;
 }
-.form form input[type=submit]:hover
+.form_inputs input[type=submit]:hover
 {
 	background-color: #ffff00;
 	border-radius: 4px;
@@ -42,7 +42,7 @@
 }
 
 @media screen and (max-width: 600px){
-	.form form{
+	.form_inputs{
 		grid-template-columns: 1fr;
 	}
 	.form label{

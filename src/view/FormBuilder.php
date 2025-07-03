@@ -19,32 +19,31 @@ class FormBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }
 
-            $action_url = new URL(['page' => CURRENT_PAGE]);
             $captcha = new Captcha;
             $_SESSION['captcha'] = $captcha->getSolution();
-
-            $recipient_found = false;
-            if(isset($email)){
-                $recipient_found = true;
-            }
-            else{
-                $email = '';
-            }
 
             $admin_content = '';
             if($_SESSION['admin'])
             {
-                $admin_content = '<script src="js/form.js"></script>
-                <h3>Configuration du formulaire</h3>
-                <div class="admin_form">
-                    <label for="recipient">E-mail de destination</label>
-                    <input id="recipient" type="email" name="recipient" placeholder="mon-adresse@email.fr" value="' . $email . '">
-                    <button onclick="changeRecipient(' . $node->getNodeData()->getId() . ')">Valider</button>
-                </div>';
+                $admin_content = ''
+                    //. '<h3>Configuration du formulaire</h3>' . "\n"
+                    . '<div class="admin_form">' . "\n"
+                    /*. '<p>
+                        <label for="recipient">E-mail de destination</label>
+                        <input id="recipient" type="email" name="recipient" placeholder="mon-adresse@email.fr" value="' . $email . '">
+                        <input type="hidden" id="recipient_hidden" value="">
+                        <button onclick="changeRecipient(' . $node->getNodeData()->getId() . ')">Valider</button>
+                    </p>
+                    <p>
+                        <label for="smtp">Serveur SMTP</label>
+                        <input id="smtp" type="text" name="smtp" value="' . $smtp . '">
+                        <input type="hidden" id="smtp_hidden" value="">
+                        <button onclick="changeSmtp(' . $node->getNodeData()->getId() . ')">Valider</button>
+                    </p>' . "\n"*/
+                    . '<p><button onclick="sendTestEmail()">Envoi d\'un e-mail de test</button></p>' . "\n"
+                    . '<p class="test_email_success full_width_column"></p>'
+                    . '</div>' . "\n";
             }
-            
-            // vérifier qu'une adresse de destination est bien configurée
-            $no_recipient_warning = '<p class="no_recipient_warning ' . ($recipient_found ? 'hidden' : '') . '">Aucune adresse de destination n\'a été configurée, envoi d\'e-mail impossible!</p>';
 
             ob_start();
             require $viewFile;

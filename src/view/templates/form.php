@@ -2,31 +2,32 @@
 <section class="form" id="<?= $this->id_node ?>">
 	<?= $admin_content ?>
 	<h3><?= $title ?></h3>
-	<?= $no_recipient_warning ?>
-	<form method="post" action="<?= $action_url ?>">
-		<label for="email">Votre e-mail</label>
-		<input type="email" name="email" placeholder="mon-adresse@email.fr" value="" required>
+	<div class="form_inputs">
+		<label for="email_name">Votre nom</label>
+		<input id="email_name" type="text" name="email_name" value="" required>
+		
+		<label for="email_address">Votre e-mail</label>
+		<input id="email_address" type="email" name="email_address" placeholder="mon-adresse@email.fr" value="" required>
 
-		<label for="subject">Objet</label>
-		<input type="text" name="subject" value="" required>
-
-		<label for="message">Votre message</label>
-		<textarea type="text" name="message" rows="4" required></textarea>
+		<label for="email_message">Votre message</label>
+		<textarea id="email_message" type="text" name="email_message" rows="4" required></textarea>
 
 		<div class="full_width_column">
 			<label for="captcha" >Montrez que vous n'êtes pas un robot</label>
 		</div>
 
-		<label for="captcha" >Combien font <?= $captcha->getA() ?> fois <?= $captcha->getB() ?>?</label>
+		<label for="email_captcha" >Combien font <?= $captcha->getA() ?> fois <?= $captcha->getB() ?>?</label>
 		<div>
-			<input type="text" name="captcha" size="1" required>
+			<input id="email_captcha" type="text" name="email_captcha" size="1" required>
 		</div>
 
-		<input type="hidden" name="form_id" value="">
-		<input type="hidden" name="form_hidden">
+		<input id="form_id_hidden" type="hidden" name="form_id_hidden" value="">
+		<input id="email_hidden" type="hidden" name="email_hidden">
 
 		<div class="full_width_column">
-			<input type="submit" value="Envoyez votre message">
+			<input type="submit" value="Envoyez votre message" onclick="sendVisitorEmail()">
 		</div>
-	</form>
+
+		<p class="send_email_success full_width_column"></p>
+	</div>
 </section>

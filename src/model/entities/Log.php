@@ -6,8 +6,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 #[ORM\Table(name: TABLE_PREFIX . "log")]
