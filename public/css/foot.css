@@ -28,7 +28,7 @@ footer > div
 	padding: 0 2px;
 	/*background-color: #13aff0ff;
 	border-bottom: 3px #fadb11 solid;*/
-	background-color: #ffff00;
+	background-color: yellow;
 	/*border-bottom: 2px #00a8f3 solid;*/
 	border-bottom: 2px #ff1d04 solid;
 }
@@ -58,7 +58,7 @@ footer > div
 {
 	/*background-color: #13aff0;
 	border-bottom: 3px #fadb11 solid;*/
-	background-color: #ffff00;
+	background-color: yellow;
 	/*border-bottom: 2px #00a8f3 solid;*/
 	border-bottom: 2px #ff1d04 solid;
 }
@@ -131,7 +131,7 @@ footer > div
 	/*height: 70px;*/
 	width: 100%;
 	margin: auto;
-	background-color: #ffff00;
+	background-color: yellow;
 	position: fixed;
 	bottom: 0px;
 	z-index: 1; /* augmenter la valeur si nécessaire */
@@ -149,7 +149,7 @@ footer > div
 .logged_in button:hover
 {
 	cursor: pointer; /* curseur qui touche du doigt */
-	background-color: #ffff00;
+	background-color: yellow;
 	border-radius: 4px;
 }
 .modif_mode

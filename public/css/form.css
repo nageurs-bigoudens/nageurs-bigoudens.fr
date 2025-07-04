@@ -24,7 +24,7 @@
 }
 .form_inputs input[type=submit]:hover
 {
-	background-color: #ffff00;
+	background-color: yellow;
 	border-radius: 4px;
 	cursor: pointer;
 }

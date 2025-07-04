@@ -33,8 +33,8 @@ class Email
     private ?\DateTime $date_time ; 
 
     public function __construct(string $sender, string $recipient, string $content){
-        $this->sender = $sender;
-        $this->recipient = $recipient;
+        $this->sender = strtolower($sender);
+        $this->recipient = strtolower($recipient);
         $this->content = $content;
         $this->date_time = new \DateTime();
     }

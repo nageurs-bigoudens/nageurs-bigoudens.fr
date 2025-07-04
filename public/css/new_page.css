@@ -19,7 +19,7 @@
 }
 .new_page #page_location:hover, .new_page input[type=submit]:hover
 {
-	background-color: #ffff00;
+	background-color: yellow;
 	border-radius: 4px;
 	border: lightgrey 2px outset;
 	cursor: pointer;

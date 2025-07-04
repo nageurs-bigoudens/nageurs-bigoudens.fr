@@ -55,9 +55,15 @@ class NodeData
     {
         $this->data = $data;
     }*/
-    public function updateData(string $key, string $value): void
+    public function updateData(string $key, string $value = ''): void
     {
-        $this->data[$key] = $value;
+        if($value !== ''){
+            $this->data[$key] = $value;
+        }
+        // si $value est vide, supprime la clé
+        elseif(isset($this->data[$key])){
+            unset($this->data[$key]);
+        }
     }
     /*public function setNode(Node $node): void
     {

@@ -25,7 +25,7 @@
 		<input id="email_hidden" type="hidden" name="email_hidden">
 
 		<div class="full_width_column">
-			<input type="submit" value="Envoyez votre message" onclick="sendVisitorEmail()">
+			<input type="submit" value="Envoyez votre message" onclick="sendVisitorEmail(<?= $node->getNodeData()->getId() ?>)">
 		</div>
 
 		<p class="send_email_success full_width_column"></p>

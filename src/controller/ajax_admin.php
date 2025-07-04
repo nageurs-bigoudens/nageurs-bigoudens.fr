@@ -197,7 +197,6 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 	$data = file_get_contents('php://input');
 	$json = json_decode($data, true);
 
-	// requêtes de tinymce ou touchant aux articles
 	if(isset($_GET['action']))
 	{
 		if($_GET['action'] === 'editor_submit' && isset($json['id']) && isset($json['content']))
@@ -356,13 +355,17 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 			die;
 		}
 
-		// config formulaire
-		/*elseif($_GET['action'] === 'recipient_email'){
+
+		/* -- bloc Formulaire -- */
+		elseif($_GET['action'] === 'recipient_email'){
 			$email = htmlspecialchars(trim($json['email']));
 
-			if(filter_var($email, FILTER_VALIDATE_EMAIL) && isset($json['hidden']) && empty($json['hidden'])){
+			if((filter_var($email, FILTER_VALIDATE_EMAIL) // nouvel e-mail
+				|| ($json['email'] === '' && !empty(Config::$email_dest))) // e-mail par défaut
+				&& isset($json['hidden']) && empty($json['hidden']))
+			{
 				$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
-				$form_data->updateData('email', $json['email']);
+				$form_data->updateData('email', $email);
 				$entityManager->persist($form_data);
 				$entityManager->flush();
 
@@ -372,10 +375,13 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 				echo json_encode(['success' => false]);
 			}
 			die;
-		}*/
-		// e-mail de test
+		}
 		elseif($_GET['action'] === 'test_email'){
-			if(sendEmail(false, 'nom du visiteur', 'adresse@du_visiteur.fr', "TEST d'un envoi d'e-mail depuis le site web")){
+			// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
+			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+			$recipient = $form_data->getData()['email'] ?? Config::$email_dest;
+
+			if(sendEmail($recipient, false, 'nom du visiteur', 'adresse@du_visiteur.fr', "TEST d'un envoi d'e-mail depuis le site web")){
 				echo json_encode(['success' => true]);
 			}
 			else{

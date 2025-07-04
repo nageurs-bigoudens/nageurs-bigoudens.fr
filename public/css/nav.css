@@ -72,7 +72,7 @@ ul
 /*.sub-menu p:hover*/
 .nav_main p:hover
 {
-	background-color: #ffff00;
+	background-color: yellow;
 }
 .drop-right > a > p:after
 {

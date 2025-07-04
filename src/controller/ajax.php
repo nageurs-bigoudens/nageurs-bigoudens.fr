@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\Exception;
 use App\Entity\Email;
 
 // mettre ça ailleurs?
-function sendEmail(bool $true_email, string $name = '', string $email = '', string $message = ''): bool
+function sendEmail(string $recipient, bool $true_email, string $name = '', string $email = '', string $message = ''): bool
 {
 	$mail = new PHPMailer(true); // true => exceptions
     $mail->CharSet = 'UTF-8';
@@ -35,7 +35,7 @@ function sendEmail(bool $true_email, string $name = '', string $email = '', stri
 
         // Expéditeur et destinataire
         $mail->setFrom(strtolower(Config::$email_from), Config::$email_from_name); // expéditeur
-        $mail->addAddress(strtolower(Config::$email_dest), Config::$email_dest_name); // destinataire
+        $mail->addAddress(strtolower($recipient), Config::$email_dest_name); // destinataire
 
         // Contenu
         $mail->isHTML(true);
@@ -65,10 +65,9 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 	$data = file_get_contents('php://input');
 	$json = json_decode($data, true);
 
-	// requêtes de tinymce ou touchant aux articles
 	if(isset($_GET['action']))
 	{
-		// e-mail envoyé par le formulaire de contact
+		/* -- bloc Formulaire -- */
 		if($_GET['action'] === 'send_email'){
 			$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
 			$captcha_try = isset($json['captcha']) ? Captcha::controlInput($json['captcha']) : 0;
@@ -77,12 +76,16 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 			$name = htmlspecialchars(trim($json['name']));
 			$email = strtolower(htmlspecialchars(trim($json['email'])));
 			$message = htmlspecialchars(trim($json['message']));
+
+			// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
+			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+			$recipient = $form_data->getData()['email'] ?? Config::$email_dest;
 			
 			if($captcha_try != 0 && $captcha_solution != 0 && ($captcha_try === $captcha_solution)
 				&& filter_var($email, FILTER_VALIDATE_EMAIL) && isset($json['hidden']) && empty($json['hidden'])
-				&& sendEmail(true, $name, $email, $message))
+				&& sendEmail($recipient, true, $name, $email, $message))
 			{
-				$db_email = new Email(strtolower(Config::$email_from), strtolower(Config::$email_dest), $message);
+				$db_email = new Email(Config::$email_from, Config::$email_dest, $message);
 		        $entityManager->persist($db_email);
 		        $entityManager->flush();
 				echo json_encode(['success' => true]);

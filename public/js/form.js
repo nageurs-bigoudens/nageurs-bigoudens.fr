@@ -1,10 +1,9 @@
 //function sendMessage(){}
 
 // modif des paramètre d'envoi d'e-mail depuis l'espace admin
-/*function changeRecipient(id){
+function changeRecipient(id){
 	const email = document.getElementById('recipient').value;
     const hidden = document.getElementById('recipient_hidden').value;
-    const warning = document.querySelector('.no_recipient_warning');
 
 	fetch('index.php?action=recipient_email', {
         method: 'POST',
@@ -16,7 +15,6 @@
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            warning.classList.add('hidden');
         	toastNotify('Adresse e-mail de destination modifiée');
         }
         else{
@@ -26,20 +24,20 @@
     .catch(error => {
         console.error('Erreur:', error);
     });
-}*/
+}
 
-function sendTestEmail(){
+function sendTestEmail(id){
     const admin_form = document.querySelector('.admin_form');
     const test_email_success = document.querySelector('.test_email_success');
     test_email_success.innerHTML = 'Envoi en cours, veuillez patienter';
-    test_email_success.style.backgroundColor = '#f0f0f0';
+    test_email_success.style.backgroundColor = 'yellow';
 
     fetch('index.php?action=test_email', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({ id: id})
     })
     .then(response => response.json())
     .then(data => {
@@ -47,10 +45,10 @@ function sendTestEmail(){
         let color;
         if(data.success){
             message = 'E-mail de test envoyé avec succès';
-            color = 'lawngreen';
+            color = 'chartreuse';
         }
         else{
-            message = "Erreur à l'envoi de l'e-mail";
+            message = "Erreur à l'envoi de l'e-mail, vérifiez la configuration du serveur";
             color = "orangered"
         }
         test_email_success.innerHTML = message;
@@ -62,10 +60,10 @@ function sendTestEmail(){
     });
 }
 
-function sendVisitorEmail(){
+function sendVisitorEmail(id){
     const send_email_success = document.querySelector('.send_email_success');
     send_email_success.innerHTML = 'Envoi en cours, veuillez patienter';
-    send_email_success.style.backgroundColor = 'initial';
+    send_email_success.style.backgroundColor = 'yellow';
 
     const email_name = document.getElementById('email_name').value;
     const email_address = document.getElementById('email_address').value;
@@ -83,7 +81,8 @@ function sendVisitorEmail(){
             email: email_address,
             message: email_message,
             captcha: email_captcha,
-            hidden: email_hidden
+            hidden: email_hidden,
+            id: id
         })
     })
     .then(response => response.json())
