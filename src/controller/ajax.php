@@ -85,7 +85,7 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 				&& filter_var($email, FILTER_VALIDATE_EMAIL) && isset($json['hidden']) && empty($json['hidden'])
 				&& sendEmail($recipient, true, $name, $email, $message))
 			{
-				$db_email = new Email(Config::$email_from, Config::$email_dest, $message);
+				$db_email = new Email($email, Config::$email_dest, $message);
 		        $entityManager->persist($db_email);
 		        $entityManager->flush();
 				echo json_encode(['success' => true]);
