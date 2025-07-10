@@ -16,6 +16,7 @@
 	/*margin-top: 10px;*/
 	/*margin-bottom: 10px;*/
 	text-wrap: nowrap;
+	background-color: #ffffffe1; /* b3 = 179 = 0.7 (x 256) */
 }
 .nav_main > ul
 {
@@ -28,39 +29,81 @@ ul
 {
 	margin: 0;
 }
-.nav_main ul, .nav_main li
+
+.nav_main ul
 {
 	list-style: none;
 	padding-left: 0;
 }
+.nav_main li
+{
+	list-style: none;
+	padding: 7px;
+}
 .nav_main p
 {
-	padding: 7px;
+	display: inline-block; /* à cause du bouton sub-menu-toggle */
 	margin: 0;
-	background-color: #ffffffe1; /* b3 = 179 = 0.7 (x 256) */
+	/*background-color: #ffffffe1;*/ /* b3 = 179 = 0.7 (x 256) */
 }
-.nav_main p:hover
+.nav_main > ul > li:hover
 {
 	background-color: white;
 }
-.current > a > p
+.current/* > a > p*/
 {
 	background-color: white;
 	font-weight: bold;
 }
-.drop-down > a > p::after
-{
-	content: ' ▼';
-	font-size: x-small;
+li:not(.current){
+	background-color: initial;
+	font-weight: initial;
 }
 
-/* faire apparaître sub-menu */
-.drop-down:hover > .sub-menu{
+/* faire apparaître les sous-menu sur PC */
+.drop-down:hover > .sub-menu,
+.drop-right:hover > .sub-menu
+{
 	display: block;
 }
-.drop-right:hover > .sub-menu{
-	display: block;
+@media (pointer: fine) /* fine => précision de la souris */
+{
+	.drop-down > a > p::after
+	{
+		content: ' ▼';
+		font-size: x-small;
+	}
+	.drop-right > a > p:after
+	{
+		content: " ▶";
+		font-size: x-small;
+	}
 }
+
+/* faire apparaître les sous-menu sur smartphone */
+.sub-menu-toggle
+{
+	display: none; /* masqué par défaut */
+	background: none;
+	/*border: none;*/
+	cursor: pointer;
+	font-size: x-small;
+	vertical-align: text-bottom;
+}
+@media (pointer: coarse) /* coarse = grossier = précision écran tactile */
+{
+	.sub-menu-toggle
+	{
+		display: inline-block; /* visible sur écran tactile */
+	}
+	.drop-down.open > .sub-menu,
+	.drop-right.open > .sub-menu
+	{
+		display: block;
+	}
+}
+
+
 .sub-menu
 {
 	display: none;
@@ -69,15 +112,9 @@ ul
 	box-shadow: 1px 1px 3px black;
 	font-size: 95%;
 }
-/*.sub-menu p:hover*/
-.nav_main p:hover
+.sub-menu li:hover /* écrase le fond blanc placé en même temps */
 {
 	background-color: yellow;
-}
-.drop-right > a > p:after
-{
-	content: " ▶";
-	font-size: x-small;
 }
 
 /* 1er sous-menu, poitionnement pour ne pas aggrandir l'élément parent */

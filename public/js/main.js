@@ -8,6 +8,33 @@ function newPassword(page, id = ''){
 	}, 0);
 }
 
+// ouvrir/fermer les sous-menus avec écran tactile
+document.addEventListener('DOMContentLoaded', () => { // sinon on ne trouve pas les boutons
+	document.querySelectorAll('.sub-menu-toggle').forEach(button => {
+		button.addEventListener('click', e => {
+			e.preventDefault();
+			const li = button.parentElement; // <li class="drop-down">
+
+			// fermer les autres sous-menus de même niveau
+			// :scope pour pouvoir utiliser > pour restreindre aux frères directs
+			li.parentElement.querySelectorAll(':scope > .drop-down, :scope > .drop-right').forEach(sibling => {
+				if(sibling !== li){
+					sibling.classList.remove('open'); // fermer sous-menus frères
+					sibling.querySelectorAll('.drop-right').forEach(desc => {
+						desc.classList.remove('open'); // fermer sous-menus neveux
+					});
+				}
+			});
+
+			if(!li.classList.toggle('open')){ // fermer sous-menu
+				li.querySelectorAll('.drop-right').forEach(desc => {
+					desc.classList.remove('open'); // fermer sous-menus enfants
+				});
+			}
+		});
+	});
+});
+
 function copyInClipBoard(link){
 	// une balise <input> avec des attributs
 	var element = document.createElement("input");
