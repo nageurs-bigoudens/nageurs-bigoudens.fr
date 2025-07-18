@@ -77,6 +77,7 @@ footer > div
 .footer_logo img
 {
 	max-width: 288px;
+	min-width: 150px;
 }
 @media screen and (max-width: 1000px)
 {

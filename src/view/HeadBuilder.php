@@ -26,25 +26,25 @@ class HeadBuilder extends AbstractBuilder
             $css = '';
 	        foreach($css_array as $name)
 			{
-				$css .= '<link rel="stylesheet" href="css/' . $name . '.css">' . "\n";
+				$css .= '<link rel="stylesheet" href="' . $this->versionedFileURL('css', $name) . '">' . "\n";
 			}
 			
             $js = '';
 	        foreach($js_array as $name)
 			{
-				$js .= '<script src="js/' . $name . '.js"></script>' . "\n";
+				$js .= '<script src="' . $this->versionedFileURL('js', $name) . '"></script>' . "\n";
 			}
 
             if(MainBuilder::$modif_mode){
-                $css .= '<link rel="stylesheet" href="css/modif_page.css">' . "\n";
-                $js .= '<script src="js/modif_page.js"></script>' . "\n";
+                $css .= '<link rel="stylesheet" href="' . $this->versionedFileURL('css', 'modif_page') . '">' . "\n";
+                $js .= '<script src="' . $this->versionedFileURL('js', 'modif_page') . '"></script>' . "\n";
             }
 
             // tinymce, nécéssite un script de copie dans composer.json
             if($_SESSION['admin']){
-                $css .= '<link rel="stylesheet" href="css/tinymce.css">' . "\n";
-                $js .= '<script src="js/tinymce/tinymce.min.js"></script>' . "\n";
-                $js .= '<script src="js/tinymce.js"></script>' . "\n";
+                $css .= '<link rel="stylesheet" href="' . $this->versionedFileURL('css', 'tinymce') . '">' . "\n";
+                $js .= '<script src="' . $this->versionedFileURL('js', 'tinymce/tinymce.min') . '"></script>' . "\n"; // pour js/tinymce/tinymce.min.js
+                $js .= '<script src="' . $this->versionedFileURL('js', 'tinymce') . '"></script>' . "\n";
             }
 
             // titre
@@ -75,5 +75,16 @@ class HeadBuilder extends AbstractBuilder
     public function getStop(): bool
     {
         return $this->stop;
+    }
+
+    private function versionedFileURL(string $type, string $filename): string
+    {
+        $path = $type . '/' . $filename . '.' . $type;
+
+        if(file_exists($path)){
+            $version = substr(md5_file($path), 0, 8);
+            return $path . '?v=' . $version;
+        }
+        return $path; // sécurité fichier absent
     }
 }
