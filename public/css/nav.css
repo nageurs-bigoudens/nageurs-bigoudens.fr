@@ -1,7 +1,8 @@
 /*-- menu principal --*/
 #nav_zone
 {
-	height: 33px;
+	/*height: 33px;*/
+	/*width: 100%;*/
 }
 .nav_main
 {
@@ -121,15 +122,70 @@ li:not(.current){
 nav > ul > li > ul
 {
 	position: absolute; /* retire du flux, positionnement par rapport à la fenêtre */
+	margin-left: -7px; /* annuler le déplacement dû au padding: 7px; dans ".nav_main li" */
+	margin-top: 7px;
 }
 /* élément du menu survolé, le positionnement relatif en fait la référence du positionnement suivant */
 .drop-right
 {
-	position: relative;
+	/*position: relative;*/
 }
 .drop-right .sub-menu
 {
 	position: absolute; /* positionnement par rapport au précédent "position" en CSS */
 	left: 100%;
 	top: -3px; /* la bordure bleue fait 3px */
+}
+
+@media screen and (max-width: 1000px){
+	#nav_zone
+	{
+		/*height: 29px;*/
+	}
+	.nav_main li
+	{
+		padding: 5px;
+	}
+	.nav_main p
+	{
+		/*font-size: smaller;*/
+		font-size: 90%;
+	}
+	nav > ul > li > ul
+	{
+		margin-left: -5px;
+		margin-top: 5px;
+	}
+}
+@media screen and (max-width: 450px){
+	.nav_button
+	{
+		/*display: block;*/
+	}
+	#nav_zone
+	{
+		/*position: fixed;
+		justify-content: left;*/
+	}
+	.nav_main
+	{
+		/*top: 0px;*/
+	}
+	.nav_main > ul
+	{
+		/*flex-direction: column;*/
+	}
+	.nav_main li
+	{
+		/**/
+	}
+	.sub-menu p
+	{
+		font-size: smaller;
+	}
+	.drop-down > .sub-menu
+	{
+		/*flex-direction: row;*/
+		/*position: static;*/
+	}
 }

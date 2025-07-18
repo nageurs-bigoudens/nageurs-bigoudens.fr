@@ -55,16 +55,22 @@ class HeaderBuilder extends AbstractBuilder
             {
                 for($i = 0; $i < count($keys); $i++)
                 {
+                    // réseaux sociaux
                     if(str_contains($image->getFileName(), $keys[$i])){
                         $social_networks .= '<a href="' . $social[$keys[$i]] . '" target="_blank" rel="noopener noreferrer">
                         <img src="' . rtrim($image->getFilePathMini(), '/') . '" alt="' . $keys[$i] . '_alt"></a>';
                         break;
                     }
-                    if(str_contains($image->getFileName(), 'logo'))
-                    {
-                        $logo = rtrim($image->getFilePathMini(), '/');
+                    // logo en-tête
+                    /*if(str_contains($image->getFileName(), 'header_logo')){
+                        $header_logo = rtrim($image->getFilePathMini(), '/');
                         break;
-                    }
+                    }*/
+                    // image de fond
+                    /*if(str_contains($image->getFileName(), 'header_background')){
+                        $header_background = rtrim($image->getFilePath(), '/');
+                        break;
+                    }*/
                 }
             }
 

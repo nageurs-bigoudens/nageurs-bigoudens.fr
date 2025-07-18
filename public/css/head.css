@@ -3,7 +3,6 @@ header
 	text-align: center;
 	/*padding-top: 5px;*/
 	/*padding-bottom: 10px;*/
-	background-image: url('../assets/fond-piscine.jpg');
 	background-size: cover; /* largeur du bloc_page  */
 }
 #nav_zone
@@ -14,14 +13,35 @@ header
 	/*align-items: center;*/ /* conflit possible avec .social align-self */
 	justify-content: center;
 }
+.nav_button{
+	display: none;
+}
 
 .header-content
 {
 	padding: 20px 0;
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: 1fr 1fr 1fr;
 	align-items: end;
 }
+@media screen and (max-width: 1000px){
+	.header-content{
+		padding: 18px 0;
+	}
+}
+@media screen and (max-width: 450px){
+	.header-content
+	{
+		/*grid-template-columns: 1fr 2fr 1fr;*/
+		display: block;
+		padding: 18px;
+	}
+	.head_logo
+	{
+		display: none;
+	}
+}
+
 .site_title
 {
 	background-color: #ffffff7f;
@@ -37,6 +57,12 @@ header h2
 	font-size: medium; /* défaut = x-large */
 	margin: 10px;
 }
+@media screen and (max-width: 1000px){
+	header h1, header h2
+	{
+		margin: 8px;
+	}
+}
 header img
 {
 	vertical-align: bottom; /* supprime espace sous l'image */
@@ -50,7 +76,8 @@ header a
 }
 .social
 {
-	align-self: end;
+	/*align-self: end;*/
+	/*padding: 4px;*/
 }
 .social img
 {

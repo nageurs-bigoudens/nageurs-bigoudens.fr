@@ -67,8 +67,12 @@ section > h3
         grid-template-columns: repeat(2, 1fr);
     }
 }
-@media screen and (max-width: 550px)
+@media screen and (max-width: 600px)
 {
+    article
+    {
+        /*margin: 5px;*/
+    }
     .grid_columns
     {
         display: block;
