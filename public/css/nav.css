@@ -47,10 +47,7 @@ ul
 	margin: 0;
 	/*background-color: #ffffffe1;*/ /* b3 = 179 = 0.7 (x 256) */
 }
-.nav_main > ul > li:hover
-{
-	background-color: white;
-}
+
 .current/* > a > p*/
 {
 	background-color: white;
@@ -61,14 +58,25 @@ li:not(.current){
 	font-weight: initial;
 }
 
-/* faire apparaître les sous-menu sur PC */
-.drop-down:hover > .sub-menu,
-.drop-right:hover > .sub-menu
-{
-	display: block;
-}
+
+/* sous-menus avec PC + souris
+mettre ici tous les blocs avec :hover, les navigateurs mobiles "simulent" les :hover, cassant le JS utilisé ici */
 @media (pointer: fine) /* fine => précision de la souris */
 {
+	.nav_main > ul > li:hover
+	{
+		background-color: white;
+	}
+	.drop-down:hover > .sub-menu,
+	.drop-right:hover > .sub-menu
+	{
+		display: block;
+	}
+	.sub-menu li:hover /* écrase le fond blanc placé en même temps */
+	{
+		background-color: yellow;
+	}
+
 	.drop-down > a > p::after
 	{
 		content: ' ▼';
@@ -91,6 +99,8 @@ li:not(.current){
 	font-size: x-small;
 	vertical-align: text-bottom;
 }
+
+/* écran tactile */
 @media (pointer: coarse) /* coarse = grossier = précision écran tactile */
 {
 	.sub-menu-toggle
@@ -113,10 +123,7 @@ li:not(.current){
 	box-shadow: 1px 1px 3px black;
 	font-size: 95%;
 }
-.sub-menu li:hover /* écrase le fond blanc placé en même temps */
-{
-	background-color: yellow;
-}
+
 
 /* 1er sous-menu, poitionnement pour ne pas aggrandir l'élément parent */
 nav > ul > li > ul
