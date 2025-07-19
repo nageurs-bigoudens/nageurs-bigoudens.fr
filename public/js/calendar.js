@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', function(){
         stickyHeaderDates: true, // garder les en-tête de colonnes lors du scroll
         fixedWeekCount: false, // avec false, affiche 4, 5 ou 6 semaines selon le mois
         selectable: true, // sélection de jours multiples
+        longPressDelay: 0, /* par défaut sur mobile, select est déclenché avec un appui d'une seconde,
+        chatgpt déconseille 0 par risque de conflit entre selection et scrolling, mettre plutôt 200 ou 300ms */
         navLinks: true, // numéros de jour et de semaines clicables
         
         // vue semaine
@@ -43,6 +45,14 @@ document.addEventListener('DOMContentLoaded', function(){
             selected_start_string = info.startStr; // variable "globale"
             hideModal();
         },
+        // méthode alternative à longPressDelay: 0 pour obtenir une sélection d'un simple "tap" sur écran tactile (mettre le if inverse dans select)
+        /*dateClick: function(info) {
+            if (window.matchMedia('(pointer: coarse)').matches) {
+                // utile sur mobile/tablette : déclenche sur un tap
+                console.log('dateClick', info.dateStr);
+                calendar.select(info.date, info.date); // hack permettant de sélectionner une journée seule uniquement
+            }
+        },*/
         //unselect: function(event, view){},
 
         eventClick: function(info){
@@ -72,14 +82,14 @@ document.addEventListener('DOMContentLoaded', function(){
                     <h3>` + info.event.title + `</h3>
                     <p><i>` + info.event.extendedProps.description + `</i></p>`;
             if(checked && (formated_start === formated_end)){ // affichage simplifié évènement d'un jour
-                aside_content = aside_content + `<p>le ` + formated_start + `</p>
-                    </div>`;
+                aside_content = aside_content + `<p>le ` + formated_start + `</p>`;
             }
             else{
                 aside_content = aside_content + `<p>du ` + formated_start + `</p>
-                        <p>au ` + formated_end + `</p>
-                    </div>`;
+                        <p>au ` + formated_end + `</p>`;
             }
+            aside_content += `<button class="event_close_button">Fermer</button>
+                </div>`;
             
             aside.innerHTML = aside_content;
             calendar.updateSize();

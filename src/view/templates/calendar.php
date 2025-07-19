@@ -8,10 +8,10 @@
     <script src='js/fullcalendar/packages/core/locales/fr.global.min.js'></script>
 <?php
 if($_SESSION['admin'] === true){
-    echo '<script src="js/calendar_admin.js"></script>' . "\n";
+    echo '<script src="' . HeadBuilder::versionedFileURL('js', 'calendar_admin') . '"></script>' . "\n";
 }
 else{
-    echo '<script src="js/calendar.js"></script>' . "\n";
+    echo '<script src="' . HeadBuilder::versionedFileURL('js', 'calendar') . '"></script>' . "\n";
 }
 ?>
 	<h3><?= $title ?></h3>

@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function(){
         stickyHeaderDates: true, // garder les en-tête de colonnes lors du scroll
         fixedWeekCount: false, // avec false, affiche 4, 5 ou 6 semaines selon le mois
         selectable: true, // sélection de jours multiples
+        longPressDelay: 0, /* par défaut sur mobile, select est déclenché avec un appui d'une seconde,
+        chatgpt déconseille 0 par risque de conflit entre selection et scrolling, mettre plutôt 200 ou 300ms */
         navLinks: true, // numéros de jour et de semaines clicables
         
         // vue semaine

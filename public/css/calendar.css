@@ -1,7 +1,10 @@
+/* !important est nécessaire pour écraser le CSS inséré par le javascript de fullcalendar */
+
 .event{
     border: 2px double;
     border-radius: 5px;
     width: max-content;
+    max-width: 250px;
     padding: 5px;
 }
 #calendar_zone{
@@ -13,16 +16,17 @@
 #calendar{
     width: 1165px; /* on enlève le "gap" */
 }
+#event_modal{}
 .event_title_box{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 .event_close_button{
-    height: fit-content;
+    /*height: fit-content;*/
 }
 .fc-toolbar-title{
-    font-size: x-large !important;
+    /*font-size: x-large !important;*/
 }
 .fc-button{
     padding: 0.2em 0.4em !important;
@@ -60,12 +64,21 @@ td .fc-timegrid-axis{
         padding: 0;
     }
     .fc-toolbar-title{
-        font-size: large !important;
+        /*font-size: large !important;*/
+    }
+    .fc-header-toolbar{
+        font-size: smaller;
+    }
+    h3, p, .event > button{
+        font-size: smaller;
     }
 }
 @media screen and (max-width: 650px){
-    .fc-toolbar-chunk{
-        font-size: smaller;
+    .fc-header-toolbar{
+        font-size: small;
+    }
+    .fc-toolbar-title{
+        font-size: 1.5em !important; /* au lieu de 1.75em */
     }
 }
 @media screen and (max-width: 550px){
