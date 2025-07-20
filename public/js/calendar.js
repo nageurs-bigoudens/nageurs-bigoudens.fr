@@ -28,9 +28,8 @@ document.addEventListener('DOMContentLoaded', function(){
         // pour recalculer la taille au redimensionnement du parent, exécuter: calendar.updateSize()
         stickyHeaderDates: true, // garder les en-tête de colonnes lors du scroll
         fixedWeekCount: false, // avec false, affiche 4, 5 ou 6 semaines selon le mois
-        selectable: true, // sélection de jours multiples
-        longPressDelay: 0, /* par défaut sur mobile, select est déclenché avec un appui d'une seconde,
-        chatgpt déconseille 0 par risque de conflit entre selection et scrolling, mettre plutôt 200 ou 300ms */
+        selectable: true, // sélection de jours en cliquant dessus
+        longPressDelay: 300, // 1000ms par défaut
         navLinks: true, // numéros de jour et de semaines clicables
         
         // vue semaine
@@ -45,14 +44,17 @@ document.addEventListener('DOMContentLoaded', function(){
             selected_start_string = info.startStr; // variable "globale"
             hideModal();
         },
-        // méthode alternative à longPressDelay: 0 pour obtenir une sélection d'un simple "tap" sur écran tactile (mettre le if inverse dans select)
-        /*dateClick: function(info) {
-            if (window.matchMedia('(pointer: coarse)').matches) {
-                // utile sur mobile/tablette : déclenche sur un tap
-                console.log('dateClick', info.dateStr);
-                calendar.select(info.date, info.date); // hack permettant de sélectionner une journée seule uniquement
+        // sélection d'une date simple sur mobile, évite des problèmes de conflit avec eventClick
+        dateClick: function(info){
+            if(window.matchMedia('(pointer: coarse)').matches){
+                const end = new Date(info.date.getTime());
+                calendar.view.type == 'dayGridMonth' ? end.setDate(end.getDate() + 1) : end.setMinutes(end.getMinutes() + 30);
+                // vue date: la fin est une date exclue
+                // vue semaine: durée de 30min par défaut
+
+                calendar.select(info.date, end); // appeler select() avec un seul paramètre ne marche pas avec la vue "mois"
             }
-        },*/
+        },
         //unselect: function(event, view){},
 
         eventClick: function(info){

@@ -29,9 +29,8 @@ document.addEventListener('DOMContentLoaded', function(){
         // pour recalculer la taille au redimensionnement du parent, exécuter: calendar.updateSize()
         stickyHeaderDates: true, // garder les en-tête de colonnes lors du scroll
         fixedWeekCount: false, // avec false, affiche 4, 5 ou 6 semaines selon le mois
-        selectable: true, // sélection de jours multiples
-        longPressDelay: 0, /* par défaut sur mobile, select est déclenché avec un appui d'une seconde,
-        chatgpt déconseille 0 par risque de conflit entre selection et scrolling, mettre plutôt 200 ou 300ms */
+        selectable: true, // sélection de jours en cliquant dessus
+        longPressDelay: 300, // 1000ms par défaut
         navLinks: true, // numéros de jour et de semaines clicables
         
         // vue semaine
@@ -58,10 +57,11 @@ document.addEventListener('DOMContentLoaded', function(){
             const end = new Date(info.endStr);
 
             if(calendar.view.type == 'dayGridMonth'){
-                start_value = info.startStr + 'T10:00';
+                const start = new Date(info.startStr);
+                start_value = start.toISOString().split('T')[0] + 'T10:00';
+                
                 end.setDate(end.getDate() - 1); // jour de fin modifié pour ne pas faire bizarre pour l'utilisateur
-                end.setHours(11);
-                end_value = end.toISOString().split('T')[0] + 'T11:00';
+                end_value = end.toISOString().split('T')[0] + 'T10:30';
             }
             else if(calendar.view.type == 'timeGridWeek' || calendar.view.type == 'timeGridDay'){
                 const start_array = info.startStr.split("T");
@@ -114,6 +114,26 @@ document.addEventListener('DOMContentLoaded', function(){
                 </div>`;
             aside.innerHTML = aside_content;
             calendar.updateSize();
+        },
+        // sélection d'une date simple sur mobile, évite des problèmes de conflit avec eventClick
+        dateClick: function(info){
+            if(window.matchMedia('(pointer: coarse)').matches){
+                const end = new Date(info.date);
+                calendar.view.type == 'dayGridMonth' ? end.setDate(end.getDate() + 1) : end.setMinutes(end.getMinutes() + 30);
+                // vue date: la fin est une date exclue
+                // vue semaine: durée de 30min par défaut
+
+                const local_end_date_array = end.toLocaleDateString().split('/');
+                let local_end_str = local_end_date_array[2] + '-' + local_end_date_array[1] + '-' + local_end_date_array[0];
+
+                if(calendar.view.type != 'dayGridMonth'){
+                    local_end_str += 'T' + end.toLocaleTimeString();
+                }
+
+                // on a besoin de deux chaînes représentant l'heure locale pour obtenir le même objet "info" qu'avec l'évènement select
+                // la vue "dayGridMonth" nécessite deux paramètres, par sécurité on en enverra toujours deux
+                calendar.select(info.dateStr, local_end_str);
+            }
         },
         //unselect: function(event, view){},
         eventClick: function(info){
