@@ -33,6 +33,7 @@ function phpDependancies()
     }
 }
 
+// inutilisée pour l'instant
 function installation(): void
 {
     /* -- droits des fichiers et dossiers -- */

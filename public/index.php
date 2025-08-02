@@ -20,10 +20,12 @@ phpDependancies();
 // $entityManager
 require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter
 
+// générateur de liens
 URL::setProtocol(Config::$protocol); // utile si port autre que 80 ou 443
 URL::setPort(Config::$port);
 URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 
+// session
 //require('controller/Session.php');
 ini_set('session.cookie_samesite', 'Strict');
 ini_set('session.cookie_httponly', 'On');
@@ -41,41 +43,25 @@ require '../src/controller/password.php';
 existUsers($entityManager); // si la table user est vide, on en crée un
 
 
-/* -- partie 2: affichage d'une page ou traitement d'un POST -- */
+/* -- partie 2: contrôleurs -- */
 
-// navigation avec les GET
+// navigation avec des GET
 define('CURRENT_PAGE', !empty($_GET['page']) ? htmlspecialchars($_GET['page']) : 'accueil');
-
-// traitement des POST (formulaires et AJAX)
-require '../src/controller/post.php';
-
-// id des articles
 $id = '';
 if(!empty($_GET['id']))
 {
     $id = htmlspecialchars($_GET['id']); // nettoyage qui n'abime pas les id du genre "n16"
 }
 
-if(isset($_GET['action']) && $_GET['action'] === 'deconnexion')
-{
-    disconnect($entityManager);
-}
-elseif(isset($_GET['action']) && $_GET['action'] === 'modif_mdp')
-{
-    changePassword($entityManager);
-}
-elseif($_SESSION['admin'] && isset($_GET['page']) && isset($_GET['action']) && $_GET['action'] === 'modif_page'
-    && $_GET['page'] !== 'connexion' && $_GET['page'] !== 'article' && $_GET['page'] !== 'nouvelle_page' && $_GET['page'] !== 'menu_chemins')
-{
-    // les contrôles de la 2è ligne devraient utiliser un tableau
-    MainBuilder::$modif_mode = true;
-}
+/* -- contrôleurs qui traitent les POST (formulaires ou AJAX) -- */
+require '../src/controller/post.php';
 
-// contrôleur principal
+/* -- affichage d'une page -- */
+// contrôleur accédant au modèle
 $director = new Director($entityManager, true);
 $director->makeRootNode($id);
 $node = $director->getNode();
 
-// vues
+// contrôleur principal des vues
 $view_builder = new ViewBuilder($node);
 echo $view_builder->render(); // et voilà!
