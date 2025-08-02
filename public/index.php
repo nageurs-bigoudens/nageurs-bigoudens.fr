@@ -54,9 +54,18 @@ if(!empty($_GET['id']))
 }
 
 /* -- contrôleurs qui traitent les POST (formulaires ou AJAX) -- */
-require '../src/controller/post.php';
+require '../src/controller/post_router.php';
+
 
 /* -- affichage d'une page -- */
+// mode modification d'une page activé
+if($_SESSION['admin'] && isset($_GET['page']) && isset($_GET['action']) && $_GET['action'] === 'modif_page'
+    && $_GET['page'] !== 'connexion' && $_GET['page'] !== 'article' && $_GET['page'] !== 'nouvelle_page' && $_GET['page'] !== 'menu_chemins')
+{
+    // les contrôles de la 2è ligne devraient utiliser un tableau
+    MainBuilder::$modif_mode = true;
+}
+
 // contrôleur accédant au modèle
 $director = new Director($entityManager, true);
 $director->makeRootNode($id);

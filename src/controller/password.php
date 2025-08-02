@@ -213,7 +213,7 @@ function connect(LoginBuilder $builder, EntityManager $entityManager)
 }
 
 
-function changePassword(EntityManager $entityManager)
+function changePassword(EntityManager $entityManager): void
 {
 	// fonction exécutée à priori deux fois d'affilée: affichage puis traitement de la saisie
 
@@ -284,6 +284,7 @@ function changePassword(EntityManager $entityManager)
 	{
 		$success = false;
 		echo($alertJSNewPassword);
+		//header("Location: " . new URL(['page' => $_GET['from']])); // choisir "location" entre PHP et JS
 		die;
 	}
 	echo($formulaireModifMDP);

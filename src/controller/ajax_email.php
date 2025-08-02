@@ -6,6 +6,7 @@ declare(strict_types=1);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\Entity\Email;
+use Doctrine\ORM\EntityManager;
 
 // mettre ça ailleurs?
 function sendEmail(string $recipient, bool $true_email, string $name = '', string $email = '', string $message = ''): bool
@@ -58,6 +59,35 @@ function sendEmail(string $recipient, bool $true_email, string $name = '', strin
     }
 }
 
+function submitEmail(array $json, EntityManager $entityManager): void
+{
+	$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
+	$captcha_try = isset($json['captcha']) ? Captcha::controlInput($json['captcha']) : 0;
+
+	// contrôles des entrées
+	$name = htmlspecialchars(trim($json['name']));
+	$email = strtolower(htmlspecialchars(trim($json['email'])));
+	$message = htmlspecialchars(trim($json['message']));
+
+	// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
+	$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+	$recipient = $form_data->getData()['email'] ?? Config::$email_dest;
+	
+	if($captcha_try != 0 && $captcha_solution != 0 && ($captcha_try === $captcha_solution)
+		&& filter_var($email, FILTER_VALIDATE_EMAIL) && isset($json['hidden']) && empty($json['hidden'])
+		&& sendEmail($recipient, true, $name, $email, $message))
+	{
+		$db_email = new Email($email, Config::$email_dest, $message);
+        $entityManager->persist($db_email);
+        $entityManager->flush();
+		echo json_encode(['success' => true]);
+	}
+	else{
+		echo json_encode(['success' => false]);
+	}
+	die;
+}
+
 
 // détection des requêtes envoyées avec fetch (application/json) et récupération du JSON
 if($_SERVER['CONTENT_TYPE'] === 'application/json')
@@ -67,33 +97,9 @@ if($_SERVER['CONTENT_TYPE'] === 'application/json')
 
 	if(isset($_GET['action']))
 	{
-		/* -- bloc Formulaire -- */
+		// formulaire de contact
 		if($_GET['action'] === 'send_email'){
-			$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-			$captcha_try = isset($json['captcha']) ? Captcha::controlInput($json['captcha']) : 0;
-
-			// contrôles des entrées
-			$name = htmlspecialchars(trim($json['name']));
-			$email = strtolower(htmlspecialchars(trim($json['email'])));
-			$message = htmlspecialchars(trim($json['message']));
-
-			// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
-			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
-			$recipient = $form_data->getData()['email'] ?? Config::$email_dest;
-			
-			if($captcha_try != 0 && $captcha_solution != 0 && ($captcha_try === $captcha_solution)
-				&& filter_var($email, FILTER_VALIDATE_EMAIL) && isset($json['hidden']) && empty($json['hidden'])
-				&& sendEmail($recipient, true, $name, $email, $message))
-			{
-				$db_email = new Email($email, Config::$email_dest, $message);
-		        $entityManager->persist($db_email);
-		        $entityManager->flush();
-				echo json_encode(['success' => true]);
-			}
-			else{
-				echo json_encode(['success' => false]);
-			}
-			die;
+			submitEmail($json, $entityManager);
 		}
 	}
 }

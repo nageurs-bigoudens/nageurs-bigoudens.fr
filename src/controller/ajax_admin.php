@@ -59,9 +59,7 @@ function curlDownloadImage(string $url, $maxRetries = 3, $timeout = 10): string|
     return false; // échec après trois tentatives
 }
 
-
-// détection des requêtes d'upload d'image de tinymce
-if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_GET['action']) && $_GET['action'] === 'upload_image')
+function imageUploadTinyMce(): void
 {
 	if(isset($_FILES['file'])){
         $file = $_FILES['file'];
@@ -100,6 +98,12 @@ if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_
         echo json_encode(['message' => 'Erreur 400: Bad Request']);
     }
     die;
+}
+
+// détection des requêtes d'upload d'image de tinymce
+if(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_GET['action']) && $_GET['action'] === 'upload_image')
+{
+	imageUploadTinyMce();
 }
 // cas du collage d'un contenu HTML, réception d'une URL, téléchargement par le serveur et renvoie de l'adresse sur le serveur 
 elseif(isset($_GET['action']) && $_GET['action'] == 'upload_image_url')

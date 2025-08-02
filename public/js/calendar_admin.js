@@ -229,7 +229,9 @@ document.addEventListener('DOMContentLoaded', function(){
                 event_end = new Date(event_end).toISOString();
             }
 
+            // contrôle date/heure de fin après le début
             if(event_start > event_end || (!event_all_day && event_start == event_end)){
+                toastNotify("Erreur: la fin de l'évènement doit se situer après son début.");
                 return;
             }
 

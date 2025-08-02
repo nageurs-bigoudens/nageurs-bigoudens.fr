@@ -107,7 +107,7 @@ class MainBuilder extends AbstractBuilder
             $bloc_edit .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">
                     <input type="hidden" name="delete_bloc_id" value="' . $child_node->getId() . '">
                     <input type="hidden" name="delete_bloc_hidden">
-                    <input type="submit" value="Supprimer" onclick="return confirm(\'Voulez-vous vraiment supprimer cette page?\');"></p>
+                    <input type="submit" value="Supprimer" onclick="return confirm(\'Voulez-vous vraiment supprimer ce bloc?\');"></p>
                 </form>
             </div>'. "\n";
         }
