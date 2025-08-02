@@ -226,7 +226,8 @@ function changePassword(EntityManager $entityManager): void
 	}
 	elseif(!isset($_POST['login']) || empty($_POST['login'])
 		|| !isset($_POST['old_password']) || empty($_POST['old_password'])
-		|| !isset($_POST['new_password']) || empty($_POST['new_password']))
+		|| !isset($_POST['new_password']) || empty($_POST['new_password'])
+		|| !isset($_POST['modify_password_hidden']) || !empty($_POST['modify_password_hidden']))
 	{
 		$error = 'bad_login_or_password';
 	}

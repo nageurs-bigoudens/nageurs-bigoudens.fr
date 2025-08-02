@@ -2,7 +2,7 @@
 // src/model/EventDTO.php
 //
 // classe de données JSONifiable compatible avec fullcalendar
-// servira aussi pour l'import/export de fichiers .ics
+// servira éventuellement pour l'import/export de fichiers .ics
 
 declare(strict_types=1);
 

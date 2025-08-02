@@ -53,8 +53,8 @@ if(!empty($_GET['id']))
     $id = htmlspecialchars($_GET['id']); // nettoyage qui n'abime pas les id du genre "n16"
 }
 
-/* -- contrôleurs qui traitent les POST (formulaires ou AJAX) -- */
-require '../src/controller/post_router.php';
+/* -- routeur des données de formulaires et requêtes AJAX -- */
+require '../src/controller/request_router.php';
 
 
 /* -- affichage d'une page -- */
