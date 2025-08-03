@@ -1,5 +1,5 @@
 <?php
-// src/controller/Security.php
+// src/Security.php
 //
 // htmlawed nettoie les entrées de l'utilisateur, en particulier le html de l'éditeur
 

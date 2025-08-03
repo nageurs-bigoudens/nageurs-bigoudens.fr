@@ -1,5 +1,5 @@
 <?php
-// src/controller/Captcha.php
+// src/Captcha.php
 
 declare(strict_types=1);
 

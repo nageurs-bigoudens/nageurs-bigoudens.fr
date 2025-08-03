@@ -1,5 +1,5 @@
 <?php
-// src/controller/request_router.php
+// src/request_router.php
 //
 // routage des requêtes des formulaires et AJAX
 // n'utilisent que des POST à l'exception d'un GET par fullcalendar

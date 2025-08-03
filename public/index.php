@@ -13,7 +13,7 @@ require "../vendor/autoload.php";
 Config::load('../config/config.ini');
 
 // les messages d'erreur de déploiement qu'on aime
-require('../src/controller/installation.php');
+require('../src/installation.php');
 phpDependancies();
 //installation(); // des mkdir et chmod, chiant en dev
 
@@ -54,7 +54,7 @@ if(!empty($_GET['id']))
 }
 
 /* -- routeur des données de formulaires et requêtes AJAX -- */
-require '../src/controller/request_router.php';
+require '../src/request_router.php';
 
 
 /* -- affichage d'une page -- */

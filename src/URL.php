@@ -1,5 +1,5 @@
 <?php
-// src/controller/URL.php
+// src/URL.php
 
 declare(strict_types=1);
 

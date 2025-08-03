@@ -1,5 +1,5 @@
 <?php
-// src/controller/installation.php
+// src/installation.php
 
 declare(strict_types=1);
 

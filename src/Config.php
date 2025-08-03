@@ -1,5 +1,5 @@
 <?php
-// src/controller/Config.php
+// src/Config.php
 
 declare(strict_types=1);
 
