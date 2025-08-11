@@ -1,16 +1,35 @@
 <?php
 // public/index/php
 
+/* plan d'action pour symfonyfier le site
+1/ intégrer les classes Request et Response sans changer modifier les liens
+2/ méthodes HTTP: GET, HEAD, POST, PUT, PATCH, DELETE, etc, pour un pré-routage (légères modifications des liens)
+3/ passer à des chemins modernes "ciblant des ressources" genre /chemin/de/la/page
+    le mode modification de page doit thérioquement être appelé comme ça: /chemin/de/la/page/modif_page
+    apparemment, le from=nom_page pour les formulaires ne se fait pas...
+4/ utiliser le routeur de symfony: nécéssite que tous les contrôleurs soient des classes avec un namespace
+5/ http-foundation possède aussi une classe Session. intéressant!
+*/
+
 declare(strict_types=1);
 
+use Symfony\Component\HttpFoundation\Request;
+//use Symfony\Component\HttpFoundation\Session\Session;
 
-/* -- partie 1: prétraitement -- */
+
+/* -- partie 1: prétraitement --
+code à exécuter pour toutes requêtes */
 
 // une nouvelle classe? taper: composer dump-autoload -o
 require "../vendor/autoload.php";
 
 // configuration possible par l'utilisateur
 Config::load('../config/config.ini');
+
+// générateur de liens
+URL::setProtocol(Config::$protocol); // utile si port autre que 80 ou 443
+URL::setPort(Config::$port);
+URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 
 // les messages d'erreur de déploiement qu'on aime
 require('../src/installation.php');
@@ -20,13 +39,10 @@ phpDependancies();
 // $entityManager
 require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter
 
-// générateur de liens
-URL::setProtocol(Config::$protocol); // utile si port autre que 80 ou 443
-URL::setPort(Config::$port);
-URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
+$request = Request::createFromGlobals();
 
 // session
-//require('controller/Session.php');
+// (symfony/http-foundation pourrait nous aider avec les sessions)
 ini_set('session.cookie_samesite', 'Strict');
 ini_set('session.cookie_httponly', 'On');
 ini_set('session.use_strict_mode', 'On');
@@ -38,39 +54,8 @@ if($_SESSION['admin'] === false || empty($_SESSION['user'])){ // OUT !!
     $_SESSION['admin'] = false;
 }
 
-// login, mot de passe et captcha
-require '../src/controller/password.php';
-existUsers($entityManager); // si la table user est vide, on en crée un
 
+/* -- partie 2: routage et contrôleurs -- */
 
-/* -- partie 2: contrôleurs -- */
-
-// navigation avec des GET
-define('CURRENT_PAGE', !empty($_GET['page']) ? htmlspecialchars($_GET['page']) : 'accueil');
-$id = '';
-if(!empty($_GET['id']))
-{
-    $id = htmlspecialchars($_GET['id']); // nettoyage qui n'abime pas les id du genre "n16"
-}
-
-/* -- routeur des données de formulaires et requêtes AJAX -- */
-require '../src/request_router.php';
-
-
-/* -- affichage d'une page -- */
-// mode modification d'une page activé
-if($_SESSION['admin'] && isset($_GET['page']) && isset($_GET['action']) && $_GET['action'] === 'modif_page'
-    && $_GET['page'] !== 'connexion' && $_GET['page'] !== 'article' && $_GET['page'] !== 'nouvelle_page' && $_GET['page'] !== 'menu_chemins')
-{
-    // les contrôles de la 2è ligne devraient utiliser un tableau
-    MainBuilder::$modif_mode = true;
-}
-
-// contrôleur accédant au modèle
-$director = new Director($entityManager, true);
-$director->makeRootNode($id);
-$node = $director->getNode();
-
-// contrôleur principal des vues
-$view_builder = new ViewBuilder($node);
-echo $view_builder->render(); // et voilà!
+define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? 'accueil'));
+require '../src/router.php';

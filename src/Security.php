@@ -19,8 +19,8 @@ class Security
 	// faire qu'un certain élément puisse n'avoir que certains attributs, regarder la doc
 	private static $specHtmLawed = '';
 
-	// ATTENTION, n'applique pas htmlspecialchars() !!
-	public static function secureString(string $chaine): string
+	// obtenir du HTML non dangereur sans appliquer htmlspecialchars
+	public static function secureHTML(string $chaine): string
 	{
 	    return trim(htmLawed($chaine, self::$configHtmLawed, self::$specHtmLawed));
 	}
@@ -78,13 +78,6 @@ class Security
 		// - envoyer le fichier en AJAX
 		// - envoyer le nom du fichier à part puis renommer en PHP
 	}
-}
-
-// erreurs à la création des mots de passe
-function removeSpacesTabsCRLF(string $chaine): string
-{
-	$cibles = [' ', "\t", "\n", "\r"]; // doubles quotes !!
-	return(str_replace($cibles, '', $chaine));
 }
 
 // lien sans http://

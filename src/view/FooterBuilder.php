@@ -28,7 +28,7 @@ class FooterBuilder extends AbstractBuilder
             if($_SESSION['admin'])
             {
                 $empty_admin_zone = 'empty_admin_zone';
-                $link_edit_page = new URL(['page' => CURRENT_PAGE]);
+                $link_edit_page = CURRENT_PAGE === 'article' ? new URL(['page' => 'accueil']) : new URL(['page' => CURRENT_PAGE]);
                 if(MainBuilder::$modif_mode){
                     $mode = 'modification de page';
                     $div_admin = 'logged_in modif_mode';
@@ -43,10 +43,10 @@ class FooterBuilder extends AbstractBuilder
                 $link_new_page = new URL(['page' => 'nouvelle_page']);
                 $link_change_paths = new URL(['page' => 'menu_chemins']);
                 
-                $link_change_password = new URL(['from' => CURRENT_PAGE, 'action' => 'modif_mdp']);
+                $link_change_password = new URL(['page' => 'user_edit', 'from' => CURRENT_PAGE]);
                 isset($_GET['id']) ? $link_change_password->addParams(['id' => $_GET['id']]) : '';
 
-                $link_logout = new URL(['page' => CURRENT_PAGE, 'action' => 'deconnexion']);
+                $link_logout = new URL(['action' => 'deconnection', 'from' => CURRENT_PAGE]);
                 isset($_GET['id']) ? $link_logout->addParams(['id' => $_GET['id']]) : '';
 
                 $zone_admin = '<div class="admin_buttons_zone">
@@ -54,7 +54,7 @@ class FooterBuilder extends AbstractBuilder
                     '<div><a href="' . $link_new_page . '"><button>Nouvelle page</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_edit_page . '"><button>' . $link_edit_label . '</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_change_paths . '"><button>Menu et chemins</button></a></div>' . "\n" . 
-                    '<div><a href="' . $link_change_password . '"><button>Changer de mot de passe</button></a></div>' . "\n" . 
+                    '<div><a href="' . $link_change_password . '"><button>Mon compte</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_logout . '"><button>Déconnexion</button></a></div>' . "\n" . 
                 '</div>' . "\n";
             }

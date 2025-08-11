@@ -74,7 +74,7 @@ class Image
     }
 
 
-    // pour ViewBuilder?
+    // pour ViewBuilderController?
     /*public function displayImage($imageId): void
     {
         //$imageId = 1; // Exemple d'ID d'image

@@ -86,7 +86,7 @@ class MainBuilder extends AbstractBuilder
 
         //$page_id = Director::$page_path->getLast()->getId();
         $head_node = null;
-        foreach(ViewBuilder::$root_node->getChildren() as $first_level_node){
+        foreach(ViewController::$root_node->getChildren() as $first_level_node){
             if($first_level_node->getName() === 'head'){
                 $head_node = $first_level_node; // normallement c'est le 1er enfant
                 break;

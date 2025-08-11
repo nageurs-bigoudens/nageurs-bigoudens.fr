@@ -35,11 +35,14 @@ class User
     {
         return $this->login;
     }
+    public function setLogin(string $login): void
+    {
+        $this->login = $login;
+    }
     public function getPassword(): string
     {
         return $this->password;
     }
-
     public function setPassword(string $password): void
     {
         $this->password = $password;

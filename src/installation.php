@@ -92,7 +92,8 @@ function makeStartPage(EntityManager $entityManager){
 	// paramètres: name_page, end_of_path, reachable, in_menu, hidden, position, parent
 	$accueil = new Page('Accueil', 'accueil', true, true, false, 1, NULL);
 	$article = new Page('Article', 'article', true, false, false, NULL, NULL);
-	$connection = new Page('Connexion', 'connexion', true, false, false, NULL, NULL);
+	$connection = new Page('Connexion', 'connection', true, false, false, NULL, NULL);
+	$my_account = new Page('Mon compte', 'user_edit', true, false, false, NULL, NULL);
 	$menu_paths = new Page("Menu et chemins", 'menu_chemins', true, false, false, NULL, NULL);
 	//$edit_page = new Page("Modification d'une page", 'modif_page', true, false, false, NULL, NULL); // pas de page "Modification de la page"
 	$new_page = new Page('Nouvelle page', 'nouvelle_page', true, false, false, NULL, NULL);
@@ -108,6 +109,8 @@ function makeStartPage(EntityManager $entityManager){
 	$breadcrumb = new Node('breadcrumb', NULL, [], 2, $header, NULL, NULL);
 	$head_login = new Node('head', NULL, ["stop" => true, 'css_array' => ['body', 'head', 'nav'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
 	$login = new Node('login', NULL, [], 1, $main, $connection, NULL);
+	$head_my_account = new Node('head', NULL, ["stop" => true, 'css_array' => ['body', 'head', 'nav'], 'js_array' => ['main']], 1, NULL, $my_account, NULL);
+	$user_edit = new Node('user_edit', NULL, [], 1, $main, $my_account, NULL);
 	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'menu', 'foot'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
 	$bloc_edit_menu = new Node('menu', NULL, [], 1, $main, $menu_paths, NULL);
 	$head_new_page = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
@@ -123,8 +126,9 @@ function makeStartPage(EntityManager $entityManager){
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
-	$head_accueil_data = new NodeData(["description" => "page d'accueil"], $head_accueil, new ArrayCollection([$favicon]));
+	$head_accueil_data = new NodeData(["description" => "Page d'accueil"], $head_accueil, new ArrayCollection([$favicon]));
 	$head_login_data = new NodeData(["description" => "Connexion"], $head_login, new ArrayCollection([$favicon]));
+	$head_my_account_data = new NodeData(["description" => "Mon compte"], $head_my_account, new ArrayCollection([$favicon]));
 	$head_article_data = new NodeData(["description" => ""], $head_article, new ArrayCollection([$favicon]));
 	$head_edit_menu_data = new NodeData(["description" => "Menu et chemins"], $head_edit_menu, new ArrayCollection([$favicon]));
 	$head_new_page_data = new NodeData(["description" => "Nouvelle page"], $head_new_page, new ArrayCollection([$favicon]));
@@ -137,6 +141,7 @@ function makeStartPage(EntityManager $entityManager){
     $entityManager->persist($accueil);
 	$entityManager->persist($article);
 	$entityManager->persist($connection);
+	$entityManager->persist($my_account);
 	$entityManager->persist($menu_paths);
 	//$entityManager->persist($edit_page); // pas de page "Modification de la page"
 	$entityManager->persist($new_page);
@@ -150,6 +155,8 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($breadcrumb);
 	$entityManager->persist($head_login);
 	$entityManager->persist($login);
+	$entityManager->persist($head_my_account);
+	$entityManager->persist($user_edit);
 	$entityManager->persist($head_article);
 	$entityManager->persist($head_edit_menu);
 	$entityManager->persist($bloc_edit_menu);
@@ -168,6 +175,7 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($header_data);
 	$entityManager->persist($footer_data);
 	$entityManager->persist($head_login_data);
+	$entityManager->persist($head_my_account_data);
 	$entityManager->persist($head_article_data);
 	$entityManager->persist($head_edit_menu_data);
 	$entityManager->persist($head_new_page_data);

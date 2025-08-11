@@ -19,12 +19,12 @@ class ArticleController
 	        // cas d'une nouvelle "news"
 	        if(is_array($json['content'])){
 	        	foreach($json['content'] as $one_input){
-	        		$one_input = Security::secureString($one_input);
+	        		$one_input = Security::secureHTML($one_input);
 	        	}
 	        	$content = $json['content'];
 	        }
 	        else{
-	        	$content = Security::secureString($json['content']);
+	        	$content = Security::secureHTML($json['content']);
 	        }
 
 	        // nouvel article

@@ -1,30 +1,59 @@
 <?php
-// src/request_router.php
+// src/router.php
 //
-// routage des requêtes des formulaires et AJAX
-// n'utilisent que des POST à l'exception d'un GET par fullcalendar
-// les contrôleurs des formulaires sont appelés ici,
-// ceux des requêtes AJAX sont derrière d'autres routeurs
+/* fonctionnement du routeur
+=> 1er test, méthode http: GET, POST ou autre chose
+=> 2ème test, type de contenu (méthode POST uniquement):
+"application/x-www-form-urlencoded" = formulaire
+"application/json" = requête AJAX avec fetch()
+"multipart/form-data" = upload d'image par tinymce
+$_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' requête AJAX xhs, non utilisée
+=> 3ème test, comme le 2ème test mais uniquement si $_SESSION['admin'] est vrai
+*/
 
 declare(strict_types=1);
 
 
-/* appel des contrôleurs dans password.php */
-if(isset($_GET['action']) && $_GET['action'] === 'deconnexion')
-{
-    disconnect($entityManager);
-}
-elseif(isset($_GET['action']) && $_GET['action'] === 'modif_mdp')
-{
-    changePassword($entityManager);
+if($_SERVER['REQUEST_METHOD'] === 'GET'){
+    // table "user" vide
+    if(!UserController::existUsers($entityManager)){
+        require '../src/view/templates/user_create.php';
+        die;
+    }
+
+    // bouton déconnexion
+    if($request->query->has('action') && $request->query->get('action') === 'deconnection')
+    {
+        UserController::disconnect($entityManager);
+    }
+
+    // données du calendrier
+    // création du calendrier et changement de dates affichées (boutons flèches mais pas changement de vue)
+    if($_SERVER['REQUEST_METHOD'] === 'GET' && $request->query->has('action') && $request->query->get('action') === 'get_events'
+        && $request->query->has('start') && $request->query->has('end') && empty($_POST))
+    {
+        CalendarController::getData($entityManager);
+    }
+
+    if($_SESSION['admin'] === true){
+        // ...
+    }
+
+    // construction d'une page
+    $response = new ViewController()->buildView($request, $entityManager);
 }
 
 
-// presque tout est ici
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
     /* -- contrôleurs appellables par tout le monde -- */
+
+    // table "user" vide
+    if(!UserController::existUsers($entityManager))
+    {
+        UserController::createUser($entityManager);
+    }
     
-    // POST "ajax" avec fetch (application/json)
+    // requêtes JSON avec fetch()
     if($_SERVER['CONTENT_TYPE'] === 'application/json')
     {
         $data = file_get_contents('php://input');
@@ -39,13 +68,20 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         }
     }
 
-    // POST "form"
-    // ...
+    // envoi formulaire HTML
+    elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
+        // tentative de connexion
+        if($request->query->has('action') && $request->query->get('action') === 'connection'){
+            //$response = 
+            UserController::connect($entityManager);
+        }
+    }
 
 
     if($_SESSION['admin'] === true)
     {
         /* -- requêtes AJAX -- */
+
         // requêtes JSON avec fetch()
         if($_SERVER['CONTENT_TYPE'] === 'application/json')
         {
@@ -122,15 +158,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             }
 
             // partie "blocs"
-            elseif(isset($_GET['bloc_edit']))
+            elseif($request->query->has('bloc_edit'))
             {
                 // renommage d'un bloc
-                if($_GET['bloc_edit'] === 'rename_page_bloc')
+                if($request->query->get('bloc_edit') === 'rename_page_bloc')
                 {
                     PageManagementController::renameBloc($entityManager, $json);
                 }
                 // inversion des positions de deux blocs
-                elseif($_GET['bloc_edit'] === 'switch_blocs_positions')
+                elseif($request->query->get('bloc_edit') === 'switch_blocs_positions')
                 {
                     PageManagementController::SwitchBlocsPositions($entityManager, $json);
                 }
@@ -138,22 +174,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
             /* -- upload d'image dans tinymce par copier-coller -- */
             // collage de HTML contenant une ou plusieurs balises <img>
-            if(isset($_GET['action']) && $_GET['action'] == 'upload_image_html'){
+            if($request->query->has('action') && $request->query->get('action') == 'upload_image_html'){
                 ImageUploadController::uploadImageHtml();
             }
             // collage d'une image (code base64 dans le presse-papier) non encapsulée dans du HTML
-            elseif(isset($_GET['action']) && $_GET['action'] == 'upload_image_base64'){
+            elseif($request->query->has('action') && $request->query->get('action') == 'upload_image_base64'){
                 ImageUploadController::uploadImageBase64();
             }
             
             /* -- requêtes spécifiques au calendrier -- */
-            if($_GET['action'] === 'new_event'){
+            if($request->query->get('action') === 'new_event'){
                 CalendarController::newEvent($json, $entityManager);
             }
-            elseif($_GET['action'] === 'update_event'){
+            elseif($request->query->get('action') === 'update_event'){
                 CalendarController::updateEvent($json, $entityManager);
             }
-            elseif($_GET['action'] === 'remove_event'){
+            elseif($request->query->get('action') === 'remove_event'){
                 CalendarController::removeEvent($json, $entityManager);
             }
             else{
@@ -163,7 +199,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         }
 
         // upload d'image dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur)
-        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && isset($_GET['action']) && $_GET['action'] === 'upload_image')
+        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && $request->query->has('action') && $request->query->get('action') === 'upload_image')
         {
             ImageUploadController::imageUploadTinyMce();
         }
@@ -175,7 +211,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             die;
         }
 
-        /* -- envoi d'un formulaire HTML -- */
+        /* -- envoi formulaire HTML -- */
         elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
         {
             /* -- nouvelle page -- */
@@ -230,6 +266,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 MenuAndPathsController::deleteUrlMenuEntry($entityManager);
             }
 
+
+            /* -- page Mon compte -- */
+            elseif($request->query->has('action') && $request->query->get('action') === 'update_username')
+            {
+                UserController::updateUsername($entityManager);
+            }
+            elseif($request->query->has('action') && $request->query->get('action') === 'update_password')
+            {
+                UserController::updatePassword($entityManager);
+            }
+
             // redirection page d'accueil
             else{
                 header("Location: " . new URL(['error' => 'paramètres inconnus']));
@@ -237,20 +284,19 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             }
         }
     }
+
+    // rien ne match
+    header("Location: " . new URL);
+    die;
 }
 
-// cas particulier d'un GET ajax non-admin par fullcalendar
-elseif($_SERVER['REQUEST_METHOD'] === 'GET'){
-    /* -- non-admin -- */
-    // chargement des évènements à la création du calendrier
-    // et au changement de dates affichées (boutons flèches mais pas changement de vue)
-    if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_events'
-        && isset($_GET['start']) && isset($_GET['end']) && empty($_POST))
-    {
-        CalendarController::getData($entityManager);
-    }
 
-    if($_SESSION['admin'] === true){
-        // ...
-    }
+else{
+    header("Location: " . new URL(['error' => 'tu fais quoi là mec?']));
+    die;
+}
+
+// enlever le test isset à terme
+if(isset($response)){
+    $response->send();
 }
