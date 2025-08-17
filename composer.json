@@ -1,6 +1,6 @@
 {
-    "name": "nageurs/bigoudens",
-    "description": "site web du club de natation: les nageurs bigoudens à Pont-l'Abbé",
+    "name": "CMS",
+    "description": "CMS maison avec PHP, doctrine et tinMCE",
     "require": {
         "doctrine/dbal": "^4.2",
         "doctrine/orm": "^3.3",
@@ -28,7 +28,7 @@
             "email": "paul.jusot@fdn.fr"
         }
     ],
-	"autoload": {
+    "autoload": {
         "classmap": ["src/"]
      }
 }

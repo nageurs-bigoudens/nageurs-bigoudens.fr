@@ -16,7 +16,7 @@ class ViewController extends AbstractBuilder
 
     public function __construct(){}
 
-    public function buildView(Request $request, EntityManager $entityManager): Response
+    public function buildView(EntityManager $entityManager, Request $request): Response
     {
         // accès au modèle
         $director = new Director($entityManager, true);

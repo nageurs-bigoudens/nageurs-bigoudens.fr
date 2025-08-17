@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
     }
 
     // construction d'une page
-    $response = new ViewController()->buildView($request, $entityManager);
+    $response = (new ViewController)->buildView($entityManager, $request);
 }
 
 
