@@ -107,7 +107,7 @@ class UserController
 		
 		if(!empty($error)){
 			sleep(1); // défense basique à la force brute
-			$url = new URL(['page' => 'connexion']);
+			$url = new URL(['page' => 'connection']);
 			isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
 			isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : null;
 			$url->addParams(['error' => $error]);
