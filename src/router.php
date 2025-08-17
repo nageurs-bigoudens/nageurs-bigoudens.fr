@@ -63,7 +63,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
         {
             // formulaire de contact
             if($_GET['action'] === 'send_email'){
-                EmailController::submit($json, $entityManager);
+                ContactFormController::sendVisitorEmail($entityManager, $json);
             }
         }
     }

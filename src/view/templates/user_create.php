@@ -5,6 +5,7 @@ $error_messages = [
     'error_non_valid_captcha' => 'Erreur au test anti-robot, veuillez saisir un nombre entier.',
     'captcha_server_error' => 'captcha_server_error',
     'bad_solution_captcha' => 'Erreur au test anti-robot, veuillez réessayer.',
+    'bad_login_or_password' => 'Mauvais identifiant ou mot de passe, veuillez réessayer.',
     'different_passwords' => 'Les deux mots de passe saisis sont différents',
     'forbidden_characters' => 'Caractères interdits: espaces, tabulations, sauts CR/LF.'
 ];

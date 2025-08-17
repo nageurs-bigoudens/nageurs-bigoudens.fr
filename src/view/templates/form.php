@@ -4,13 +4,13 @@
 	<h3><?= $title ?></h3>
 	<div class="form_inputs">
 		<label for="email_name">Votre nom</label>
-		<input id="email_name" type="text" name="email_name" value="" required>
+		<input id="email_name" type="text" name="email_name" value="">
 		
 		<label for="email_address">Votre e-mail</label>
-		<input id="email_address" type="email" name="email_address" placeholder="mon-adresse@email.fr" value="" required>
+		<input id="email_address" type="email" name="email_address" placeholder="mon-adresse@email.fr" value="" onchange="checkCase()">
 
 		<label for="email_message">Votre message</label>
-		<textarea id="email_message" type="text" name="email_message" rows="4" required></textarea>
+		<textarea id="email_message" type="text" name="email_message" rows="4"></textarea>
 
 		<div class="full_width_column">
 			<label for="captcha" >Montrez que vous n'êtes pas un robot</label>
@@ -18,7 +18,7 @@
 
 		<label for="email_captcha" >Combien font <?= $captcha->getA() ?> fois <?= $captcha->getB() ?>?</label>
 		<div>
-			<input id="email_captcha" type="text" name="email_captcha" size="1" required>
+			<input id="email_captcha" type="text" name="email_captcha" size="1" autocomplete="off">
 		</div>
 
 		<input id="form_id_hidden" type="hidden" name="form_id_hidden" value="">

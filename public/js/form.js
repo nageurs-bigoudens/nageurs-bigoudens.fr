@@ -26,6 +26,12 @@ function changeRecipient(id){
     });
 }
 
+function checkCase(){
+    if(document.getElementById('email_address').value.match('[A-Z]')){
+        toastNotify("Votre e-mail comporte une lettre majuscule, il s'agit probablement d'une erreur.");
+    }
+}
+
 function sendTestEmail(id){
     const admin_form = document.querySelector('.admin_form');
     const test_email_success = document.querySelector('.test_email_success');
@@ -61,15 +67,21 @@ function sendTestEmail(id){
 }
 
 function sendVisitorEmail(id){
-    const send_email_success = document.querySelector('.send_email_success');
-    send_email_success.innerHTML = 'Envoi en cours, veuillez patienter';
-    send_email_success.style.backgroundColor = 'yellow';
-
     const email_name = document.getElementById('email_name').value;
     const email_address = document.getElementById('email_address').value;
     const email_message = document.getElementById('email_message').value;
     const email_captcha = document.getElementById('email_captcha').value;
     const email_hidden = document.getElementById('email_hidden').value;
+    const send_email_success = document.querySelector('.send_email_success');
+
+    if(email_name === '' || email_address === '' || email_message === '' || email_captcha === ''){
+        toastNotify('Veuillez remplir tous les champs.');
+        return;
+    }
+    else{
+        send_email_success.innerHTML = 'Envoi en cours, veuillez patienter';
+        send_email_success.style.backgroundColor = 'yellow';
+    }
 
     fetch('index.php?action=send_email', {
         method: 'POST',
@@ -90,7 +102,7 @@ function sendVisitorEmail(id){
         let message;
         let color;
         if(data.success){
-            message = 'Votre E-mail a été envoyé!';
+            message = 'Votre e-mail a été envoyé!';
             color = 'lawngreen';
         }
         else{
@@ -98,8 +110,8 @@ function sendVisitorEmail(id){
             color = "orangered"
         }
         send_email_success.innerHTML = message;
-        toastNotify(message);
         send_email_success.style.backgroundColor = color;
+        toastNotify(message);
     })
     .catch(error => {
         console.error('Erreur:', error);

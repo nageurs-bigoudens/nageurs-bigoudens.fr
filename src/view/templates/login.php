@@ -9,6 +9,7 @@
 				        <input id="login" type="text" name="login" autofocus required></p>
 				    <p><label for="password" >Mot de passe:</label>
 				        <input id="password" type="password" name="password" required></p>
+				    <input type="hidden" name="connection_hidden">
 
 				    <p>Montrez que vous n'êtes pas un robot.<br>
 	                    <label for="captcha" >Combien font <?= $captcha->getA() ?> fois <?= $captcha->getB() ?>?</label>

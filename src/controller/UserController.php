@@ -1,7 +1,15 @@
 <?php
-// src/controller/PasswordController.php
+// src/controller/UserController.php
 //
-// test mot de passe et captcha
+/* actuellement un fourre-tout de méthodes en rapport avec les utilisateurs
+pour l'améliorer on pourrait appliquer le principe de reponsabilité unique
+=> UserController devrait se limiter à gérer des requêtes et réponses (changement transparent pour le routeur)
+il instancierait un classe correspondant au formulaire (prend POST et SESSION) et une classe "métier" UserService
+=> UserService contiendrait des méthodes utilisant l'objet formulaire pour agir sur la BDD
+=> les formulaires peuvent tenir dans une classe "UserUpdateForm" avec des stratégies ou plusieurs, les données y sont validées
+=> il est aussi possible de découper UserController en contrôleurs par fonctionnalité:
+Auth (connexion, deconnexion), User (infos, choix photo), Account (créer, supprimer compte), Avatar (upload photo...)
+*/
 
 declare(strict_types=1);
 
@@ -11,6 +19,7 @@ use App\Entity\Log;
 
 class UserController
 {
+	// account
 	static public function existUsers(EntityManager $entityManager): bool
 	{
 	    // optimiser ça si possible, on veut juste savoir si la table est vide ou non
@@ -28,71 +37,34 @@ class UserController
 		}
 	}
 
+	// account
 	static public function createUser(EntityManager $entityManager)
 	{
-		// test mauvais paramètres
-		if(!isset($_POST['login']) || empty($_POST['login'])
-        || !isset($_POST['password']) || empty($_POST['password'])
-        || !isset($_POST['password_confirmation']) || empty($_POST['password_confirmation'])
-        || !isset($_POST['create_user_hidden']) || !empty($_POST['create_user_hidden']))
-		{
-			header('Location: ' . new URL);
-			die;
-		}
-
 		unset($_SESSION['user']);
 
-		$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-		$captcha_try = isset($_POST['captcha']) ? Captcha::controlInput($_POST['captcha']) : 0;
-		unset($_SESSION['captcha']);
+		$form = new FormValidation($_POST, 'create_user');
 		
+		$url = new URL;
 		$error = '';
-		if($captcha_try == 0)
-		{
-			$error = 'error_non_valid_captcha';
+		if($form->validate()){
+			$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+			$user = new App\Entity\User($_POST['login'], $password);
+			$entityManager->persist($user);
+			$entityManager->flush();
 		}
-		elseif($captcha_solution == 0) // ne peut pas arriver, si?
-		{
-			$error = 'captcha_server_error';
+		else{
+			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
 		}
-		elseif($captcha_try != $captcha_solution) // le test!
-		{
-			$error = 'bad_solution_captcha';
-		}
-		elseif($_POST['password'] !== $_POST['password_confirmation'])
-		{
-			$error = 'different_passwords';
-		}
-		else
-		{
-			$login = self::removeSpacesTabsCRLF(htmlspecialchars($_POST['login']));
-			$password = self::removeSpacesTabsCRLF(htmlspecialchars($_POST['password']));
-			
-			// self::removeSpacesTabsCRLF prévient la validation par erreur d'une chaine "vide"
-
-			// conformité
-			if(!empty($password) && !empty($login)
-				&& $password === $_POST['password'] && $login === $_POST['login'])
-			{
-				// enregistrement et redirection
-				$password = password_hash($password, PASSWORD_DEFAULT);
-				$user = new App\Entity\User($login, $password);
-				$entityManager->persist($user);
-				$entityManager->flush();
-				
-				header('Location: ' . new URL);
-				die;
-			}
-			else{
-				$error = 'forbidden_characters';
-			}
+		
+		if(!empty($error)){
+			$url->addParams(['error' => $error]);
 		}
 
-		$url = empty($error) ? new URL : new URL(['error' => $error]);
 		header('Location: ' . $url);
 		die;
 	}
 
+	// auth
 	static public function connect(EntityManager $entityManager): void
 	{
 		if($_SESSION['admin']) // déjà connecté?
@@ -100,74 +72,52 @@ class UserController
 			header('Location: ' . new URL);
 			die;
 		}
-
 		$_SESSION['user'] = '';
 		$_SESSION['admin'] = false;
 
-		$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-		$captcha_try = isset($_POST['captcha']) ? Captcha::controlInput($_POST['captcha']) : 0;
-		unset($_SESSION['captcha']);
+		$form = new FormValidation($_POST, 'connection');
 
 		$error = '';
-		if($captcha_try == 0)
-		{
-			$error = 'error_non_valid_captcha';
-		}
-		elseif($captcha_solution == 0) // pas censé se produire
-		{
-			$error = 'captcha_server_error';
-		}
-		elseif($captcha_try != $captcha_solution) // le test!
-		{
-			$error = 'bad_solution_captcha';
-		}
-		elseif(!isset($_POST['login']) || empty($_POST['login'])
-			|| !isset($_POST['password']) || empty($_POST['password']))
-		{
-			$error = 'bad_login_or_password';
-		}
-		else // c'est OK
-		{
-			$login = trim($_POST['login']);
-			$password = trim($_POST['password']);
-			$user = self::getUser($login, $entityManager);
-
-			// enregistrement et redirection
-			if(!empty($user) && $login === $user->getLogin() && password_verify($password, $user->getPassword()))
+		if($form->validate()){
+			// à mettre dans une classe métier UserService, Authentication, AuthService?
+			$user = self::getUser($_POST['login'], $entityManager);
+			if(!empty($user) && $_POST['login'] === $user->getLogin() && password_verify($_POST['password'], $user->getPassword()))
 			{
 				$log = new Log(true);
-				$entityManager->persist($log);
-				$entityManager->flush();
 				
 				// protection fixation de session, si l'attaquant crée un cookie de session, il est remplacé
 				session_regenerate_id(true);
-
-				$_SESSION['user'] = $login;
+				$_SESSION['user'] = $_POST['login'];
 				$_SESSION['admin'] = true;
 
 				$url = new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
 				isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
-				header('Location: ' . $url);
-				die;
 			}
 			else
 			{
 				$log = new Log(false);
-				$entityManager->persist($log);
-				$entityManager->flush();
 				$error = 'bad_login_or_password';
 			}
+			$entityManager->persist($log);
+			$entityManager->flush();
+		}
+		else{
+			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+		}
+		
+		if(!empty($error)){
+			sleep(1); // défense basique à la force brute
+			$url = new URL(['page' => 'connexion']);
+			isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
+			isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : null;
+			$url->addParams(['error' => $error]);
 		}
 
-		// tous les cas sauf connexion réussie
-		sleep(1); // défense basique à la force brute
-		$url = new URL(isset($_GET['from']) ? ['page' => 'connexion', 'from' => $_GET['from']] : []);
-		isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
-		!empty($error) ? $url->addParams(['error' => $error]) : '';
 		header('Location: ' . $url);
 		die;
 	}
 
+	// auth
 	static public function disconnect(): void
 	{
 		// nettoyage complet
@@ -183,154 +133,87 @@ class UserController
 		die;
 	}
 
+	// user
 	static public function updateUsername(EntityManager $entityManager): void
 	{
-		if(!$_SESSION['admin']) // superflux, fait dans le routeur
-		{
+		if(!$_SESSION['admin']){ // superflux, fait dans le routeur
 			self::disconnect();
 		}
-
-		$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-		$captcha_try = isset($_POST['captcha']) ? Captcha::controlInput($_POST['captcha']) : 0;
-		unset($_SESSION['captcha']);
 
 		$url = new URL(['page' => 'user_edit']);
 		isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
 
-		$error = '';
-		if(!isset($_POST['old_login']) || empty($_POST['old_login'])
-			|| !isset($_POST['password']) || empty($_POST['password'])
-			|| !isset($_POST['new_login']) || empty($_POST['new_login'])
-			|| !isset($_POST['modify_username_hidden']) || !empty($_POST['modify_username_hidden']))
-		{
-			$error = 'bad_login_or_password';
-		}
-		elseif($captcha_try != $captcha_solution) // le test!
-		{
-			$error = 'bad_solution_captcha';
-		}
-		else
-		{
-			// sécurisation de la saisie
-			$old_login = $_POST['old_login'];
-			$password = $_POST['password'];
-			$new_login = self::removeSpacesTabsCRLF(htmlspecialchars($_POST['new_login']));
-			// removeSpacesTabsCRLF pour éviter d'enregistrer une chaîne vide
+		$form = new FormValidation($_POST, 'username_update');
 
-			// tests de conformité
-			if($old_login !== $_POST['old_login'] || $password !==  $_POST['password'] || $new_login !== $_POST['new_login'])
-			{
-				$error = 'forbidden_characters';
+		$error = '';
+		if($form->validate()){
+			// à mettre dans une classe métier UserService?
+			$user = self::getUser($_POST['login'], $entityManager);
+			if(password_verify($_POST['password'], $user->getPassword())){
+				$user->setLogin($_POST['new_login']);
+				$entityManager->flush();
+				$_SESSION['user'] = $_POST['new_login'];
+
+				$url->addParams(['success_username' => 'new_login']);
+				$error = '';
 			}
-			elseif($old_login !== $_SESSION['user']){
+			else{
 				$error = 'bad_login_or_password';
 			}
-			elseif($old_login === $new_login){
-				$error = 'same_username_as_before';
-			}
-			else
-			{
-				$user = self::getUser($old_login, $entityManager);
-
-				if(password_verify($password, $user->getPassword()))
-				{
-					$user->setLogin($new_login);
-					$entityManager->flush();
-					$_SESSION['user'] = $new_login;
-
-					$url->addParams(['success_login' => 'new_login']);
-					$error = '';
-				}
-				else
-				{
-					$error = 'bad_login_or_password';
-				}
-			}
 		}
-
-		if(!empty($error)){
-			sleep(1);
-			$url->addParams(['error_login' => $error]);
+		else{
+			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
 		}
 		
+		if(!empty($error)){
+			sleep(1);
+			$url->addParams(['error_username' => $error]);
+		}
 		header('Location: ' . $url);
 		die;
 	}
 
+	// user
 	static public function updatePassword(EntityManager $entityManager): void
 	{
-		if(!$_SESSION['admin']) // superflux, fait dans le routeur
-		{
+		if(!$_SESSION['admin']){ // superflux, fait dans le routeur
 			self::disconnect();
 		}
-
-		$captcha_solution = (isset($_SESSION['captcha']) && is_int($_SESSION['captcha'])) ? $_SESSION['captcha'] : 0;
-		$captcha_try = isset($_POST['captcha']) ? Captcha::controlInput($_POST['captcha']) : 0;
-		unset($_SESSION['captcha']);
 
 		$url = new URL(['page' => 'user_edit']);
 		isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
 
-		$error = '';
-		if(!isset($_POST['login']) || empty($_POST['login'])
-			|| !isset($_POST['old_password']) || empty($_POST['old_password'])
-			|| !isset($_POST['new_password']) || empty($_POST['new_password'])
-			|| !isset($_POST['modify_password_hidden']) || !empty($_POST['modify_password_hidden']))
-		{
-			$error = 'bad_login_or_password';
-		}
-		elseif($captcha_try != $captcha_solution) // le test!
-		{
-			$error = 'bad_solution_captcha';
-		}
-		else
-		{
-			// sécurisation de la saisie
-			$login = $_POST['login'];
-			$old_password = $_POST['old_password'];
-			$new_password = self::removeSpacesTabsCRLF(htmlspecialchars($_POST['new_password']));
-			// removeSpacesTabsCRLF pour éviter d'enregistrer une chaîne vide
+		$form = new FormValidation($_POST, 'password_update');
 
-			// tests de conformité
-			if($login !== $_POST['login'] || $old_password !==  $_POST['old_password'] || $new_password !== $_POST['new_password'])
-			{
-				$error = 'forbidden_characters';
+		$error = '';
+		if($form->validate()){
+			// à mettre dans une classe métier UserService?
+			$user = self::getUser($_POST['login'], $entityManager);
+			if(password_verify($_POST['password'], $user->getPassword())){
+				$new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+				$user->setPassword($new_password);
+				$entityManager->flush();
+
+				$url->addParams(['success_password' => 'new_password']);
+				$error = '';
 			}
-			elseif($login !== $_SESSION['user']){
+			else{
 				$error = 'bad_login_or_password';
 			}
-			elseif($old_password === $new_password){
-				$error = 'same_password_as_before';
-			}
-			else
-			{
-				$user = self::getUser($login, $entityManager);
-
-				if(password_verify($old_password, $user->getPassword()))
-				{
-					$new_password = password_hash($new_password, PASSWORD_DEFAULT);
-					$user->setPassword($new_password);
-					$entityManager->flush();
-
-					$url->addParams(['success_password' => 'new_password']);
-					$error = '';
-				}
-				else
-				{
-					$error = 'bad_login_or_password';
-				}
-			}
 		}
-
+		else{
+			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+		}
+		
 		if(!empty($error)){
 			sleep(1);
 			$url->addParams(['error_password' => $error]);
 		}
-		
 		header('Location: ' . $url);
 		die;
 	}
 
+	// dans une classe mère ou un trait après découpage de UserController?
 	static private function getUser(string $login, EntityManager $entityManager): ?User
 	{
 		$users = $entityManager->getRepository('App\Entity\User')->findBy(['login' => $login]);
@@ -351,6 +234,7 @@ class UserController
 		return null;
 	}
 
+	// dans une classe Form?
 	// erreurs à la création des mots de passe
 	static private function removeSpacesTabsCRLF(string $chaine): string
 	{

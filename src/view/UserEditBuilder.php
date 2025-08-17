@@ -31,8 +31,8 @@ class UserEditBuilder extends AbstractBuilder
             'same_password_as_before' => 'Nouveau mot de passe identique au précédent.'
         ];
 
-        $error_username = isset($_GET['error_login']) ? $error_messages[$_GET['error_login']] : '';
-        $success_username = (isset($_GET['success_login']) && $_GET['success_login']) ? 'Identifiant modifié avec succès.' : '';
+        $error_username = isset($_GET['error_username']) ? $error_messages[$_GET['error_username']] : '';
+        $success_username = (isset($_GET['success_username']) && $_GET['success_username']) ? 'Identifiant modifié avec succès.' : '';
         $error_password = isset($_GET['error_password']) ? $error_messages[$_GET['error_password']] : '';
         $success_password = (isset($_GET['success_password']) && $_GET['success_password']) ? 'Mot de passe modifié avec succès.' : '';
 
@@ -50,6 +50,10 @@ class UserEditBuilder extends AbstractBuilder
         $link_exit = new URL;
         isset($_GET['from']) ? $link_exit->addParams(['page' => $_GET['from'] ]) : '';
         isset($_GET['id']) ? $link_exit->addParams(['id' => $_GET['id']]) : '';
+
+        $link_logout = new URL(['action' => 'deconnection']);
+        isset($_GET['from']) ? $link_logout->addParams(['from' => $_GET['from'] ]) : '';
+        isset($_GET['id']) ? $link_logout->addParams(['id' => $_GET['id']]) : '';
 
 		ob_start();
         require $viewFile;
