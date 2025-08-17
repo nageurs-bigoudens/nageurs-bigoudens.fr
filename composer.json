@@ -1,5 +1,5 @@
 {
-    "name": "CMS",
+    "name": "ordipolo/cms",
     "description": "CMS maison avec PHP, doctrine et tinMCE",
     "require": {
         "doctrine/dbal": "^4.2",
