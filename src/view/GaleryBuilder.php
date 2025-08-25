@@ -54,7 +54,7 @@ class GaleryBuilder extends AbstractBuilder
 
                 // squelette d'un nouvel article
                 ob_start();
-                require self::VIEWS_PATH . 'article.php';
+                require self::VIEWS_PATH . 'post.php';
                 $new_article = ob_get_clean();
             }
 

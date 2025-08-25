@@ -1,5 +1,7 @@
 <?php
 // src/model/entities/Article.php
+//
+// entité commune pour les "post" (articles simples) et les "news" (complexes avec titre, aperçu et contenu)
 
 declare(strict_types=1);
 

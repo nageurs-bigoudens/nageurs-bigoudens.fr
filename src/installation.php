@@ -7,6 +7,7 @@ use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\NodeData;
 use App\Entity\Image;
+use App\Entity\Presentation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 
@@ -116,6 +117,10 @@ function makeStartPage(EntityManager $entityManager){
 	$head_new_page = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
 	$bloc_new_page = new Node('new_page', NULL, [], 1, $main, $new_page, NULL);
 
+	/* -- table presentation -- */
+	$list = new Presentation('list');
+	$grid = new Presentation('grid');
+
 	/* -- table image -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
 	$favicon = new Image("favicon48x48.png", NULL, "assets/favicon48x48.png", "image/png", "favicon");
@@ -162,6 +167,10 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($bloc_edit_menu);
 	$entityManager->persist($head_new_page);
 	$entityManager->persist($bloc_new_page);
+
+	/* -- table presentation -- */
+	$entityManager->persist($list);
+	$entityManager->persist($grid);
 	
 	/* -- table image -- */
 	$entityManager->persist($favicon);

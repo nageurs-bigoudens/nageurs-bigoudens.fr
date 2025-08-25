@@ -49,7 +49,7 @@ class ArticleController
 		        	$date->setTimestamp($timestamp);
 
 		        	$article = new Article($content, $date); // le "current" timestamp est obtenu par la BDD
-		        	$article_node = new Node('article', 'i' . (string)$timestamp, [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);	
+		        	$article_node = new Node('post', 'i' . (string)$timestamp, [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);	
 	        	}
 
 	        	$entityManager->persist($article_node);

@@ -6,6 +6,7 @@ declare(strict_types=1);
 use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\NodeData;
+use App\Entity\Presentation;
 //use App\Entity\Image;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
@@ -136,8 +137,7 @@ class PageManagementController
 	    $main = $director->getNode();
 	    $position = count($main->getChildren()) + 1; // position dans la fraterie
 
-	    $blocks = ['blog', 'grid', 'calendar', 'galery', 'form']; // même liste dans FormBuilder.php
-	    if(!in_array($_POST["bloc_select"], $blocks, true)) // 3è param: contrôle du type
+	    if(!in_array($_POST["bloc_select"], Blocks::getNameList(), true)) // 3è param: contrôle du type
 	    {
 	        header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'bad_bloc_type']));
 	        die;
@@ -163,7 +163,7 @@ class PageManagementController
 	        $entityManager->persist($bulk_data[0]);
 	    }
 
-	    $bloc = new Node(
+	    $block = new Node(
 	        $_POST["bloc_select"],
 	        null, [],
 	        $position,
@@ -171,9 +171,17 @@ class PageManagementController
 	        $page);
 	    $data = new NodeData(
 	        ['title' => trim(htmlspecialchars($_POST["bloc_title"]))],
-	        $bloc);
+	        $block);
 
-	    $entityManager->persist($bloc);
+	    // valeurs par défaut
+	    if($_POST["bloc_select"] === 'post_block'){
+	    	$data->setPresentation($entityManager->find('App\Entity\Presentation', 1)); // pas génial l'utilisation de l'index dans la table
+	    }
+	    elseif($_POST["bloc_select"] === 'news_block'){
+	    	$data->setPresentation($entityManager->find('App\Entity\Presentation', 2));
+	    }
+
+	    $entityManager->persist($block);
 	    $entityManager->persist($data);
 	    $entityManager->flush();
 	    header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));

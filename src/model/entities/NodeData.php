@@ -24,6 +24,10 @@ class NodeData
     #[ORM\JoinColumn(name: "node_id", referencedColumnName: "id_node", onDelete: "CASCADE")]
     private Node $node;
 
+    #[ORM\ManyToOne(targetEntity: Presentation::class)]
+    #[ORM\JoinColumn(name: "presentation_id", referencedColumnName: "id_presentation", nullable: true)]
+    private Presentation $presentation;
+
     #[ORM\Column(type: "json")]
     private array $data;
 
@@ -46,6 +50,14 @@ class NodeData
     public function getId(): int
     {
         return $this->id_node_data;
+    }
+    public function getPresentation(): Presentation
+    {
+        return $this->presentation;
+    }
+    public function setPresentation(Presentation $presentation): void
+    {
+        $this->presentation = $presentation;
     }
     public function getData(): array
     {

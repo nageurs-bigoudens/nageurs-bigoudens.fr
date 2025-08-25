@@ -35,21 +35,18 @@ class NewBuilder extends AbstractBuilder
             $content = '';
 
             // page article unique
-            if(Director::$page_path->getLast()->getEndOfPath() === 'article')
-            {
+            if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
                 $content = $node->getArticle()->getContent();
-                $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'accueil']) . '"><button>Page<br>d\'accueil</button></a></p>';
+                $from_to_button = '<p><a class="link_to_article" href="' . new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []) . '"><button>Page<br>précédente</button></a></p>';
             }
             // page d'accueil (avec des news)
-            else
-            {
-                $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id]) . '"><button><img class="action_icon" src="assets/book-open.svg">Lire la suite</button></a></p>';
+            else{
+                $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id, 'from' => CURRENT_PAGE]) . '"><button><img class="action_icon" src="assets/book-open.svg">Lire la suite</button></a></p>';
             }
 
             
             $date_object = $node->getArticle()->getDateTime(); // class DateTime
             $date = 'le ' . str_replace(':', 'h', $date_object->format('d-m-Y à H:i'));
-            //$date = str_replace(':', 'h', $date_object->format('d-m-Y à H:i'));
 
             // partage
             $share_link = new URL(['page' => 'article', 'id' => $id]);

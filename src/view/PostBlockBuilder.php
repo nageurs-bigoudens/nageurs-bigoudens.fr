@@ -1,16 +1,19 @@
 <?php
-// src/view/BlogBuilder.php
+// src/view/PostBlockBuilder.php
 
 declare(strict_types=1);
 
 use App\Entity\Node;
 
-class BlogBuilder extends AbstractBuilder
+class PostBlockBuilder extends AbstractBuilder
 {
     public function __construct(Node $node)
     {
         parent::__construct($node);
-        $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
+
+        // à remplacer par list.php/grid.php (une vue par stratégie) le jour ou ou a besoin de les différencier
+        //$viewFile = self::VIEWS_PATH . $node->getName() . '.php';
+        $viewFile = self::VIEWS_PATH . 'post_block.php'; // actuellement identique à news_block.php
         
         if(file_exists($viewFile))
         {
@@ -19,18 +22,21 @@ class BlogBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }
 
+            $presentation = $node->getNodeData()->getPresentation()->getName(); // affichage list ou grid
+
+            // exécution de la stratégie (utilisation d'une méthode ou d'une classe)
+            $section_class = $presentation;
+            $section_child_class = $presentation === 'grid' ? 'grid_columns' : '';
+
             // ajouter un article
             $new_article = '';
             if($_SESSION['admin'])
             {
                 $id = 'n' . $this->id_node;
-                $js = 'onclick="openEditor(\'' . $id . '\')"';
 
                 $share_button = '<p class="share hidden"><img class="action_icon" src="assets/share.svg"></p>';
-                $html = '';
-
-                $new_button = '<p id="new-' . $id . '">' . "\n" . 
-                '<button ' . $js . '><img class="action_icon" src="assets/edit.svg">Nouvel article</button></p>';
+                
+                $new_button = '<p id="new-' . $id . '">' . "\n" . '<button onclick="openEditor(\'' . $id . '\')"><img class="action_icon" src="assets/edit.svg">Nouvel article</button></p>';
 
                 $modify_js = 'onclick="openEditor(\'' . $id . '\')"';
                 $modify_article = '<p id="edit-' . $id . '" class="hidden"><img class="action_icon" src="assets/edit.svg" ' . $modify_js . '></p>' . "\n";
@@ -50,11 +56,12 @@ class BlogBuilder extends AbstractBuilder
                 $submit_js = 'onclick="submitArticle(\'' . $id . '\', \'\', clone' . $this->id_node . ')"';
                 $submit_article = '<p id="submit-' . $id . '" class="hidden"><button ' . $submit_js . '>Valider</button></p>';
                 
+                $html = '';
                 $admin_buttons = $new_button . $modify_article . $up_button . $down_button . $delete_article . $close_editor . $submit_article;
 
                 // squelette d'un nouvel article
                 ob_start();
-                require self::VIEWS_PATH . 'article.php';
+                require self::VIEWS_PATH . 'post.php';
                 $new_article = ob_get_clean();
             }
 

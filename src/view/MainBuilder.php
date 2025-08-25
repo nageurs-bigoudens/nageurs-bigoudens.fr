@@ -36,13 +36,13 @@ class MainBuilder extends AbstractBuilder
             $this->html .= $builder->render();
         }
         else{
-            // si action = "modif_page", affiche des commandes pour modifier
+            // si action = "modif_page", affiche des commandes supplémentaires
             if($_SESSION['admin'] && self::$modif_mode){
                 // ajouter un contrôle du champ in_menu
                 $this->viewEditBlocks($node);
             }
 
-            // cas normal
+            // dans tous les cas
             $this->useChildrenBuilder($node);
         }
 
@@ -53,42 +53,18 @@ class MainBuilder extends AbstractBuilder
     private function viewEditBlocks($node): void
     {
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php'; // mode modification uniquement
-
-        // blocs disponibles, même liste dans post.php
-        $blocks = [ // créer une classe pour ça?
-            ['type' => 'blog', 'name' => 'Blog'],
-            ['type' => 'grid', 'name' => 'Grille'],
-            ['type' => 'calendar', 'name' => 'Calendrier'],
-            ['type' => 'galery', 'name' => 'Galerie'],
-            ['type' => 'form', 'name' => 'Formulaire']];
-
-        function getBlockName(array $blocks, string $type){ // créer une classe pour ça?
-            for($i=0; $i < count($blocks); $i++){ 
-                if($blocks[$i]['type'] === $type){
-                    return $blocks[$i]['name'];
-                }
-            }
-        }
+        $blocks = Blocks::getTypeNamePairs();
 
         $options = '';
         for($i = 0; $i < count($blocks); $i++){
             $options .= '<option value= "' . $blocks[$i]['type'] . '">' . $blocks[$i]['name'] . "</option>\n";
         }
 
-        // blabla
-        /*$this->html .= '<aside class="modif_page_explanations">
-            <p>Modification de la structure d\'une page:</p>
-            <div>
-                <p><img></p>
-                <p><img></p>
-            </div>
-        </aside>' . "\n";*/
-
         //$page_id = Director::$page_path->getLast()->getId();
         $head_node = null;
         foreach(ViewController::$root_node->getChildren() as $first_level_node){
             if($first_level_node->getName() === 'head'){
-                $head_node = $first_level_node; // normallement c'est le 1er enfant
+                $head_node = $first_level_node; // normalement c'est le 1er enfant
                 break;
             }
         }
@@ -97,7 +73,7 @@ class MainBuilder extends AbstractBuilder
         foreach($node->getChildren() as $child_node){
             // renommage d'un bloc
             $bloc_edit .= '<div id="bloc_edit_' . $child_node->getId() . '">
-                <p><label for="bloc_rename_' . $child_node->getId() . '"><b>' . getBlockName($blocks, $child_node->getName()) . '</b></label>
+                <p><label for="bloc_rename_' . $child_node->getId() . '"><b>' . Blocks::getNameFromType($child_node->getName()) . '</b></label>
                 <input type="text" id="bloc_rename_' . $child_node->getId() . '" name="bloc_rename_title" value="' . $child_node->getNodeData()->getdata()['title'] . '" required>
                 <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>'. "\n";
             // déplacement d'un bloc

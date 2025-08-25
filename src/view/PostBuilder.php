@@ -1,11 +1,11 @@
 <?php
-// src/view/ArticleBuilder.php
+// src/view/PostBuilder.php
 
 declare(strict_types=1);
 
 use App\Entity\Node;
 
-class ArticleBuilder extends AbstractBuilder
+class PostBuilder extends AbstractBuilder
 {
     public function __construct(Node $node)
     {
