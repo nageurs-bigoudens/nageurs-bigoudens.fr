@@ -13,7 +13,6 @@ $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' requête AJAX xhs, non uti
 
 declare(strict_types=1);
 
-
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
     // table "user" vide
     if(!UserController::existUsers($entityManager)){
@@ -95,9 +94,10 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 {
                     ArticleController::editorSubmit($entityManager, $json);
                 }
-                elseif($_GET['action'] === 'delete_article' && isset($json['id']))
-                {
-                    ArticleController::deleteArticle($entityManager, $json);
+                elseif($_GET['action'] === 'delete_article' && isset($json['id'])){
+                    $response = ArticleController::deleteArticle($entityManager, $json); // version AJAX
+                    $response->send();
+                    die;
                 }
                 // inversion de la position de deux noeuds
                 elseif($_GET['action'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
@@ -214,8 +214,19 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
         /* -- envoi formulaire HTML -- */
         elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
         {
+            if($_GET['action'] === 'delete_article' && isset($_GET['id'])){
+                $response = json_decode(ArticleController::deleteArticle($entityManager, $_GET)->getContent(), true); // version formulaire
+                $url = new URL;
+                if(isset($_GET['from'])){
+                    $url->addParams(['page' => $_GET['from']]);
+                }
+                $url->addParams(['success' => $response['success'], 'message' => $response['message']]);
+                header('Location: ' . $url);
+                die;
+            }
+
             /* -- nouvelle page -- */
-            if(isset($_POST['page_name']) && $_POST['page_name'] !== null
+            elseif(isset($_POST['page_name']) && $_POST['page_name'] !== null
                 && isset($_POST['page_name_path']) && $_POST['page_name_path'] !== null
                 && isset($_POST['page_location']) && $_POST['page_location'] !== null
                 && isset($_POST['page_description']) && $_POST['page_description'] !== null

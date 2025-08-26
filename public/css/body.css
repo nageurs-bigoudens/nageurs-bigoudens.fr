@@ -188,6 +188,11 @@ button .action_icon:hover
     display: flex;
     justify-content: end;
 }
+.delete_button
+{
+    float: right;
+    margin-left: 2px;
+}
 section button, section input[type=submit]
 {
     color: #ff1d04;

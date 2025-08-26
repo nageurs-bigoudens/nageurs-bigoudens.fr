@@ -6,6 +6,7 @@ declare(strict_types=1);
 use App\Entity\Node;
 use App\Entity\Article;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController
 {
@@ -97,7 +98,7 @@ class ArticleController
 	    die;
 	}
 
-	static public function deleteArticle(EntityManager $entityManager, array $json): void
+	static public function deleteArticle(EntityManager $entityManager, array $json): Response
 	{
 		$director = new Director($entityManager);
 		$director->makeArticleNode($json['id'], true);
@@ -107,20 +108,18 @@ class ArticleController
 	    $entityManager->remove($article);
 	    $section->removeChild($article);
 	    $section->sortChildren(true); // régénère les positions
-	    $entityManager->flush();
 
-	    // test avec une nouvelle requête qui ne devrait rien trouver
-	    if(!$director->makeArticleNode($json['id']))
-	    {
-	    	echo json_encode(['success' => true]);
-
-	    	// on pourrait afficher une notification "toast"
+	    try{
+	    	$entityManager->flush();
+	    	return new Response(
+	    		'{"success": true, "message": "Article supprimé avec succès"}',
+                Response::HTTP_OK); // 200
 	    }
-	    else{
-	    	http_response_code(500);
-	        echo json_encode(['success' => false, 'message' => 'Erreur lors de la suppression de l\'article.']);
+	    catch(Exception $e){
+	    	return new Response(
+	    		'{"success": false, "message": "Erreur: ' . $e->getMessage() . '"}',
+                Response::HTTP_INTERNAL_SERVER_ERROR); // 500
 	    }
-		die;
 	}
 
 	static public function switchPositions(EntityManager $entityManager, array $json): void

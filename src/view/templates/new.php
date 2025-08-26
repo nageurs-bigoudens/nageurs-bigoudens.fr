@@ -24,7 +24,6 @@
         </div>
         <?= $date_buttons ?>
         <div class="article_admin_zone">
-            <?= $from_to_button ?>
             <?= $admin_buttons ?>
         </div>
     </div>

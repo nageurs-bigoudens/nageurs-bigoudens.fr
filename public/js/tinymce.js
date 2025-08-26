@@ -184,20 +184,13 @@ function deleteArticle(id, page = '') {
         .then(data => {
             if(data.success)
             {
-                if(page === 'article'){
-                    // redirection vers la page d'accueil
-                    window.setTimeout(function(){
-                        location.href = "index.php?page=accueil";
-                    }, 0);
-                }
-                else{
-                    // Supprimer l'article du DOM
-                    const articleElement = document.getElementById(id);
-                    articleElement.parentElement.parentElement.remove(); // <article> est deux niveau au dessus
-                }
+                // Supprimer l'article du DOM
+                const articleElement = document.getElementById(id);
+                articleElement.parentElement.parentElement.remove(); // <article> est deux niveau au dessus
+                toastNotify("L'article a été supprimé.");
             }
             else {
-                alert('Erreur lors de la suppression de l\'article.');
+                toastNotify('Erreur lors de la suppression de l\'article.');
             }
         })
         .catch(error => {
@@ -261,7 +254,7 @@ function submitArticle(id, page = '', clone = null)
     var content;
     const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
 
-    // clic sur "tout enregistrer"
+    // clic sur "Tout enregistrer"
     if(id[0] === 'n' && page === 'article'){
         const prefixes = ['t', 'p', 'i', 'd'];
         const allElemsWithId = document.querySelectorAll('.data');
@@ -306,16 +299,16 @@ function submitArticle(id, page = '', clone = null)
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
+        if(data.success) {
             //console.log(data.article_id);
             if(id[0] === 'n' && page === 'article'){
                 console.log('données envoyées au serveur avec succès.');
 
                 // redirection page de l'article
                 window.setTimeout(function(){
-                    location.href = "index.php?page=article&id=" + data.article_id;
+                    const url_params = new URLSearchParams(window.location.search); // le "$_GET" de javascript
+                    location.href = "index.php?page=article&id=" + data.article_id + "&from=" + url_params.get('from');
                 }, 0);
-                
             }
             else{
                 // Fermer l'éditeur et mettre à jour le contenu de l'article
@@ -325,7 +318,7 @@ function submitArticle(id, page = '', clone = null)
                 }
             }
         }
-        else {
+        else{
             alert('Erreur lors de la sauvegarde de l\'article.');
         }
     })
