@@ -4,10 +4,12 @@
 function makePageNamePath(){
 	const page_name = document.getElementById("page_name");
 	const page_name_path = document.getElementById("page_name_path");
-	page_name_path.value = page_name.value.replace(/\W+/g, " ").trim().toLowerCase().split(' ').join('_');
-
-	/* explication de l'expression régulière
-    / = début et fin, \W+ = lettres et chiffres, g = global */
+	
+    page_name_path.value = page_name.value
+        .normalize("NFD")                   // décompose lettres + accents: é devient "e + accent aigu"
+        .replace(/[\u0300-\u036f]/g, "")    // supprime les accents
+        .replace(/[^a-zA-Z0-9]+/g, " ")     // supprime tout ce qu'il n'est pas alphanuméric
+        .trim().toLowerCase().replaceAll(" ", "_");
 }
 
 

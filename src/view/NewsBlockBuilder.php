@@ -35,7 +35,7 @@ class NewsBlockBuilder extends AbstractBuilder
 
                 $share_button = '<p class="share hidden"><img class="action_icon" src="assets/share.svg"></p>';
 
-                $new_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id]) . '"><button><img class="action_icon" src="assets/edit.svg">Nouvel article</button></a></p>';
+                $new_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id, 'from' => CURRENT_PAGE]) . '"><button><img class="action_icon" src="assets/edit.svg">Nouvel article</button></a></p>';
 
                 $modify_js = 'onclick="openEditor(\'' . $id . '\')"';
                 $modify_article = '<p id="edit-' . $id . '" class="hidden"><img class="action_icon" src="assets/edit.svg" ' . $modify_js . '></p>' . "\n";
