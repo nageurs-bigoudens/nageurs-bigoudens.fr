@@ -145,7 +145,7 @@ function openEditor(id, page = '') {
             const formData = new FormData();
             formData.append("file", blobInfo.blob());
 
-            fetch("index.php?action=upload_image", {
+            fetch("index.php?action=upload_image_tinymce", {
                 method: "POST",
                 body: formData
             })

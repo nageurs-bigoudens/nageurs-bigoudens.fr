@@ -39,7 +39,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
     }
 
     // construction d'une page
-    $response = (new ViewController)->buildView($entityManager, $request);
+    $response = (new ViewController)->buildView($entityManager, $request); // utilise Director
 }
 
 
@@ -87,25 +87,19 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
             $data = file_get_contents('php://input');
             $json = json_decode($data, true);
 
-            if(isset($_GET['action']))
+            if($request->query->has('action'))
             {
                 /* -- manipulation des articles -- */
-                if($_GET['action'] === 'editor_submit' && isset($json['id']) && isset($json['content']))
-                {
+                if($_GET['action'] === 'editor_submit' && isset($json['id']) && isset($json['content'])){
                     ArticleController::editorSubmit($entityManager, $json);
                 }
                 elseif($_GET['action'] === 'delete_article' && isset($json['id'])){
                     $response = ArticleController::deleteArticle($entityManager, $json); // version AJAX
-                    $response->send();
-                    die;
                 }
-                // inversion de la position de deux noeuds
-                elseif($_GET['action'] === 'switch_positions' && isset($json['id1']) && isset($json['id2']))
-                {
+                elseif($_GET['action'] === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
                     ArticleController::switchPositions($entityManager, $json);
                 }
-                elseif($_GET['action'] === 'date_submit' && isset($json['id']) && isset($json['date']))
-                {
+                elseif($_GET['action'] === 'date_submit' && isset($json['id']) && isset($json['date'])){
                     ArticleController::dateSubmit($entityManager, $json);
                 }
 
@@ -116,29 +110,54 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 elseif($_GET['action'] === 'test_email'){
                     ContactFormController::sendTestEmail($entityManager, $json);
                 }
+
+
+                /* -- upload d'image dans tinymce par copier-coller -- */
+                // collage de HTML contenant une ou plusieurs balises <img>
+                elseif($request->query->get('action') === 'upload_image_url'){
+                    ImageUploadController::uploadImageHtml();
+                }
+                // collage d'une image (code base64 dans le presse-papier) non encapsulée dans du HTML
+                elseif($request->query->get('action') === 'upload_image_base64'){
+                    ImageUploadController::uploadImageBase64();
+                }
+
+
+                /* -- requêtes spécifiques au calendrier -- */
+                elseif($request->query->get('action') === 'new_event'){
+                    CalendarController::newEvent($json, $entityManager);
+                }
+                elseif($request->query->get('action') === 'update_event'){
+                    CalendarController::updateEvent($json, $entityManager);
+                }
+                elseif($request->query->get('action') === 'remove_event'){
+                    CalendarController::removeEvent($json, $entityManager);
+                }
+                else{
+                    echo json_encode(['success' => false]);
+                    die;
+                }
             }
+
 
             /* -- page Menu et chemins -- */
             elseif(isset($_GET['menu_edit']))
             {
-                // récupération des données (serait peut-être mieux dans la classe)
-                Director::$menu_data = new Menu($entityManager);
+                // ne suit pas la règle, faire ça dans un contrôleur
+                Director::$menu_data = new Menu($entityManager); // récupération des données
 
                 // flèche gauche <=: position = position du parent + 1, parent = grand-parent, recalculer les positions
                 if($_GET['menu_edit'] === 'move_one_level_up' && isset($json['id'])){
                     MenuAndPathsController::MoveOneLevelUp($entityManager, $json);
                 }
-
                 // flèche droite =>: position = nombre d'éléments de la fraterie + 1, l'élément précédent devient le parent
-                if($_GET['menu_edit'] === 'move_one_level_down' && isset($json['id'])){
+                elseif($_GET['menu_edit'] === 'move_one_level_down' && isset($json['id'])){
                     MenuAndPathsController::MoveOneLevelDown($entityManager, $json);
                 }
-
-                if($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
+                elseif($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
                     MenuAndPathsController::switchPositions($entityManager, $json);
                 }
-
-                if($_GET['menu_edit'] === 'displayInMenu' && isset($json['id']) && isset($json['checked'])){
+                elseif($_GET['menu_edit'] === 'displayInMenu' && isset($json['id']) && isset($json['checked'])){
                     MenuAndPathsController::displayInMenu($entityManager, $json);
                 }
             }
@@ -161,45 +180,18 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
             elseif($request->query->has('bloc_edit'))
             {
                 // renommage d'un bloc
-                if($request->query->get('bloc_edit') === 'rename_page_bloc')
-                {
+                if($request->query->get('bloc_edit') === 'rename_page_bloc'){
                     PageManagementController::renameBloc($entityManager, $json);
                 }
                 // inversion des positions de deux blocs
-                elseif($request->query->get('bloc_edit') === 'switch_blocs_positions')
-                {
+                elseif($request->query->get('bloc_edit') === 'switch_blocs_positions'){
                     PageManagementController::SwitchBlocsPositions($entityManager, $json);
                 }
             }
-
-            /* -- upload d'image dans tinymce par copier-coller -- */
-            // collage de HTML contenant une ou plusieurs balises <img>
-            if($request->query->has('action') && $request->query->get('action') == 'upload_image_html'){
-                ImageUploadController::uploadImageHtml();
-            }
-            // collage d'une image (code base64 dans le presse-papier) non encapsulée dans du HTML
-            elseif($request->query->has('action') && $request->query->get('action') == 'upload_image_base64'){
-                ImageUploadController::uploadImageBase64();
-            }
-            
-            /* -- requêtes spécifiques au calendrier -- */
-            if($request->query->get('action') === 'new_event'){
-                CalendarController::newEvent($json, $entityManager);
-            }
-            elseif($request->query->get('action') === 'update_event'){
-                CalendarController::updateEvent($json, $entityManager);
-            }
-            elseif($request->query->get('action') === 'remove_event'){
-                CalendarController::removeEvent($json, $entityManager);
-            }
-            else{
-                echo json_encode(['success' => false]);
-            }
-            die;
         }
 
         // upload d'image dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur)
-        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && $request->query->has('action') && $request->query->get('action') === 'upload_image')
+        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && $request->query->has('action') && $request->query->get('action') === 'upload_image_tinymce')
         {
             ImageUploadController::imageUploadTinyMce();
         }
@@ -207,7 +199,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
         elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
         {
             //echo "requête XMLHttpRequest reçue par le serveur";
-            echo json_encode(['success' => false]); // ça marche mais ça marche pas...
+            echo json_encode(['success' => false]); // noyer le poisson en laissant penser que le site gère les requêtes XHR
             die;
         }
 
@@ -215,14 +207,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
         elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
         {
             if($_GET['action'] === 'delete_article' && isset($_GET['id'])){
-                $response = json_decode(ArticleController::deleteArticle($entityManager, $_GET)->getContent(), true); // version formulaire
-                $url = new URL;
-                if(isset($_GET['from'])){
-                    $url->addParams(['page' => $_GET['from']]);
-                }
-                $url->addParams(['success' => $response['success'], 'message' => $response['message']]);
-                header('Location: ' . $url);
-                die;
+                $response = ArticleController::deleteArticle($entityManager, $_GET); // version formulaire
             }
 
             /* -- nouvelle page -- */
@@ -241,6 +226,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
             {
                 PageManagementController::deletePage($entityManager);
             }
+
 
             /* -- mode Modification d'une page -- */
 
@@ -294,20 +280,51 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 die;
             }
         }
+        // POST admin ne matchant pas
+        else{
+            echo json_encode(['success' => false]);
+            die;
+        }
     }
-
-    // rien ne match
-    header("Location: " . new URL);
-    die;
+    // POST non admin ne matchant pas
+    else{
+        echo json_encode(['success' => false]);
+        die;
+    }
 }
 
-
+// méthode inconnue
 else{
     header("Location: " . new URL(['error' => 'tu fais quoi là mec?']));
     die;
 }
 
-// enlever le test isset à terme
+
+
+/* -- utilisation de la réponse -- */
 if(isset($response)){
-    $response->send();
+    if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
+    {
+        $response_data = json_decode(($response)->getContent(), true);
+        $url = new URL;
+        if(isset($_GET['from'])){
+            $url->addParams(['page' => $_GET['from']]);
+        }
+        $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
+        header('Location: ' . $url);
+    }
+    else{
+        $response->send();
+    }
 }
+else{
+    if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
+    {
+        header("Location: " . new URL(['error' => 'erreur côté serveur']));
+    }
+    else{
+        http_response_code(500);
+        echo "erreur côté serveur";
+    }
+}
+//die; // inutile normalement

@@ -22,14 +22,14 @@ class UserController
 	// account
 	static public function existUsers(EntityManager $entityManager): bool
 	{
-	    // optimiser ça si possible, on veut juste savoir si la table est vide ou non
-		$users = $entityManager->getRepository(User::class)->findAll();
-		
-		if(count($users) === 0) // table vide
+		$nb_users = $entityManager
+			->createQuery('SELECT COUNT(u.id_user) FROM App\Entity\User u')
+			->getSingleScalarResult();
+
+		if($nb_users === 0) // table vide
 		{
 			$_SESSION['user'] = '';
 			$_SESSION['admin'] = false;
-
 			return false;
 		}
 		else{

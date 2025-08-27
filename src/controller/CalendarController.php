@@ -52,6 +52,7 @@ class CalendarController
 	    $entityManager->flush();
 		
 		echo json_encode(['success' => true, 'id' => $event->getId()]);
+		die;
 	}
 	static public function updateEvent(array $json, EntityManager $entityManager):void
 	{
@@ -67,6 +68,7 @@ class CalendarController
 	    $entityManager->flush();
 
 		echo json_encode(['success' => true]);
+		die;
 	}
 	static public function removeEvent(array $json, EntityManager $entityManager):void
 	{
@@ -75,5 +77,6 @@ class CalendarController
 	    $entityManager->flush();
 
 		echo json_encode(['success' => true]);
+		die;
 	}
 }

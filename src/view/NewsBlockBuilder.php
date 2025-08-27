@@ -23,7 +23,7 @@ class NewsBlockBuilder extends AbstractBuilder
 
             $presentation = $node->getNodeData()->getPresentation()->getName(); // affichage list ou grid
 
-            // exécution de la stratégie (utilisation d'une méthode ou d'une classe)
+            // exécution de la stratégie (utilisation de méthodes ou de classe List, Grid, CarouselPresentation)
             $section_class = $presentation;
             $section_child_class = $presentation === 'grid' ? 'grid_columns' : '';
 

@@ -101,7 +101,11 @@ class ArticleController
 	static public function deleteArticle(EntityManager $entityManager, array $json): Response
 	{
 		$director = new Director($entityManager);
-		$director->makeArticleNode($json['id'], true);
+		if(!$director->makeArticleNode($json['id'], true)){
+			return new Response(
+	    		'{"success": false, "message": "Erreur: pas d\'article à supprimer"}',
+                Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+		}
 	    $article = $director->getArticleNode();
 		$section = $director->getNode();
 

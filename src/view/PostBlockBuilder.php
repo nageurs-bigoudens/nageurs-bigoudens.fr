@@ -12,8 +12,7 @@ class PostBlockBuilder extends AbstractBuilder
         parent::__construct($node);
 
         // à remplacer par list.php/grid.php (une vue par stratégie) le jour ou ou a besoin de les différencier
-        //$viewFile = self::VIEWS_PATH . $node->getName() . '.php';
-        $viewFile = self::VIEWS_PATH . 'post_block.php'; // actuellement identique à news_block.php
+        $viewFile = self::VIEWS_PATH . $node->getName() . '.php'; // = post_block.php, actuellement identique à news_block.php
         
         if(file_exists($viewFile))
         {
@@ -24,7 +23,7 @@ class PostBlockBuilder extends AbstractBuilder
 
             $presentation = $node->getNodeData()->getPresentation()->getName(); // affichage list ou grid
 
-            // exécution de la stratégie (utilisation d'une méthode ou d'une classe)
+            // exécution de la stratégie (utilisation de méthodes ou de classe List, Grid, CarouselPresentation)
             $section_class = $presentation;
             $section_child_class = $presentation === 'grid' ? 'grid_columns' : '';
 
