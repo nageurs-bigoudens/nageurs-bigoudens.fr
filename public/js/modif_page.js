@@ -19,9 +19,7 @@ function changePageTitle(page_id){
 
 	fetch('index.php?page_edit=page_title', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({title: page_name.value, page_id: page_id})
     })
     .then(response => response.json())
@@ -49,9 +47,7 @@ function changePageTitle(page_id){
 	
 	fetch('index.php?page_edit=page_menu_path', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({page_menu_path: page_name_path.value, page_id: page_id})
     })
     .then(response => response.json())
@@ -88,9 +84,7 @@ function changeDescription(node_data_id){
 
 	fetch('index.php?page_edit=page_description', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({description: textarea.value, node_data_id: node_data_id})
     })
     .then(response => response.json())
@@ -117,9 +111,7 @@ function renamePageBloc(bloc_id){
 
 	fetch('index.php?bloc_edit=rename_page_bloc', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({bloc_title: input.value, bloc_id: bloc_id})
     })
     .then(response => response.json())
@@ -159,9 +151,7 @@ function switchBlocsPositions(bloc_id, direction, current_page) {
 	
     fetch('index.php?page=' + current_page + '&bloc_edit=switch_blocs_positions', {
         method: 'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id1: bloc_id, id2: parseInt(other_bloc.id) })
     })
     .then(response => response.json())
@@ -182,6 +172,61 @@ function switchBlocsPositions(bloc_id, direction, current_page) {
         else {
 
             console.error('Échec de l\'inversion');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
+function changePresentation(bloc_id){
+    const presentation = document.getElementById('presentation_select_' + bloc_id).value;
+
+    fetch('index.php?bloc_edit=change_presentation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bloc_id, presentation: presentation })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            document.getElementById(bloc_id).className = presentation;
+            document.getElementById('cols_min_width_edit_' + bloc_id).className = presentation === 'grid' ? '' : 'hidden';
+            console.log('changement de présentation');
+        }
+        else{
+            console.log('Erreur au changement de présentation côté serveur');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
+function changeColsMinWidth(bloc_id){
+    const cols_min_width_input = document.getElementById('cols_min_width_select_' + bloc_id);
+    
+    if(cols_min_width_input.value < 150){
+        cols_min_width_input.value = 150;
+    }
+    else if(cols_min_width_input.value > 500){
+        cols_min_width_input.value = 500;
+    }
+
+    fetch('index.php?bloc_edit=change_cols_min_width', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bloc_id, cols_min_width: cols_min_width_input.value })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            document.getElementById(bloc_id).className = 'grid';
+            document.getElementById(bloc_id).querySelector(".section_child").style.gridTemplateColumns = 'repeat(auto-fit, minmax(' + data.cols_min_width + 'px, 1fr))';
+            console.log('changement de la largeur minimum en mode grille');
+        }
+        else{
+            console.log('Erreur au changement du nb de colonnes en mode grille côté serveur');
         }
     })
     .catch(error => {

@@ -32,7 +32,10 @@ class ArticleController
 	        if($id[0] === 'n')
 	        {
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
-	        	$director->findNodeById($section_id);
+	        	if(!$director->findNodeById($section_id)){
+	        		echo json_encode(['success' => false, 'error' => 'article_not_saved']);
+	        		die;
+	        	}
 	        	$director->makeSectionNode();
 	        	$node = $director->getNode(); // = <section>
 

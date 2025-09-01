@@ -39,7 +39,7 @@ class PageManagementController
 	        }
 	    }
 	    $entityManager->flush();
-	    header("Location: " . new URL(['page' => $page->getPagePath(), 'action' => 'modif_page']));
+	    header("Location: " . new URL(['page' => $page->getPagePath(), 'mode' => 'page_modif']));
 	    die;
 	}
 
@@ -104,7 +104,7 @@ class PageManagementController
 	    $entityManager->flush();
 
 	    // page créée, direction la page en mode modification pour ajouter des blocs
-	    header("Location: " . new URL(['page' => $page->getPagePath(), 'action' => 'modif_page']));
+	    header("Location: " . new URL(['page' => $page->getPagePath(), 'mode' => 'page_modif']));
 	    die;
 	}
 
@@ -146,10 +146,10 @@ class PageManagementController
 	    if($_POST["bloc_select"] === 'calendar' || $_POST["bloc_select"] === 'form'){
 	        $dql = 'SELECT n FROM App\Entity\Node n WHERE n.page = :page AND n.name_node = :name'; // noeud 'head' de la page
 	        $bulk_data = $entityManager
-	        ->createQuery($dql)
-	        ->setParameter('page', $page)
-	        ->setParameter('name', 'head')
-	        ->getResult();
+		        ->createQuery($dql)
+		        ->setParameter('page', $page)
+		        ->setParameter('name', 'head')
+		        ->getResult();
 
 	        if(count($bulk_data) != 1){ // 1 head par page
 	            header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'head_node_not_found']));
@@ -175,16 +175,20 @@ class PageManagementController
 
 	    // valeurs par défaut
 	    if($_POST["bloc_select"] === 'post_block'){
-	    	$data->setPresentation($entityManager->find('App\Entity\Presentation', 1)); // pas génial l'utilisation de l'index dans la table
+	    	$data->setPresentation(Presentation::findPresentation($entityManager, 'fullwidth')); // pas génial l'utilisation de l'index dans la table
 	    }
 	    elseif($_POST["bloc_select"] === 'news_block'){
-	    	$data->setPresentation($entityManager->find('App\Entity\Presentation', 2));
+	    	$data->setPresentation(Presentation::findPresentation($entityManager, 'grid'));
 	    }
+	    elseif($_POST["bloc_select"] === 'galery'){
+	    	$data->setPresentation(Presentation::findPresentation($entityManager, 'mosaic')); // mieux que carousel pour commencer
+	    }
+	    // else = null par défaut
 
 	    $entityManager->persist($block);
 	    $entityManager->persist($data);
 	    $entityManager->flush();
-	    header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));
+	    header("Location: " . new URL(['page' => $_GET['page'], 'mode' => 'page_modif']));
 	    die;
 	}
 
@@ -208,7 +212,8 @@ class PageManagementController
 	        $entityManager->remove($bloc); // suppression en BDD
 	        $entityManager->flush();
 	    }
-	    header("Location: " . new URL(['page' => $_GET['page'], 'action' => 'modif_page']));
+
+	    header("Location: " . new URL(['page' => $_GET['page'], 'mode' => 'page_modif']));
 	    die;
 	}
 	
@@ -235,7 +240,7 @@ class PageManagementController
 	static public function SwitchBlocsPositions(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id1']) && is_int($json['id1']) && isset($json['id2']) && is_int($json['id2']) && isset($_GET['page'])){
-    		$director = new Director($entityManager, true);
+    		$director = new Director($entityManager, true); // true pour $director->findItsChildren();
     		$director->findUniqueNodeByName('main');
             $director->findItsChildren();
             $main = $director->getNode();
@@ -265,6 +270,44 @@ class PageManagementController
             echo json_encode(['success' => true]);
     	}
     	else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+	}
+
+	static public function changePresentation(EntityManager $entityManager, array $json): void
+	{
+		if(isset($json['id']) && isset($json['presentation'])){
+			$director = new Director($entityManager, false);
+			$director->findNodeById($json['id']);
+
+			$presentation = Presentation::findPresentation($entityManager, $json['presentation']);
+			if($presentation !== null){
+				$director->getNode()->getNodeData()->setPresentation($presentation);
+
+				$entityManager->flush();
+				echo json_encode(['success' => true, 'presentation' => $json['presentation'], 'cols_min_width' => $director->getNode()->getNodeData()->getColsMinWidth()]);
+			}
+			else{
+				echo json_encode(['success' => false]);
+			}
+		}
+		else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+	}
+	static public function changeColsMinWidth(EntityManager $entityManager, array $json): void
+	{
+		if(isset($json['id']) && isset($json['cols_min_width'])){
+			$director = new Director($entityManager, false);
+			$director->findNodeById($json['id']);
+			$director->getNode()->getNodeData()->setColsMinWidth((int)$json['cols_min_width']); // attention conversion?
+
+			$entityManager->flush();
+			echo json_encode(['success' => true, 'cols_min_width' => $json['cols_min_width']]);
+		}
+		else{
 			echo json_encode(['success' => false]);
 		}
 		die;

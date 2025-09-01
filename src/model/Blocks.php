@@ -3,10 +3,10 @@
 
 class Blocks{
     /*private array $types = ['blog', 'grid', 'calendar', 'galery', 'form'];*/
-    static private array $types = ['post_block', 'news_block', 'calendar', 'galery', 'form'];
+    static private array $types = ['post_block', 'news_block', 'galery', 'calendar', 'form'];
 
     /*private array $names = ['Blog', 'Grille', 'Calendrier', 'Galerie', 'Formulaire'];*/
-    static private array $names = ['Articles libres', 'Actualités', 'Calendrier', 'Galerie', 'Formulaire'];
+    static private array $names = ['Articles libres', 'Actualités', 'Galerie', 'Calendrier', 'Formulaire'];
 
     static public function getNameList(): array
     {

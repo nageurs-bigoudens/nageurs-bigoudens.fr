@@ -21,11 +21,12 @@ class NewsBlockBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }
 
-            $presentation = $node->getNodeData()->getPresentation()->getName(); // affichage list ou grid
-
-            // exécution de la stratégie (utilisation de méthodes ou de classe List, Grid, CarouselPresentation)
-            $section_class = $presentation;
-            $section_child_class = $presentation === 'grid' ? 'grid_columns' : '';
+            // stratégie d'affichage du contenu (utilisation de méthodes ou de classe List, GridPresentation, etc)
+            $section_class = $node->getNodeData()->getPresentation()->getName(); // = list, grid , mosaic ou carousel
+            if($section_class === 'grid'){
+                $min_width = (string)$node->getNodeData()->getColsMinWidth();
+                $cols_min_width = 'grid-template-columns: repeat(auto-fit, minmax(' . $min_width . 'px, 1fr));';
+            }
 
             // ajouter un article
             $new_article = '';

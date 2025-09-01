@@ -24,12 +24,15 @@ class NodeData
     #[ORM\JoinColumn(name: "node_id", referencedColumnName: "id_node", onDelete: "CASCADE")]
     private Node $node;
 
-    #[ORM\ManyToOne(targetEntity: Presentation::class)]
-    #[ORM\JoinColumn(name: "presentation_id", referencedColumnName: "id_presentation", nullable: true)]
-    private Presentation $presentation;
-
     #[ORM\Column(type: "json")]
     private array $data;
+
+    #[ORM\ManyToOne(targetEntity: Presentation::class)]
+    #[ORM\JoinColumn(name: "presentation_id", referencedColumnName: "id_presentation", nullable: true)]
+    private ?Presentation $presentation;
+
+    #[ORM\Column(type: "integer", length: 255, nullable: true)]
+    private ?int $grid_cols_min_width = null; // pour le mode grille
 
     // liaison avec table intermédiaire
     #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "node_data")]
@@ -40,24 +43,19 @@ class NodeData
     )]
     private Collection $images;
 
-    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection)
+    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, Presentation $presentation = null)
     {
         $this->data = $data;
         $this->node = $node;
         $this->images = $images;
+        if(!empty($presentation) && $presentation->getName() === 'grid'){
+            $this->grid_cols_min_width = 250;
+        }
     }
 
     public function getId(): int
     {
         return $this->id_node_data;
-    }
-    public function getPresentation(): Presentation
-    {
-        return $this->presentation;
-    }
-    public function setPresentation(Presentation $presentation): void
-    {
-        $this->presentation = $presentation;
     }
     public function getData(): array
     {
@@ -77,6 +75,24 @@ class NodeData
             unset($this->data[$key]);
         }
     }
+    public function getPresentation(): ?Presentation
+    {
+        return $this->presentation;
+    }
+    public function setPresentation(Presentation $presentation): void
+    {
+        $this->presentation = $presentation;
+    }
+    public function getColsMinWidth(): int
+    {
+        $default = 320; // pixels
+        return $this->grid_cols_min_width === null ? $default : $this->grid_cols_min_width;
+    }
+    public function setColsMinWidth(int $columns): void
+    {
+        $this->grid_cols_min_width = $columns;
+    }
+    
     /*public function setNode(Node $node): void
     {
         $this->node = $node;

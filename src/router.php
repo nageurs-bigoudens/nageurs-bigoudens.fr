@@ -21,8 +21,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
     }
 
     // bouton déconnexion
-    if($request->query->has('action') && $request->query->get('action') === 'deconnection')
-    {
+    if($request->query->has('action') && $request->query->get('action') === 'deconnection'){
         UserController::disconnect($entityManager);
     }
 
@@ -40,6 +39,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 
     // construction d'une page
     $response = (new ViewController)->buildView($entityManager, $request); // utilise Director
+    // parenthèses nécéssaires autour de l'instanciation pour PHP < 8.4
 }
 
 
@@ -47,8 +47,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
     /* -- contrôleurs appellables par tout le monde -- */
 
     // table "user" vide
-    if(!UserController::existUsers($entityManager))
-    {
+    if(!UserController::existUsers($entityManager)){
         UserController::createUser($entityManager);
     }
     
@@ -179,13 +178,17 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
             // partie "blocs"
             elseif($request->query->has('bloc_edit'))
             {
-                // renommage d'un bloc
                 if($request->query->get('bloc_edit') === 'rename_page_bloc'){
                     PageManagementController::renameBloc($entityManager, $json);
                 }
-                // inversion des positions de deux blocs
                 elseif($request->query->get('bloc_edit') === 'switch_blocs_positions'){
                     PageManagementController::SwitchBlocsPositions($entityManager, $json);
+                }
+                elseif($request->query->get('bloc_edit') === 'change_presentation'){
+                    PageManagementController::changePresentation($entityManager, $json);
+                }
+                elseif($request->query->get('bloc_edit') === 'change_cols_min_width'){
+                    PageManagementController::changeColsMinWidth($entityManager, $json);
                 }
             }
         }
@@ -206,7 +209,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
         /* -- envoi formulaire HTML -- */
         elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
         {
-            if($_GET['action'] === 'delete_article' && isset($_GET['id'])){
+            if($request->query->has('action') && $request->query->get('action') === 'delete_article' && isset($_GET['id'])){
                 $response = ArticleController::deleteArticle($entityManager, $_GET); // version formulaire
             }
 
@@ -303,13 +306,13 @@ else{
 
 /* -- utilisation de la réponse -- */
 if(isset($response)){
-    if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
-    {
+    if($request->isMethod('GET') && $response->getStatusCode() == 302){ // 302 redirection temporaire
+        // ne gère pour l'instant que les mauvais id de la page article
+        header('Location: ' . new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']));
+    }
+    elseif($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         $response_data = json_decode(($response)->getContent(), true);
-        $url = new URL;
-        if(isset($_GET['from'])){
-            $url->addParams(['page' => $_GET['from']]);
-        }
+        $url = new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']);
         $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
         header('Location: ' . $url);
     }
@@ -318,8 +321,7 @@ if(isset($response)){
     }
 }
 else{
-    if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
-    {
+    if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         header("Location: " . new URL(['error' => 'erreur côté serveur']));
     }
     else{

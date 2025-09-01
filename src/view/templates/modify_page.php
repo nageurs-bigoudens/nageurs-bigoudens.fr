@@ -31,8 +31,8 @@
             <input type="submit" value="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
         </form>
     </div>
-    <div class="edit_bloc_zone">
-        <div class="new_bloc">
+    <div class="edit_block_zone">
+        <div class="new_block">
             <p>Ajouter un bloc de page</p>
             <form method="post" action="<?= new URL(['page' => CURRENT_PAGE]) ?>">
                 <p><label for="bloc_title">Titre</label>
@@ -45,7 +45,7 @@
                 <input type="submit" value="Valider"></p>
             </form>
         </div>
-        <div class="modify_bloc">
+        <div class="modify_block">
             <p>Modifier un bloc</p>
             <?= $bloc_edit ?>
         </div>

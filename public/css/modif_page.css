@@ -5,7 +5,7 @@
 	padding: 10px;
 	margin: 10px 15px;
 }
-.page_modification form select, .page_modification form input[type=submit]
+.page_modification select, .page_modification input[type=submit]
 {
 	color: #ff1d04;
 	font-size: medium;
@@ -17,7 +17,7 @@
 {
 	cursor: pointer;
 }*/
-.page_modification form input[type=submit]:hover
+.page_modification input[type=submit]:hover
 {
 	background-color: yellow;
 	border-radius: 4px;
@@ -29,10 +29,10 @@
 	flex-wrap: wrap;
 	justify-content: space-evenly;
 }
-.edit_page_zone, .edit_bloc_zone, .delete_page_zone
+.edit_page_zone, .edit_block_zone, .delete_page_zone
 {
 	background-color: #f0f0f0f0;
-	margin: 5px;
+	margin: 8px 5px;
 	padding: 10px;
 }
 #edit_description
@@ -47,32 +47,54 @@
 {
 	vertical-align: top;
 }
-.edit_bloc_zone
+.edit_block_zone
 {
 	display: flex;
 	justify-content: space-evenly;
 	flex-wrap: wrap;
 }
-.edit_page_zone p, .edit_bloc_zone p, .edit_page_zone form
+.edit_page_zone p, .edit_block_zone p, .edit_page_zone form
 {
 	margin: 5px;
 }
 
-.new_bloc #bloc_title
+.new_block #bloc_title
 {
 	width: 70%;
 	max-width: 300px;
 }
-.modify_bloc > div
-{
-	display: flex;
-	align-items: baseline;
-}
-.modify_bloc img
+
+.modify_block img
 {
 	vertical-align: middle;
 }
 .delete_page_zone
 {
 	text-align: center;
+}
+.modify_one_block
+{
+	background-color: white;
+	margin: 8px 0;
+	padding: 5px;
+}
+.modify_one_block > *
+{
+	/*text-wrap: nowrap;*/
+}
+.modify_one_block > div
+{
+	display: flex;
+	align-items: baseline;
+}
+.block_options > *
+{
+	/*display: flex;
+	flex-wrap: wrap;*/
+	text-wrap: nowrap;
+}
+.grid_options
+{
+	/*text-wrap: nowrap;*/ /* saut de la div grid_options */
+	flex-wrap: wrap; /* éléments à l'intérieur de grid_options lorsque lui-même dépasse la largeur dispo (téléphone) */
 }

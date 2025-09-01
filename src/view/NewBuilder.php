@@ -7,6 +7,8 @@ use App\Entity\Node;
 
 class NewBuilder extends AbstractBuilder
 {
+    static public bool $new_article_mode = false;
+
     public function __construct(Node $node, )
     {
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
@@ -39,7 +41,6 @@ class NewBuilder extends AbstractBuilder
                 $content = $node->getArticle()->getContent();
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []) . '"><button>Page<br>précédente</button></a></p>';
             }
-            // page d'accueil (avec des news)
             else{
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id, 'from' => CURRENT_PAGE]) . '"><button><img class="action_icon" src="assets/book-open.svg">Lire la suite</button></a></p>';
             }
@@ -101,7 +102,7 @@ class NewBuilder extends AbstractBuilder
                     $date_buttons = '<div class="button_zone">' . $modify_date . $close_editor_date . $submit_date . '</div>';
                     
                     // mode nouvel article
-                    if($_GET['id'][0] != 'i'){
+                    if(self::$new_article_mode){
                         $delete_article = '';
                         // valider la création d'un nouvel article
                         $submit_js = 'onclick="submitArticle(\'' . $_GET['id'] . '\', \'' . Director::$page_path->getLast()->getEndOfPath() . '\')"';
@@ -109,8 +110,7 @@ class NewBuilder extends AbstractBuilder
                     }
                     // mode article existant
                     else{
-                        // supprimer article existant
-                        $url = new URL(['action' => 'delete_article', 'id' => $_GET['id'], 'from' => $_GET['from']]);
+                        $url = new URL(['action' => 'delete_article', 'id' => $_GET['id'], 'from' => $_GET['from'] ?? '']);
                         $delete_article = '<form id="delete-' . $id . '" method="post" onsubmit="return confirm(\'Voulez-vous vraiment supprimer cet article ?\');" action="' . $url . '">
                             <p><button type="submit">
                                 <img class="action_icon" src="assets/delete-bin.svg">
@@ -122,7 +122,7 @@ class NewBuilder extends AbstractBuilder
                     
                     $admin_buttons = $delete_article . $from_to_button . $submit_article;
                 }
-                // page d'accueil
+                // autre page
                 else{
                     $modify_article = '<p id="edit-' . $id . '"></p>' . "\n";
 
@@ -142,6 +142,9 @@ class NewBuilder extends AbstractBuilder
 
                     $admin_buttons = $from_to_button . $modify_article . $up_button . $down_button . $delete_article . $close_editor . $submit_article;
                 }
+            }
+            else{
+                $admin_buttons = $from_to_button;
             }
 
             ob_start();

@@ -161,6 +161,15 @@ class Node
     {
         return $this->children;
     }
+    public function getNodeByName(string $name): ?Node
+    {
+        foreach($this->children as $child){
+            if($child->getName() === $name){
+                return $child;
+            }
+        }
+        return null;
+    }
     public function addChild(self $child): void
     {
         $this->children[] = $child;

@@ -49,6 +49,10 @@ main
     background-color: #E3F3FF;
     padding: 15px 0;
 }
+.hidden
+{
+    display: none;
+}
 section > h3
 {
     padding: 15px;
@@ -62,28 +66,10 @@ section > h3
     padding: 15px;
 }
 
-.grid_columns
+.grid > .section_child
 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-}
-@media screen and (max-width: 800px)
-{
-    .grid_columns
-    {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media screen and (max-width: 600px)
-{
-    article
-    {
-        /*margin: 5px;*/
-    }
-    .grid_columns
-    {
-        display: block;
-    }
+    display: grid; /* et c'est tout */
+    /*grid-template-columns: repeat(auto-fit, minmax(' . $min_width . 'px, 1fr)); */ /* dans PostBlockBuilder et NewsBlockBuilder */
 }
 .galery_photos
 {

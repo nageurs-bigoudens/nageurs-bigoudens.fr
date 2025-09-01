@@ -118,8 +118,10 @@ function makeStartPage(EntityManager $entityManager){
 	$bloc_new_page = new Node('new_page', NULL, [], 1, $main, $new_page, NULL);
 
 	/* -- table presentation -- */
-	$list = new Presentation('list');
+	$fullwidth = new Presentation('fullwidth');
 	$grid = new Presentation('grid');
+	$mosaic = new Presentation('mosaic');
+	$carousel = new Presentation('carousel');
 
 	/* -- table image -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
@@ -169,8 +171,10 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($bloc_new_page);
 
 	/* -- table presentation -- */
-	$entityManager->persist($list);
+	$entityManager->persist($fullwidth);
 	$entityManager->persist($grid);
+	$entityManager->persist($mosaic);
+	$entityManager->persist($carousel);
 	
 	/* -- table image -- */
 	$entityManager->persist($favicon);

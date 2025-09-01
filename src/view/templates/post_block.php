@@ -5,7 +5,7 @@
 	<script>
 		var clone<?= $this->id_node ?> = document.currentScript.previousElementSibling.cloneNode(true);
 	</script>
-	<div class="<?= $section_child_class ?>">
+	<div class="section_child" style="<?= $cols_min_width ?>">
 <?= $content ?>
 	</div>
 </section>

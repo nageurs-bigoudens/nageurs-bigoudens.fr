@@ -5,16 +5,17 @@
 
 declare(strict_types=1);
 
+use App\Entity\Article;
 use App\Entity\Node;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ViewController extends AbstractBuilder
+class ViewController extends AbstractBuilder // ViewController est aussi le premier Builder
 {
     static public Node $root_node;
 
-    public function __construct(){}
+    public function __construct(){} // surcharge celui de AbstractBuilder
 
     public function buildView(EntityManager $entityManager, Request $request): Response
     {
@@ -25,13 +26,28 @@ class ViewController extends AbstractBuilder
 
         // mode modification d'une page activé
         if($_SESSION['admin'] && $request->query->has('page')
-            && $request->query->has('action') && $request->query->get('action') === 'modif_page'
+            && $request->query->has('mode') && $request->query->get('mode') === 'page_modif'
             && $request->query->get('page') !== 'connexion' && $request->query->get('page') !== 'article' && $request->query->get('page') !== 'nouvelle_page' && $request->query->get('page') !== 'menu_chemins'){
             // les contrôles de la 2è ligne devraient utiliser un tableau
             MainBuilder::$modif_mode = true;
         }
 
-        // construction de la page
+        // page article: mode création et erreurs d'id
+        if($_SESSION['admin'] && $request->query->has('page') && $request->query->get('page') === 'article'){
+            if(!$request->query->has('id')){
+                return new Response($this->html, 302);
+            }
+            else{
+                if($request->query->get('id')[0] === 'n'){ // mode création d'article (vérification de l'id du bloc dans ArticleController)
+                    NewBuilder::$new_article_mode = true;
+                }
+                elseif(self::$root_node->getNodeByName('main')->getAdoptedChild() === null){ // id inconnu
+                    return new Response($this->html, 302);
+                }
+            }
+        }
+
+        //début de la construction de la page
         $this->useChildrenBuilder(self::$root_node);
 
         return new Response($this->html, 200);

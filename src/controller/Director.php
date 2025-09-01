@@ -13,7 +13,7 @@ class Director
     static public Menu $menu_data; // pour NavBuilder
     static public ?Path $page_path = null; // pour $current dans NavBuilder et pour BreadcrumbBuilder
 	private Page $page;
-	private Node $node;
+	private ?Node $node;
     private Node $article;
 
 	public function __construct(EntityManager $entityManager, bool $get_menu = false)
@@ -82,8 +82,10 @@ class Director
                 $node->getParent()->addChild($node);
 
                 // spécifique page article
-                if($node->getName() === 'new' && $this->page->getEndOfPath() == 'article'){
-                    $new = $node;
+                if($this->page->getEndOfPath() == 'article'){
+                    if($node->getName() === 'new'){
+                        $new = $node;
+                    }
                 }
             }
         }
@@ -93,9 +95,10 @@ class Director
     }
 
     // le basique
-    public function findNodeById(int $id): void
+    public function findNodeById(int $id): bool
     {
         $this->node = $this->entityManager->find('App\Entity\Node', $id);
+        return $this->node === null ? false : true;
     }
 
     // récupération d'un article pour modification
