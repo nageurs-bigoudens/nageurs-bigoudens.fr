@@ -24,12 +24,19 @@ function closeEditor(id, restore_old){
 }
 function submitArticle(id, clone = null)
 {
+    // bouton Valider de l'éditeur
     if(editors[id]){
         editors[id].submit(clone);
     }
-    else if(window.Config.page === "article" && id[0] === 'n'){ // bouton Tout enregistrer (pas d'éditeur)
-        editors[id] = new Editor(id);
-        editors[id].submit();
+    // bouton Tout enregistrer
+    else if(window.Config.page === "article" && id[0] === 'n'){
+        if(Object.keys(editors).length === 0){ // vérifier qu'il n'y a pas d'éditeur ouvert
+            editors[id] = new Editor(id);
+            editors[id].submit();
+        }
+        else{
+            toastNotify("Un editeur est ouvert. Validez ou annulez d'abord votre saisie dans chaque éditeur.");
+        }
     }
 }
 // standalone contraîrement aux autres fonctions ici
@@ -51,7 +58,7 @@ function deleteArticle(id){
                 articleElement.parentElement.parentElement.remove(); // <article> est deux niveau au dessus
                 toastNotify("L'article a été supprimé.");
             }
-            else {
+            else{
                 toastNotify('Erreur lors de la suppression de l\'article.');
             }
         })
