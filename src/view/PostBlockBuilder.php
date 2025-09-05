@@ -29,6 +29,7 @@ class PostBlockBuilder extends AbstractBuilder
             }
 
             // ajouter un article
+            // => fait un peu double emploi avec PostBuilder
             $new_article = '';
             if($_SESSION['admin'])
             {
@@ -52,12 +53,20 @@ class PostBlockBuilder extends AbstractBuilder
 
                 $close_js = 'onclick="closeEditor(\'' . $id . '\')"';
                 $close_editor = '<p id="cancel-' . $id . '" class="hidden"><button ' . $close_js . '>Annuler</button></p>';
+
+                $position = '<div id="radio-' . $id . '" class="hidden" style="margin: 5px; font-size: 90%;">
+                        Placement:<br>
+                        <input type="radio" id="radio_first-' . $id . '" name="article_placement-' . $id . '" value="first" onchange="setArticlePlacement(\'' . $id . '\')">
+                        <label for="radio_start">en premier</label><br>
+                        <input type="radio" id="radio_last-' . $id . '" name="article_placement-' . $id . '" value="last" onchange="setArticlePlacement(\'' . $id . '\')">
+                        <label for="radio_end">en dernier</label>
+                    </div>';
                 
-                $submit_js = 'onclick="submitArticle(\'' . $id . '\', \'\', clone' . $this->id_node . ')"';
+                $submit_js = 'onclick="submitArticle(\'' . $id . '\', clone' . $this->id_node . ')"';
                 $submit_article = '<p id="submit-' . $id . '" class="hidden"><button ' . $submit_js . '>Valider</button></p>';
                 
                 $html = '';
-                $admin_buttons = $new_button . $modify_article . $up_button . $down_button . $delete_article . $close_editor . $submit_article;
+                $admin_buttons = $new_button . $modify_article . $up_button . $down_button . $delete_article . $close_editor . $submit_article . $position;
 
                 // squelette d'un nouvel article
                 ob_start();

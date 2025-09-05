@@ -30,6 +30,7 @@ class PostBuilder extends AbstractBuilder
             $share_button = '<p class="share" ' . $share_js . '><img class="action_icon" src="assets/share.svg"></p>' . "\n";
 
             // modifier un article
+            // => fait un peu double emploi avec PostBlockBuilder
             $admin_buttons = '';
             if($_SESSION['admin'])
             {

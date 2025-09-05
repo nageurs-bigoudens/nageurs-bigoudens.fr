@@ -69,27 +69,27 @@ class NewBuilder extends AbstractBuilder
             if($_SESSION['admin'])
             {
                 if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
-                    $title_js = 'onclick="openEditor(\'' . $id_title . '\', \'article\')"';
+                    $title_js = 'onclick="openEditor(\'' . $id_title . '\')"';
                     $modify_title = '<p id="edit-' . $id_title . '"><button ' . $title_js . '><img class="action_icon" src="assets/edit.svg">Titre</button></p>' . "\n";
-                    $close_js_title = 'onclick="closeEditor(\'' . $id_title . '\', \'article\', \'preview\')"';
+                    $close_js_title = 'onclick="closeEditor(\'' . $id_title . '\')"';
                     $close_editor_title = '<p id="cancel-' . $id_title . '" class="hidden"><button ' . $close_js_title . '>Annuler</button></p>';
-                    $submit_js_title = 'onclick="submitArticle(\'' . $id_title . '\', \'article\')"';
+                    $submit_js_title = 'onclick="submitArticle(\'' . $id_title . '\')"';
                     $submit_title = '<p id="submit-' . $id_title . '" class="hidden"><button ' . $submit_js_title . '>Valider</button></p>';
                     $title_buttons = '<div class="button_zone">' . $modify_title . $close_editor_title . $submit_title . '</div>';
 
-                    $preview_js = 'onclick="openEditor(\'' . $id_preview . '\', \'article\')"';
+                    $preview_js = 'onclick="openEditor(\'' . $id_preview . '\')"';
                     $modify_preview = '<p id="edit-' . $id_preview . '"><button ' . $preview_js . '><img class="action_icon" src="assets/edit.svg">Aperçu</button></a></p>' . "\n";
-                    $close_js_preview = 'onclick="closeEditor(\'' . $id_preview . '\', \'article\', \'preview\')"';
+                    $close_js_preview = 'onclick="closeEditor(\'' . $id_preview . '\')"';
                     $close_editor_preview = '<p id="cancel-' . $id_preview . '" class="hidden"><button ' . $close_js_preview . '>Annuler</button></p>';
-                    $submit_js_preview = 'onclick="submitArticle(\'' . $id_preview . '\', \'article\')"';
+                    $submit_js_preview = 'onclick="submitArticle(\'' . $id_preview . '\')"';
                     $submit_preview = '<p id="submit-' . $id_preview . '" class="hidden"><button ' . $submit_js_preview . '>Valider</button></p>';
                     $preview_buttons = '<div class="button_zone">' . $modify_preview . $close_editor_preview . $submit_preview . '</div>';
 
-                    $article_js = 'onclick="openEditor(\'' . $id . '\', \'article\')"';
+                    $article_js = 'onclick="openEditor(\'' . $id . '\')"';
                     $modify_article = '<p id="edit-' . $id . '"><button ' . $article_js . '><img class="action_icon" src="assets/edit.svg">Article</button></p>' . "\n";
-                    $close_js_article = 'onclick="closeEditor(\'' . $id . '\', \'article\')"';
+                    $close_js_article = 'onclick="closeEditor(\'' . $id . '\')"';
                     $close_editor_article = '<p id="cancel-' . $id . '" class="hidden"><button ' . $close_js_article . '>Annuler</button></p>';
-                    $submit_js_article = 'onclick="submitArticle(\'' . $id . '\', \'article\')"';
+                    $submit_js_article = 'onclick="submitArticle(\'' . $id . '\')"';
                     $submit_article = '<p id="submit-' . $id . '" class="hidden"><button ' . $submit_js_article . '>Valider</button></p>';
                     $article_buttons = '<div class="button_zone">' . $modify_article . $close_editor_article . $submit_article . '</div>';
 
@@ -105,7 +105,7 @@ class NewBuilder extends AbstractBuilder
                     if(self::$new_article_mode){
                         $delete_article = '';
                         // valider la création d'un nouvel article
-                        $submit_js = 'onclick="submitArticle(\'' . $_GET['id'] . '\', \'' . Director::$page_path->getLast()->getEndOfPath() . '\')"';
+                        $submit_js = 'onclick="submitArticle(\'' . $_GET['id'] . '\')"';
                         $submit_article = '<p id="save-' . $id . '"><button ' . $submit_js . '><img class="action_icon" src="assets/edit.svg"><span class="delete_button">Tout<br>enregistrer</span></button></p>' . "\n";
                     }
                     // mode article existant

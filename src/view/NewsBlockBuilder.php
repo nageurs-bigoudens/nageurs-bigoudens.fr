@@ -53,7 +53,7 @@ class NewsBlockBuilder extends AbstractBuilder
                 $close_js = 'onclick="closeEditor(\'' . $id . '\')"';
                 $close_editor = '<p id="cancel-' . $id . '" class="hidden"><button ' . $close_js . '>Annuler</button></p>';
                 
-                $submit_js = 'onclick="submitArticle(\'' . $id . '\', \'\', clone' . $this->id_node . ')"';
+                $submit_js = 'onclick="submitArticle(\'' . $id . '\', clone' . $this->id_node . ')"';
                 $submit_article = '<p id="submit-' . $id . '" class="hidden"><button ' . $submit_js . '>Valider</button></p>';
                 
                 $html = '';

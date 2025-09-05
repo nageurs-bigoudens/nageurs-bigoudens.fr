@@ -85,10 +85,10 @@ class MainBuilder extends AbstractBuilder
                         <button onclick="renamePageBloc(' . $child_node->getId() . ')">Renommer</button>
                     </p>'. "\n";
             // déplacement d'un bloc
-            $bloc_edit .= '<div style="display: flex; flex-wrap: wrap;">
+            $bloc_edit .= '<div>
                     <p>
-                        <img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'up\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-up.svg">
-                        <img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'down\', \'' . CURRENT_PAGE . '\')" src="assets/arrow-down.svg">
+                        <img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'up\')" src="assets/arrow-up.svg">
+                        <img class="action_icon" onclick="switchBlocsPositions(' . $child_node->getId() . ', \'down\')" src="assets/arrow-down.svg">
                     </p>' . "\n";
             // suppression d'un bloc
             $bloc_edit .= '<form method="post" action="' . new URL(['page' => CURRENT_PAGE]) . '">

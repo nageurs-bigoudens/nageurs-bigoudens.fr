@@ -16,15 +16,15 @@ class ArticleController
 	    {
 	        $id = $json['id'];
 	        $director = new Director($entityManager);
+	        $content = $json['content'];
 
-	        // cas d'une nouvelle "news"
-	        if(is_array($json['content'])){
-	        	foreach($json['content'] as $one_input){
+	        // nettoyage
+	        if(is_array($content)){ // cas d'une nouvelle "news"
+	        	foreach($content as $one_input){
 	        		$one_input = Security::secureHTML($one_input);
 	        	}
-	        	$content = $json['content'];
 	        }
-	        else{
+	        else{ // autres cas
 	        	$content = Security::secureHTML($json['content']);
 	        }
 
@@ -39,21 +39,25 @@ class ArticleController
 	        	$director->makeSectionNode();
 	        	$node = $director->getNode(); // = <section>
 
-	        	if(is_array($content)){
+	        	if(is_array($content)){ // cas d'une nouvelle "news"
 	                $date = new \DateTime($content['d']);
 	                $article = new Article($content['i'], $date, $content['t'], $content['p']);
 	                $article_node = new Node('new', 'i' . (string)$date->getTimestamp(), [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);
-
-	        		// id_node tout juste généré
-	        		//$article_node->getId();
 	        	}
-	        	else{
+	        	else{ // autres cas
 	        		$timestamp = time();
 		        	$date = new \DateTime;
 		        	$date->setTimestamp($timestamp);
 
 		        	$article = new Article($content, $date); // le "current" timestamp est obtenu par la BDD
-		        	$article_node = new Node('post', 'i' . (string)$timestamp, [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);	
+		        	
+		        	$placement = $json['placement'] === 'first' ? 0 : count($node->getChildren()) + 1; // 
+		        	$article_node = new Node('post', 'i' . (string)$timestamp, [], $placement, $node, $node->getPage(), $article);
+
+		        	if($json['placement'] === 'first'){
+		        		$node->addChild($article_node);
+		        		$node->reindexPositions(); // régénère les positions (0 devient 1, 1 devient 2...)
+		        	}
 	        	}
 
 	        	$entityManager->persist($article_node);

@@ -286,7 +286,12 @@ class PageManagementController
 				$director->getNode()->getNodeData()->setPresentation($presentation);
 
 				$entityManager->flush();
-				echo json_encode(['success' => true, 'presentation' => $json['presentation'], 'cols_min_width' => $director->getNode()->getNodeData()->getColsMinWidth()]);
+
+				$response_data = ['success' => true, 'presentation' => $json['presentation']];
+				if($json['presentation'] === 'grid'){
+					$response_data['cols_min_width'] = $director->getNode()->getNodeData()->getColsMinWidth();
+				}
+				echo json_encode($response_data);
 			}
 			else{
 				echo json_encode(['success' => false]);

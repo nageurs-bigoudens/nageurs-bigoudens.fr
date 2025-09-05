@@ -85,13 +85,20 @@
 .modify_one_block > div
 {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
+}
+.block_options
+{
+	flex-wrap: wrap;
+}
+.block_options > div /* bloc boutons flèches et supprimer */
+{
+	display: flex;
 }
 .block_options > *
 {
-	/*display: flex;
-	flex-wrap: wrap;*/
 	text-wrap: nowrap;
+	align-items: center;
 }
 .grid_options
 {

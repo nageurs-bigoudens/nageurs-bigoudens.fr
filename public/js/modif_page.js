@@ -2,10 +2,7 @@
 
 // même fonction que dans new_page.js
 function makePageNamePath(){
-	const page_name = document.getElementById("page_name");
-	const page_name_path = document.getElementById("page_name_path");
-	
-    page_name_path.value = page_name.value
+    document.getElementById("page_name_path").value = document.getElementById("page_name").value
         .normalize("NFD")                   // décompose lettres + accents: é devient "e + accent aigu"
         .replace(/[\u0300-\u036f]/g, "")    // supprime les accents
         .replace(/[^a-zA-Z0-9]+/g, " ")     // supprime tout ce qu'il n'est pas alphanuméric
@@ -130,7 +127,7 @@ function renamePageBloc(bloc_id){
     });
 }
 
-function switchBlocsPositions(bloc_id, direction, current_page) {
+function switchBlocsPositions(bloc_id, direction) {
 	const current_bloc = document.getElementById(bloc_id);
 	const current_bloc_edit_zone = document.getElementById("bloc_edit_" + bloc_id);
 	var other_bloc;
@@ -149,7 +146,7 @@ function switchBlocsPositions(bloc_id, direction, current_page) {
 	}
 	const other_bloc_edit_zone = document.getElementById("bloc_edit_" + other_bloc.id);
 	
-    fetch('index.php?page=' + current_page + '&bloc_edit=switch_blocs_positions', {
+    fetch('index.php?page=' + window.Config.page + '&bloc_edit=switch_blocs_positions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id1: bloc_id, id2: parseInt(other_bloc.id) })

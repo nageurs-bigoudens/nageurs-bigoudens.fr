@@ -7,6 +7,7 @@
         <link rel="icon" type="image/png" href="<?= $favicon ?>" alt="<?= $alt ?>">
         <meta name="description" content="<?= $description ?>">
         <meta name="viewport" content="width=device-width">
+        <script>window.Config = {page: "<?= CURRENT_PAGE ?>"};</script>
         <?= $css ?>
         <?= $js ?>
     </head>

@@ -2,10 +2,7 @@
 
 // même fonction que dans modif_page.js
 function makePageNamePath(){
-	const page_name = document.getElementById("page_name");
-	const page_name_path = document.getElementById("page_name_path");
-	
-	page_name_path.value = page_name.value
+	document.getElementById("page_name_path").value = document.getElementById("page_name").value
 		.normalize("NFD")					// décompose lettres + accents: é devient "e + accent aigu"
     	.replace(/[\u0300-\u036f]/g, "")	// supprime les accents
     	.replace(/[^a-zA-Z0-9]+/g, " ")		// supprime tout ce qu'il n'est pas alphanuméric

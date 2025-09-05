@@ -1,10 +1,10 @@
-function newPassword(page, id = ''){
+function newPassword(id = ''){
 	if(id != ''){
 		id = '&id=' + id;
 	}
 	alert('Le mot de passe a été modifié.');
 	window.setTimeout(function(){
-	    location.href = "index.php?page=" + page + "&message=nouveau_mdp" + id;
+	    location.href = "index.php?page=" + window.Config.page + "&message=nouveau_mdp" + id;
 	}, 0);
 }
 
@@ -71,14 +71,16 @@ document.addEventListener('DOMContentLoaded', () => { // pour pouvoir attraper l
 			nav_zone.style.height = entry.contentRect.height + 'px';
 		}
 	});
-	resize_observer.observe(nav);
+	if(nav){
+		resize_observer.observe(nav);
+	}
 });
 
 
 // complète les fonctions dans tinymce.js
 function switchPositions(article_id, direction)
 {
-	const current_article = findParent(document.getElementById(article_id), 'article'); // l'id n'est pas sur la bonne balise
+	const current_article = findParentByTagName(document.getElementById(article_id), 'article'); // l'id n'est pas sur la bonne balise
 	var other_article;
 
 	if(direction == 'down'){
@@ -232,10 +234,9 @@ function updateDate(id_date, date_input){
 	return date_input;
 }
 
-function findParent(element, tag_name){
-    while (element !== null) {
-        if (element.tagName === tag_name.toUpperCase()) // tagName est en majuscules
-        {
+function findParentByTagName(element, tag_name){
+    while(element !== null){
+        if(element.tagName === tag_name.toUpperCase()){ // tagName est en majuscules
             return element;
         }
         element = element.parentElement;

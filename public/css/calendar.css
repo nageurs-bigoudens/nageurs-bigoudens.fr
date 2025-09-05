@@ -63,13 +63,13 @@ td .fc-timegrid-axis{
     #calendar_zone{
         padding: 0;
     }
+    #calendar_zone p, .event > button{
+        font-size: smaller;
+    }
     .fc-toolbar-title{
         /*font-size: large !important;*/
     }
     .fc-header-toolbar{
-        font-size: smaller;
-    }
-    h3, p, .event > button{
         font-size: smaller;
     }
 }
