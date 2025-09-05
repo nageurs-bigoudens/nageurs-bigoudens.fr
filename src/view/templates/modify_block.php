@@ -27,7 +27,7 @@ if($child_node->getNodeData()->getPresentation() !== null){
 			<?= $this->makePresentationOptions($child_node->getNodeData()->getPresentation()->getName()) ?>
     	</select>
     	<div id="cols_min_width_edit_<?= $child_node->getId() ?>" class="<?= ($child_node->getNodeData()->getPresentation()->getName() === 'grid' ? '' : 'hidden') ?>">
-        	<label for="cols_min_width_select_' . $child_node->getId() . '">Largeur minimum </label>
+        	<label for="cols_min_width_select_<?= $child_node->getId() ?>">Largeur minimum </label>
     		<input type="number" id="cols_min_width_select_<?= $child_node->getId() ?>" onchange="changeColsMinWidth(<?= $child_node->getId() ?>)" min="150" max="400" value="<?= $child_node->getNodeData()->getColsMinWidth() ?>"> pixels
 		</div>
 	</div>

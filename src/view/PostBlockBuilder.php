@@ -23,9 +23,10 @@ class PostBlockBuilder extends AbstractBuilder
 
             // stratégie d'affichage du contenu (utilisation de méthodes ou de classe List, GridPresentation, etc)
             $section_class = $node->getNodeData()->getPresentation()->getName(); // = list, grid , mosaic ou carousel
+            $cols_min_width = '';
             if($section_class === 'grid'){
-                $min_width = (string)$node->getNodeData()->getColsMinWidth();
-                $cols_min_width = 'grid-template-columns: repeat(auto-fit, minmax(' . $min_width . 'px, 1fr));';
+                $min_width = $node->getNodeData()->getColsMinWidth();
+                $cols_min_width = 'grid-template-columns: repeat(auto-fit, minmax(' . (string)$min_width . 'px, 1fr));';
             }
 
             // ajouter un article

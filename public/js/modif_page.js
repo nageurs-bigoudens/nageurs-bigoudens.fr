@@ -188,6 +188,7 @@ function changePresentation(bloc_id){
     .then(data => {
         if(data.success){
             document.getElementById(bloc_id).className = presentation;
+            document.getElementById(bloc_id).querySelector(".section_child").style.gridTemplateColumns = presentation === 'grid' ? 'repeat(auto-fit, minmax(' + data.cols_min_width + 'px, 1fr))' : '';
             document.getElementById('cols_min_width_edit_' + bloc_id).className = presentation === 'grid' ? '' : 'hidden';
             console.log('changement de présentation');
         }
