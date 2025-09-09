@@ -156,8 +156,11 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 elseif($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
                     MenuAndPathsController::switchPositions($entityManager, $json);
                 }
-                elseif($_GET['menu_edit'] === 'displayInMenu' && isset($json['id']) && isset($json['checked'])){
+                elseif($_GET['menu_edit'] === 'display_in_menu' && isset($json['id']) && isset($json['checked'])){
                     MenuAndPathsController::displayInMenu($entityManager, $json);
+                }
+                elseif($_GET['menu_edit'] === 'edit_url_entry' && isset($json['id']) && isset($json['url_input'])){
+                    MenuAndPathsController::editUrlEntry($entityManager, $json);
                 }
             }
 

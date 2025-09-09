@@ -13,18 +13,13 @@ class MenuBuilder extends AbstractBuilder
     //private int $margin_left_multiplier = 29;
     private string $options = '';
 
-    public function __construct(Node $node = null, bool $template = true)
+    public function __construct(Node $node, bool $template = true)
     {
-        //parent::__construct($node);
+        // impossible de me rappeler pourquoi j'ai écrit ce test sur $node, pourquoi $node serait null?
         $viewFile = $node === null ? self::VIEWS_PATH . 'menu.php' : self::VIEWS_PATH . $node->getName() . '.php';
         
         if(file_exists($viewFile))
         {
-            /*if(!empty($node->getNodeData()->getData()))
-            {
-                extract($node->getNodeData()->getData());
-            }*/
-
             if($_SESSION['admin']){
                 $this->unfoldMenu(Director::$menu_data);
                 
@@ -63,13 +58,26 @@ class MenuBuilder extends AbstractBuilder
                 </span>
                 <button>' . $entry->getPageName() . '</button>';
 
+            // seul la modification des URL est possible pour l'instant, les noms des entrées de menu attendront
             if(str_starts_with($entry->getEndOfPath(), 'http')){
-                $this->html .= '<span id="edit-i' . $entry->getId() . '"><img class="move_entry_icon" src="assets/edit.svg" onclick="editUrlEntry(' . $entry->getId() . ')"></span>
-                    <i class="url">' . $entry->getEndOfPath() . '</i>
-                    <form style="display: inline;" id="delete-i' . $entry->getId() . '" method="post" action="' . new URL(['from' => 'menu_chemins']) . '">
+                $this->html .= '<form style="display: inline;" id="delete-i' . $entry->getId() . '" method="post" action="' . new URL(['from' => 'menu_chemins']) . '">
                         <input type="hidden" name="delete" value="' . $entry->getId() . '">
                         <input type="image" class="move_entry_icon" src="assets/delete-bin.svg" alt="delete link button" onclick="return confirm(\'Voulez-vous vraiment supprimer cette entrée?\');">
-                    </form>';
+                    </form>
+                    <span class="url">
+                        <input type="url" value="' . htmlspecialchars($entry->getEndOfPath()) . '">
+                        <img class="move_entry_icon" src="assets/save.svg" onclick="editUrlEntry(' . $entry->getId() . ')">
+                    </span>';
+
+                // code à recycler pour pouvoir modifier le nom de l'entrée de menu correspondant aux liens
+                /*$this->html .= '<span id="cancel-i' . $entry->getId() . '">
+                        <input type="hidden" name="cancel" value="' . $entry->getId() . '">
+                        <button class="hidden" onclick="cancelUrlEntry(' . $entry->getId() . ')">Annuler</button>
+                    </span>
+                    <span id="submit-i' . $entry->getId() . '">
+                        <input type="hidden" name="submit" value="' . $entry->getId() . '">
+                        <input type="submit" class="hidden" onclick="submitUrlEntry(' . $entry->getId() . ')">
+                    </span>';*/
             }
             else{
                 $this->html .= '<i class="path">' . $entry->getPagePath() . '</i>';

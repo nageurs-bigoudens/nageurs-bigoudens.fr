@@ -70,7 +70,7 @@
 	vertical-align: middle;
 	border: 2px transparent solid;
 }
-.menu #location:hover, .menu input[type=submit]:hover, .move_entry_icon:hover
+.menu #location:hover, .menu input[type=submit]:hover, .menu .move_entry_icon:hover
 {
 	background-color: yellow;
 	border-radius: 4px;
@@ -106,7 +106,16 @@
 {
 	margin: 5px;
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
+}
+.menu .url
+{
+	text-wrap: nowrap;
+}
+.menu .url input[type=url]
+{
+	width: 50%;
 }
 
 @media screen and (min-width: 80rem) {

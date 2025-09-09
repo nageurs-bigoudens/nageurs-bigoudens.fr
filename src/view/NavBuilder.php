@@ -38,7 +38,7 @@ class NavBuilder extends AbstractBuilder
                 {
                     if(str_starts_with($data->getEndOfPath(), 'http')) // lien vers autre site
                     {
-                        $link .= '<a href="' . $data->getEndOfPath() . '" target="_blank">';
+                        $link .= '<a href="' . htmlspecialchars($data->getEndOfPath()) . '" target="_blank">';
                     }
                     elseif($data->getEndOfPath() != '') // lien relatif
                     {

@@ -2,18 +2,18 @@
 <section class="menu">
 	<h3>Menu et chemins</h3>
 	<div class="new_page_button">
-		<p >Créer une <a href="<?= new URL(['page' => 'nouvelle_page']) ?>"><button style="color: #ff1d04;">Nouvelle page</button></a>.</p>
+		<p>Créer une <a href="<?= new URL(['page' => 'nouvelle_page']) ?>"><button style="color: #ff1d04;">Nouvelle page</button></a>.</p>
 	</div>
 	<div class="url_form_zone">
-		<p>Ajouter au menu un lien vers un site web quelconque avec le formulaire ci-dessous:</p>
+		<p>Créer une entrée dans le menu avec une adresse vers un site quelconque:</p>
 		<form method="post" action="<?= new URL(['from' => 'menu_chemins']) ?>">
 			<p>
-				<label for="label_input">Nom:</label>
+				<label for="label_input">Nom dans le menu:</label>
 				<input id="label_input" type="text" name="label_input">
 			</p>
 			<p>
-				<label for="url_input">Adresse URL:</label>
-				<input id="url_input" type="url" name="url_input">
+				<label for="url_input">Adresse (collez votre lien):</label>
+				<input id="url_input" type="url" name="url_input" placeholder="http://">
 			</p>
 			<p>
 				<label>Placer le lien juste après cette entrée:</label>
@@ -38,5 +38,4 @@
 	<div id="menu_edit_buttons">
 <?= $this->html ?>
 	</div>
-	
 </section>

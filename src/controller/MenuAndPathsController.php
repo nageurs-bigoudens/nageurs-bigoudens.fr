@@ -14,9 +14,15 @@ class MenuAndPathsController
         $previous_page = Director::$menu_data->findPageById((int)$_POST["location"]); // (int) à cause de declare(strict_types=1);
         $parent = $previous_page->getParent();
 
+        $url_input = trim($_POST["url_input"]); // faire htmlspecialchars à l'affichage
+        if(!filter_var($url_input, FILTER_VALIDATE_URL) || !str_starts_with($url_input, 'http')){
+            header("Location: " . new URL(['page' => $_GET['from'], 'error' => 'invalide_url']));
+            die;
+        }
+
         $page = new Page(
             trim(htmlspecialchars($_POST["label_input"])),
-            filter_var($_POST["url_input"], FILTER_VALIDATE_URL),
+            $url_input,
             true, true, false,
             $previous_page->getPosition(),
             $parent); // peut et DOIT être null si on est au 1er niveau
@@ -24,7 +30,7 @@ class MenuAndPathsController
         // on a donné à la nouvelle entrée la même position qu'à la précédente,
         // addChild l'ajoute à la fin du tableau "children" puis on trie
         // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
-        if($parent == null){
+        if(!$parent){
             $parent = Director::$menu_data;
         }
         $parent->addChild($page); // true pour réindexer les positions en BDD
@@ -33,6 +39,25 @@ class MenuAndPathsController
         $entityManager->persist($page);
         $entityManager->flush();
         header("Location: " . new URL(['page' => $_GET['from']]));
+        die;
+    }
+
+    static public function editUrlEntry(EntityManager $entityManager, array $json): void
+    {
+        $url_input = trim($json['url_input']); // faire htmlspecialchars à l'affichage
+        $page = $entityManager->find('App\Entity\Page', $json['id']);
+
+        if(!$page){
+            echo json_encode(['success' => false, 'message' => "id invalide"]);
+        }
+        elseif(!filter_var($url_input, FILTER_VALIDATE_URL) || !str_starts_with($url_input, 'http')){
+            echo json_encode(['success' => false, 'message' => "la chaîne envoyée n'est pas une URL valide"]);
+        }
+        else{
+            $page->setEndOfPath($url_input);
+            $entityManager->flush();
+            echo json_encode(['success' => true, 'url_input' => $url_input]);
+        }
         die;
     }
 
@@ -163,7 +188,6 @@ class MenuAndPathsController
         else{
         	echo json_encode(['success' => false]);
         }
-	    
 	    die;
 	}
 
