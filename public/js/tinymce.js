@@ -55,7 +55,7 @@ function deleteArticle(id){
             {
                 // Supprimer l'article du DOM
                 const articleElement = document.getElementById(id);
-                articleElement.parentElement.parentElement.remove(); // <article> est deux niveau au dessus
+                findParentByTagName(articleElement, 'article').remove();
                 toastNotify("L'article a été supprimé.");
             }
             else{
@@ -106,7 +106,7 @@ class Editor
     
     init(){
         tinymce.init({
-            selector: `#${this.id}`, // avec un # comme dans querySelector
+            selector: `[id="${this.id}"]`, // écrire [id="246"] au lieu de #246 parce que l'id commence par un chiffre
             language: 'fr_FR', // téléchargement ici: https://www.tiny.cloud/get-tiny/language-packages/
             language_url: 'js/tinymce-langs/fr_FR.js', // ou installer tweeb/tinymce-i18n avec composer
             license_key: 'gpl',
@@ -136,7 +136,7 @@ class Editor
                         if(window.Config.page !== 'article'){
                             document.getElementById(`position_up-${this.id}`).classList.add('hidden');
                             document.getElementById(`position_down-${this.id}`).classList.add('hidden');
-                            document.getElementById(`delete-${('i' + this.id.slice(1))}`).classList.add('hidden');
+                            document.getElementById(`delete-${this.id}`).classList.add('hidden');
                         }
                     }
                 });
@@ -259,7 +259,7 @@ class Editor
     }
 
     close(restore_old = true){
-        tinymce.remove(`#${this.id}`); // avec un # comme dans querySelector
+        tinymce.remove(`[id="${this.id}"]`); // comme dans tinymce.init
         delete editors[this.id];
 
         // Restaurer le contenu d'origine de l'article

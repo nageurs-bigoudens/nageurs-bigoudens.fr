@@ -12,6 +12,13 @@ class URL implements Stringable
 	private array $params;
 	private string $anchor = '';
 
+	public function __construct(array $gets = [], string $anchor = ''){
+		$this->params = $gets;
+		if($anchor != ''){
+			$this->setAnchor($anchor);
+		}
+	}
+
 	// setters statiques
 	static public function setProtocol(string $protocol = 'http'): void
 	{
@@ -39,14 +46,7 @@ class URL implements Stringable
 	{
 		self::$path = '/' . ltrim($path, '/');
 	}
-
-	public function __construct(array $gets = [], string $anchor = ''){
-		$this->params = $gets;
-		if($anchor != ''){
-			$this->setAnchor($anchor);
-		}
-	}
-
+	
 	//setters normaux
 	public function addParams(array $gets): void
 	{

@@ -306,20 +306,23 @@ else{
 
 /* -- utilisation de la réponse -- */
 if(isset($response)){
+    // cas des mauvais id de la page article (d'autres cas à prévoir)
     if($request->isMethod('GET') && $response->getStatusCode() == 302){ // 302 redirection temporaire
-        // ne gère pour l'instant que les mauvais id de la page article
         header('Location: ' . new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']));
     }
+    // redirection après traitement de formulaires HTTP
     elseif($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         $response_data = json_decode(($response)->getContent(), true);
         $url = new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']);
         $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
         header('Location: ' . $url);
     }
+    // affichage d'une page OU requête AJAX
     else{
         $response->send();
     }
 }
+// pas utilisation de RESPONSE (cas destiné à disparaître)
 else{
     if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         header("Location: " . new URL(['error' => 'erreur côté serveur']));

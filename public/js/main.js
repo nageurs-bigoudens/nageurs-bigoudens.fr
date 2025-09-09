@@ -80,8 +80,9 @@ document.addEventListener('DOMContentLoaded', () => { // pour pouvoir attraper l
 // complète les fonctions dans tinymce.js
 function switchPositions(article_id, direction)
 {
-	const current_article = findParentByTagName(document.getElementById(article_id), 'article'); // l'id n'est pas sur la bonne balise
-	var other_article;
+	const current_article = findParentByTagName(document.getElementById(article_id), 'article'); // l'id n'est pas toujours sur la même balise
+	let other_article;
+	let other_article_id;
 
 	if(direction == 'down'){
 		other_article = current_article.nextElementSibling;
@@ -90,10 +91,8 @@ function switchPositions(article_id, direction)
 		other_article = current_article.previousElementSibling;
 	}
 	
-	var other_article_id;
 	try{
 		other_article_id = other_article.querySelector('div[id]').id;
-		other_article_id = 'i' + other_article_id.slice(1); // peut mieux faire
 	}
 	catch(error){
 		console.log('Inversion impossible');

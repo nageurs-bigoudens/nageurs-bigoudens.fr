@@ -23,11 +23,13 @@ class MainBuilder extends AbstractBuilder
                 die;
             }
 
+            // nouvel article
             if($node->getAdoptedChild() == null){
                 $date = new \DateTime;
                 $article = new Article('', $date);
-                $new = new Node('new', 'i' . (string)$date->getTimestamp(), [], 0, null, null, $article);
+                $new = new Node('new', [], 0, null, null, $article);
             }
+            // modification
             else{
                 $new = $node->getAdoptedChild();
             }

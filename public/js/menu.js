@@ -15,7 +15,6 @@ function moveOneLevelUp(page_id)
     .then(data => {
         if(data.success)
         {
-        	console.log(data);
 			// affichage
 			nav_zone.innerHTML = '';
         	nav_zone.insertAdjacentHTML('afterbegin', data.nav);
@@ -23,7 +22,6 @@ function moveOneLevelUp(page_id)
 			menu_edit_buttons.insertAdjacentHTML('afterbegin', data.menu_buttons);
         }
         else {
-
             console.error('Échec du déplacement');
         }
     })
@@ -49,7 +47,6 @@ function moveOneLevelDown(page_id)
     .then(data => {
         if(data.success)
         {
-        	console.log(data);
 			// affichage
 			nav_zone.innerHTML = '';
         	nav_zone.insertAdjacentHTML('afterbegin', data.nav);

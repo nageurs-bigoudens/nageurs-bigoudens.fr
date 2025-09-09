@@ -17,7 +17,7 @@ class Node
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id_node;
+    private ?int $id_node = null;
 
     #[ORM\Column(type: "string", length: 255)]
     private string $name_node;
@@ -52,16 +52,14 @@ class Node
     private ?NodeData $node_data = null;
 
 
-    // -- fin des attributs destinés à doctrine, début du code utilisateur --
-    
+    // attributs non destinés à doctrine
     private array $children = []; // tableau de Node
     private ?self $adopted = null; // = "new" est un enfant de "main" lorsque la page est "article"
     static private array $default_attributes = ['css_array' => ['body', 'head', 'nav', 'foot'],'js_array' => ['main']];
 
-    public function __construct(string $name = '', ?string $article_timestamp = null, array $attributes = [], int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
+    public function __construct(string $name = '', array $attributes = [], int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
     {
         $this->name_node = $name;
-        $this->article_timestamp = $article_timestamp;
         $this->attributes = $attributes;
         $this->position = $position;
         $this->parent = $parent;
@@ -70,7 +68,7 @@ class Node
     }
 
     // pfff...
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id_node;
     }

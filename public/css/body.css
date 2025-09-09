@@ -69,7 +69,7 @@ section > h3
 .grid > .section_child
 {
     display: grid; /* et c'est tout */
-    /*grid-template-columns: repeat(auto-fit, minmax(' . $min_width . 'px, 1fr)); */ /* dans PostBlockBuilder et NewsBlockBuilder */
+    /* la règle grid-template-columns est ajoutée dynamiquement par PHP ou JS*/
 }
 .galery_photos
 {

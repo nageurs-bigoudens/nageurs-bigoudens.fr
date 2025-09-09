@@ -101,21 +101,21 @@ function makeStartPage(EntityManager $entityManager){
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
-	$head_accueil = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'foot'], 'js_array' => ['main']], 1, NULL, $accueil, NULL);
-	$head_article = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'foot'], 'js_array' => ['main']], 1, NULL, $article, NULL);
-	$header = new Node('header', NULL, [], 2, NULL, NULL, NULL);
-	$nav = new Node('nav', NULL, [], 1, $header, NULL, NULL);
-	$main = new Node('main', NULL, [], 3, NULL, NULL, NULL);
-	$footer = new Node('footer', NULL, [], 4, NULL, NULL, NULL);
-	$breadcrumb = new Node('breadcrumb', NULL, [], 2, $header, NULL, NULL);
-	$head_login = new Node('head', NULL, ["stop" => true, 'css_array' => ['body'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
-	$login = new Node('login', NULL, [], 1, $main, $connection, NULL);
-	$head_my_account = new Node('head', NULL, ["stop" => true, 'css_array' => ['body'], 'js_array' => ['main']], 1, NULL, $my_account, NULL);
-	$user_edit = new Node('user_edit', NULL, [], 1, $main, $my_account, NULL);
-	$head_edit_menu = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'menu', 'foot'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
-	$bloc_edit_menu = new Node('menu', NULL, [], 1, $main, $menu_paths, NULL);
-	$head_new_page = new Node('head', NULL, ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
-	$bloc_new_page = new Node('new_page', NULL, [], 1, $main, $new_page, NULL);
+	$head_accueil = new Node('head', ['css_array' => ['body', 'head', 'nav', 'foot'], 'js_array' => ['main']], 1, NULL, $accueil, NULL);
+	$head_article = new Node('head', ['css_array' => ['body', 'head', 'nav', 'foot'], 'js_array' => ['main']], 1, NULL, $article, NULL);
+	$header = new Node('header', [], 2, NULL, NULL, NULL);
+	$nav = new Node('nav', [], 1, $header, NULL, NULL);
+	$main = new Node('main', [], 3, NULL, NULL, NULL);
+	$footer = new Node('footer', [], 4, NULL, NULL, NULL);
+	$breadcrumb = new Node('breadcrumb', [], 2, $header, NULL, NULL);
+	$head_login = new Node('head', ["stop" => true, 'css_array' => ['body'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
+	$login = new Node('login', [], 1, $main, $connection, NULL);
+	$head_my_account = new Node('head', ["stop" => true, 'css_array' => ['body'], 'js_array' => ['main']], 1, NULL, $my_account, NULL);
+	$user_edit = new Node('user_edit', [], 1, $main, $my_account, NULL);
+	$head_edit_menu = new Node('head', ['css_array' => ['body', 'head', 'nav', 'menu', 'foot'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
+	$bloc_edit_menu = new Node('menu', [], 1, $main, $menu_paths, NULL);
+	$head_new_page = new Node('head', ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
+	$bloc_new_page = new Node('new_page', [], 1, $main, $new_page, NULL);
 
 	/* -- table presentation -- */
 	$fullwidth = new Presentation('fullwidth');

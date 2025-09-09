@@ -9,31 +9,47 @@ class NewBuilder extends AbstractBuilder
 {
     static public bool $new_article_mode = false;
 
-    public function __construct(Node $node, )
+    public function __construct(Node $node)
     {
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
 
         if(file_exists($viewFile))
         {
-            // id (timestamp)
-            if(!empty($node->getAttributes()))
-            {
-                extract($node->getAttributes());
+            if(self::$new_article_mode){
+                $id = $_GET['id']; // ici l'id est le nom du block news_block parent
+                $title = '';
+                $preview = '';
+
+                // lettre au début de l'id: t = title, p = preview, i = article, d = date
+                $id_title = $id;
+                $id_title[0] = 't';
+                $id_preview = $id;
+                $id_preview[0] = 'p';
+                $id_content = 'i' . $id;
+                $id_content[0] = 'i';
+                $id_date = $id;
+                $id_date[0] = 'd';
             }
+            else{
+                $id = (string)$node->getId();
 
-            // html, date
-            $title = $node->getArticle()->getTitle();
-            $preview = $node->getArticle()->getPreview();
+                // id (timestamp)
+                if(!empty($node->getAttributes()))
+                {
+                    extract($node->getAttributes());
+                }
+
+                // html, date
+                $title = $node->getArticle()->getTitle();
+                $preview = $node->getArticle()->getPreview();
+
+                // lettre au début de l'id: t = title, p = preview, i = article, d = date
+                $id_title = 't' . $id;
+                $id_preview = 'p' . $id;
+                $id_content = 'i' . $id;
+                $id_date = 'd' . $id;
+            }
             
-            // lettre au début de l'id: i = article, p = preview, t = title, d = date
-            $id = $node->getArticleTimestamp();
-            $id_title = $id;
-            $id_title[0] = 't';
-            $id_preview = $id;
-            $id_preview[0] = 'p';
-            $id_date = $id;
-            $id_date[0] = 'd';
-
             $content = '';
 
             // page article unique
@@ -85,12 +101,12 @@ class NewBuilder extends AbstractBuilder
                     $submit_preview = '<p id="submit-' . $id_preview . '" class="hidden"><button ' . $submit_js_preview . '>Valider</button></p>';
                     $preview_buttons = '<div class="button_zone">' . $modify_preview . $close_editor_preview . $submit_preview . '</div>';
 
-                    $article_js = 'onclick="openEditor(\'' . $id . '\')"';
-                    $modify_article = '<p id="edit-' . $id . '"><button ' . $article_js . '><img class="action_icon" src="assets/edit.svg">Article</button></p>' . "\n";
-                    $close_js_article = 'onclick="closeEditor(\'' . $id . '\')"';
-                    $close_editor_article = '<p id="cancel-' . $id . '" class="hidden"><button ' . $close_js_article . '>Annuler</button></p>';
-                    $submit_js_article = 'onclick="submitArticle(\'' . $id . '\')"';
-                    $submit_article = '<p id="submit-' . $id . '" class="hidden"><button ' . $submit_js_article . '>Valider</button></p>';
+                    $article_js = 'onclick="openEditor(\'' . $id_content . '\')"';
+                    $modify_article = '<p id="edit-' . $id_content . '"><button ' . $article_js . '><img class="action_icon" src="assets/edit.svg">Article</button></p>' . "\n";
+                    $close_js_article = 'onclick="closeEditor(\'' . $id_content . '\')"';
+                    $close_editor_article = '<p id="cancel-' . $id_content . '" class="hidden"><button ' . $close_js_article . '>Annuler</button></p>';
+                    $submit_js_article = 'onclick="submitArticle(\'' . $id_content . '\')"';
+                    $submit_article = '<p id="submit-' . $id_content . '" class="hidden"><button ' . $submit_js_article . '>Valider</button></p>';
                     $article_buttons = '<div class="button_zone">' . $modify_article . $close_editor_article . $submit_article . '</div>';
 
                     $date_js = 'onclick="changeDate(\'' . $id_date . '\', \'article\');';

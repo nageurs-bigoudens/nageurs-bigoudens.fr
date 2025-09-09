@@ -1,6 +1,6 @@
 <?php declare(strict_types=1); ?>
 <article>
-    <div class="new_content">
+    <div class="new_content" id="<?= $id ?>">
         <div class="article_title_zone">
             <?= $share_button ?>
             <div class="data" id="<?= $id_title ?>">
@@ -12,7 +12,7 @@
             <?= $preview ?>
         </div>
         <?= $preview_buttons ?>
-        <div class="data article_content_text" id="<?= $id ?>">
+        <div class="data article_content_text" id="<?= $id_content ?>">
             <?= $content ?>
         </div>
         <?= $article_buttons ?>

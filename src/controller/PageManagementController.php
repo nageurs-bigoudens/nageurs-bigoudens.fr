@@ -79,9 +79,7 @@ class PageManagementController
 	    $page->setPagePath(ltrim($parent->getPagePath() . '/' . $page->getEndOfPath(), '/'));
 
 	    // noeud "head"
-	    $node = new Node(
-	        'head',
-	        null, [],
+	    $node = new Node('head', [],
 	        1, // position d'un head = 1
 	        null, // pas de parent
 	        $page);
@@ -163,12 +161,7 @@ class PageManagementController
 	        $entityManager->persist($bulk_data[0]);
 	    }
 
-	    $block = new Node(
-	        $_POST["bloc_select"],
-	        null, [],
-	        $position,
-	        $main,
-	        $page);
+	    $block = new Node($_POST["bloc_select"], [], $position, $main, $page);
 	    $data = new NodeData(
 	        ['title' => trim(htmlspecialchars($_POST["bloc_title"]))],
 	        $block);

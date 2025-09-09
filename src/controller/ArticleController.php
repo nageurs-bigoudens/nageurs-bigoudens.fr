@@ -15,6 +15,10 @@ class ArticleController
 		if(json_last_error() === JSON_ERROR_NONE)
 	    {
 	        $id = $json['id'];
+	        if(in_array($id[0], ['t', 'p', 'i', 'd'])){
+	        	$id = substr($id, 1);
+	        }
+
 	        $director = new Director($entityManager);
 	        $content = $json['content'];
 
@@ -29,7 +33,7 @@ class ArticleController
 	        }
 
 	        // nouvel article
-	        if($id[0] === 'n')
+	        if($json['id'][0] === 'n') // ici $id est un bloc
 	        {
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
 	        	if(!$director->findNodeById($section_id)){
@@ -40,9 +44,9 @@ class ArticleController
 	        	$node = $director->getNode(); // = <section>
 
 	        	if(is_array($content)){ // cas d'une nouvelle "news"
-	                $date = new \DateTime($content['d']);
+	                $date = new \DateTime($content['d'] . ':' . (new \DateTime)->format('s')); // l'input type="datetime-local" ne donne pas les secondes, on les ajoute: 'hh:mm' . ':ss'
 	                $article = new Article($content['i'], $date, $content['t'], $content['p']);
-	                $article_node = new Node('new', 'i' . (string)$date->getTimestamp(), [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);
+	                $article_node = new Node('new', [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);
 	        	}
 	        	else{ // autres cas
 	        		$timestamp = time();
@@ -50,9 +54,8 @@ class ArticleController
 		        	$date->setTimestamp($timestamp);
 
 		        	$article = new Article($content, $date); // le "current" timestamp est obtenu par la BDD
-		        	
 		        	$placement = $json['placement'] === 'first' ? 0 : count($node->getChildren()) + 1; // 
-		        	$article_node = new Node('post', 'i' . (string)$timestamp, [], $placement, $node, $node->getPage(), $article);
+		        	$article_node = new Node('post', [], $placement, $node, $node->getPage(), $article);
 
 		        	if($json['placement'] === 'first'){
 		        		$node->addChild($article_node);
@@ -63,13 +66,11 @@ class ArticleController
 	        	$entityManager->persist($article_node);
 	        	$entityManager->flush();
 	        	
-	        	echo json_encode(['success' => true, 'article_id' => $article_node->getArticleTimestamp()]);
+	        	echo json_encode(['success' => true, 'article_id' => $article_node->getId()]);
 	        	die;
 	        }
 	        // modification article
-	        else{
-	        	$id[0] = 'i'; // id de l'article node
-	        }
+	        //else{}
 
 	        if($director->makeArticleNode($id)) // une entrée est trouvée
 	        {
@@ -87,9 +88,8 @@ class ArticleController
 					case 'd':
 						echo json_encode(['success' => false, 'message' => 'l\'action editor_submit ne supporte pas les dates, utiliser date_submit.']);
 						die;
-					default:
-						echo json_encode(['success' => false, 'message' => 'identifiant non utilisable']);
-						die;
+					default: // modif article simple (id sans lettre devant)
+						$node->getArticle()->setContent($content);
 				}
 		        $entityManager->flush();
 		        echo json_encode(['success' => true]);
@@ -141,10 +141,9 @@ class ArticleController
 		$section = $director->getNode();
 
 	    $section->sortChildren(true); // régénère les positions avant inversion
-
 	    $article2 = null;
 	    foreach($section->getChildren() as $child){
-	    	if($child->getArticleTimestamp() === $json['id2']) // type string
+	    	if((string)$child->getId() === $json['id2']) // type string
 	    	{
 	    		$article2 = $child;
 	    		break;
@@ -163,8 +162,7 @@ class ArticleController
 
 	static public function dateSubmit(EntityManager $entityManager, array $json): void
 	{
-		$id = $json['id'];
-		$id[0] = 'i';
+		$id = substr($json['id'], 1);
 		$date = new DateTime($json['date']);
 
 		$director = new Director($entityManager);

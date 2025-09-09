@@ -50,7 +50,7 @@ class Director
         }
         else // avec $_GET['id'] dans l'URL
         {
-            $dql .= ' OR n.article_timestamp = :id';
+            $dql .= ' OR n.id_node = :id';
             $bulk_data = $this->entityManager
                 ->createQuery($dql)
                 ->setParameter('page', $this->page)
@@ -105,10 +105,10 @@ class Director
     public function makeArticleNode(string $id = '', bool $get_section = false): bool
     {
         if($get_section){
-            $dql = 'SELECT n, p FROM App\Entity\Node n LEFT JOIN n.parent p WHERE n.article_timestamp = :id';
+            $dql = 'SELECT n, p FROM App\Entity\Node n LEFT JOIN n.parent p WHERE n.id_node = :id';
         }
         else{
-            $dql = 'SELECT n FROM App\Entity\Node n WHERE n.article_timestamp = :id';
+            $dql = 'SELECT n FROM App\Entity\Node n WHERE n.id_node = :id';
         }
         // n est l'article et p son $parent
         $bulk_data = $this->entityManager

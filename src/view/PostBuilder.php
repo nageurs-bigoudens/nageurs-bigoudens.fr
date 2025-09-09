@@ -22,7 +22,7 @@ class PostBuilder extends AbstractBuilder
             // html
             $title = $node->getArticle()->getTitle();
             $html = $node->getArticle()->getContent();
-            $id = $node->getArticleTimestamp();
+            $id = (string)$node->getId();
 
             // partage
             $share_link = new URL(['page' => CURRENT_PAGE], $id);
