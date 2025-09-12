@@ -1,6 +1,8 @@
 <?php
 // src/FormValidation.php
 
+declare(strict_types=1);
+
 class FormValidation
 {
 	private array $data; // tableau associatif (probablement $_POST)
@@ -19,9 +21,15 @@ class FormValidation
 
 		// pattern stratégie en une seule classe
 		switch($this->validation_strategy){
-			case 'email':
+			// bloc formulaire de contact
+			case 'email_send':
 				$this->emailStrategy();
 				break;
+			case 'email_params': // paramètrage en mode admin
+				$this->emailParamsStrategy();
+				break;
+
+			// formulaires pages spéciales
 			case 'create_user':
 				$this->createUserStrategy();
 				break;
@@ -34,6 +42,7 @@ class FormValidation
 			case 'password_update':
 				$this->passwordUpdateStrategy();
 				break;
+
 			default:
 				http_response_code(500); // c'est un peu comme jeter une exception
 				echo json_encode(['success' => false, 'error' => 'server_error']);
@@ -94,13 +103,33 @@ class FormValidation
 			$this->errors[] = 'missing_fields';
 		}
 		
-		if(!filter_var(trim($this->data['email']), FILTER_VALIDATE_EMAIL)){
+		elseif(!filter_var(trim($this->data['email']), FILTER_VALIDATE_EMAIL)){
 			$this->errors[] = 'bad_email_address';
 		}
 
 		$this->data['name'] = htmlspecialchars(trim($this->data['name']));
 		$this->data['email'] = htmlspecialchars(trim($this->data['email']));
 		$this->data['message'] = htmlspecialchars($this->data['message']);
+	}
+	private function emailParamsStrategy(): void
+	{
+		if(!isset($this->data['id'], $this->data['what_param'], $this->data['value'], $this->data['hidden'])
+			|| !empty($this->data['hidden'])){
+			$this->errors[] = 'missing_fields';
+		}
+
+		elseif($this->data['value'] !== ''){
+			if(!in_array($this->data['what_param'], ['smtp_host', 'smtp_secure', 'smtp_username', 'smtp_password', 'email_dest'])){
+				$this->errors[] = 'unknown_parameter';
+			}
+			elseif($this->data['what_param'] === 'smtp_username' || $this->data['what_param'] === 'email_dest'){
+				if(!filter_var($this->data['value'], FILTER_VALIDATE_EMAIL)){
+					$this->errors[] = 'invalide_email_address';
+				}
+			}
+		}
+
+		// htmlspecialchars exécutés à l'affichage dans FormBuilder
 	}
 	private function createUserStrategy(): void
 	{

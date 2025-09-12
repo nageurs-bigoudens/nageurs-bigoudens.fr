@@ -10,7 +10,7 @@
 			</div>
 			<div class="user_edit_flex">
 	            <div class="login_form">
-		            <p class="connexionP" >Modifier mon nom d'utilisateur.</p>
+		            <p class="connexionP" >Modifier mon <b>nom d'utilisateur</b>.</p>
 		            <p style="color: red; font-style: italic;"><?= $error_username ?></p>
 		            <p style="color: green; font-style: italic;"><?= $success_username ?></p>
 					<form class="connexionFormulaire" method="post" action="<?= $link_user_form ?>" >
@@ -31,7 +31,7 @@
 					</form>
 				</div>
 				<div class="login_form">
-					<p class="connexionP" >Modifier mon mot de passe.</p>
+					<p class="connexionP" >Modifier mon <b>mot de passe</b>.</p>
 		            <p style="color: red; font-style: italic;"><?= $error_password ?></p>
 		            <p style="color: green; font-style: italic;"><?= $success_password ?></p>
 					<form class="connexionFormulaire" method="post" action="<?= $link_password_form ?>" >

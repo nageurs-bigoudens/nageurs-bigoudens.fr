@@ -7,41 +7,38 @@ use App\Entity\Node;
 
 class FormBuilder extends AbstractBuilder
 {
+    static private ?Captcha $captcha = null;
+
     public function __construct(Node $node)
     {
         parent::__construct($node);
-        $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
         
-        if(file_exists($viewFile))
+        if(!empty($node->getNodeData()->getData()))
         {
-            if(!empty($node->getNodeData()->getData()))
-            {
-                extract($node->getNodeData()->getData());
-            }
-
-            $captcha = new Captcha;
-            $_SESSION['captcha'] = $captcha->getSolution();
-
-            $email = $email ?? Config::$email_dest;
-
-            $admin_content = '';
-            if($_SESSION['admin'])
-            {
-                $admin_content = '<div class="admin_form">
-                    <p>
-                        <label for="recipient">E-mail de destination de ce formulaire</label>
-                        <input id="recipient" type="email" name="recipient" placeholder="mon-adresse@email.fr" value="' . $email . '">
-                        <input type="hidden" id="recipient_hidden" value="">
-                        <button onclick="changeRecipient(' . $node->getNodeData()->getId() . ')">Valider</button>
-                    </p>
-                    <p><button onclick="sendTestEmail(' . $node->getNodeData()->getId() . ')">Envoi d\'un e-mail de test</button></p>
-                    <p class="test_email_success full_width_column"></p>
-                </div>' . "\n";
-            }
-
-            ob_start();
-            require $viewFile;
-            $this->html = ob_get_clean(); // pas de concaténation ici, on écrase
+            extract($node->getNodeData()->getData());
         }
+
+        // un seul captcha à la fois!
+        if(!self::$captcha){
+            self::$captcha = new Captcha;
+            $_SESSION['captcha'] = self::$captcha->getSolution();
+        }
+
+        $smtp_host = $smtp_host ?? Config::$smtp_host;
+        $smtp_secure = $smtp_secure ?? Config::$smtp_secure;
+        $smtp_username = $smtp_username ?? Config::$smtp_username;
+        $email_dest = $email_dest ?? Config::$email_dest;
+
+        $admin_content = '';
+        if($_SESSION['admin'])
+        {
+            ob_start();
+            require self::VIEWS_PATH . 'form_params.php';
+            $admin_content = ob_get_clean();
+        }
+
+        ob_start();
+        require self::VIEWS_PATH . $node->getName() . '.php';
+        $this->html = ob_get_clean(); // pas de concaténation ici, on écrase
     }
 }

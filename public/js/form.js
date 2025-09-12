@@ -1,28 +1,30 @@
 //function sendMessage(){}
 
-// modif des paramètre d'envoi d'e-mail depuis l'espace admin
-function changeRecipient(id){
-	const email = document.getElementById('recipient').value;
-    const hidden = document.getElementById('recipient_hidden').value;
+// modif des paramètres d'e-mail: e-mail source/dest, mot de passe, serveur smtp & chiffrement tls/ssl
+function setEmailParam(what_param, id){
+	const value = document.getElementById(what_param + '_' + id).value;
+    const hidden = document.getElementById(what_param + '_hidden_' + id).value;
 
-	fetch('index.php?action=recipient_email', {
+	fetch('index.php?action=set_email_param', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id: id, email: email, hidden: hidden })
+        body: JSON.stringify({ id: id, what_param: what_param, value: value, hidden: hidden })
     })
     .then(response => response.json())
     .then(data => {
         if(data.success){
-        	toastNotify('Adresse e-mail de destination modifiée');
+        	toastNotify(what_param + ' a été modifié(e)');
         }
         else{
-            toastNotify('E-mail non valide');
+            console.error("Erreur rencontrée à l'enregistrement de cette donnée en base de données");
+            toastNotify("Erreur rencontrée à l'enregistrement de cette donnée en base de données");
         }
     })
     .catch(error => {
         console.error('Erreur:', error);
+        toastNotify('Erreur:', error);
     });
 }
 
@@ -33,8 +35,8 @@ function checkCase(){
 }
 
 function sendTestEmail(id){
-    const admin_form = document.querySelector('.admin_form');
-    const test_email_success = document.querySelector('.test_email_success');
+    //const admin_form = document.querySelector('.admin_form');
+    const test_email_success = document.querySelector('.test_email_success_' + id);
     test_email_success.innerHTML = 'Envoi en cours, veuillez patienter';
     test_email_success.style.backgroundColor = 'yellow';
 
@@ -67,12 +69,12 @@ function sendTestEmail(id){
 }
 
 function sendVisitorEmail(id){
-    const email_name = document.getElementById('email_name').value;
-    const email_address = document.getElementById('email_address').value;
-    const email_message = document.getElementById('email_message').value;
-    const email_captcha = document.getElementById('email_captcha').value;
-    const email_hidden = document.getElementById('email_hidden').value;
-    const send_email_success = document.querySelector('.send_email_success');
+    const email_name = document.getElementById('email_name_' + id).value;
+    const email_address = document.getElementById('email_address_' + id).value;
+    const email_message = document.getElementById('email_message_' + id).value;
+    const email_captcha = document.getElementById('email_captcha_' + id).value;
+    const email_hidden = document.getElementById('email_hidden_' + id).value;
+    const send_email_success = document.querySelector('.send_email_success_' + id);
 
     if(email_name === '' || email_address === '' || email_message === '' || email_captcha === ''){
         toastNotify('Veuillez remplir tous les champs.');

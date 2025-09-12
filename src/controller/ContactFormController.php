@@ -7,29 +7,34 @@ use Doctrine\ORM\EntityManager;
 
 class ContactFormController
 {
-	static public function updateRecipient(EntityManager $entityManager, array $json): void
+	static public function setEmailParam(EntityManager $entityManager, array $json): void
 	{
-		$email = htmlspecialchars(trim($json['email']));
-
-		if((filter_var($email, FILTER_VALIDATE_EMAIL) // nouvel e-mail
-			|| ($json['email'] === '' && !empty(Config::$email_dest))) // e-mail par défaut
-			&& isset($json['hidden']) && empty($json['hidden']))
-		{
+		$form = new FormValidation($json, 'email_params');
+		
+		$error = '';
+		if($form->validate()){
 			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
-			$form_data->updateData('email', $email);
+			$form_data->updateData($json['what_param'], trim($json['value']));
 			$entityManager->persist($form_data);
 			$entityManager->flush();
+		}
+		else{
+			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+		}
 
+		if(empty($error)){
 			echo json_encode(['success' => true]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			echo json_encode(['success' => false, 'error' => $error]);
 		}
 		die;
 	}
+
+	// les deux méthodes suivantes sont "factorisables", elles ne se distinguent que par la gestion ou non du formulaire rempli par le visiteur
 	static public function sendVisitorEmail(EntityManager $entityManager, array $json): void
 	{
-		$form = new FormValidation($json, 'email');
+		$form = new FormValidation($json, 'email_send');
 
 		$error = '';
 		if($form->validate()){
@@ -40,9 +45,8 @@ class ContactFormController
 				echo json_encode(['success' => false, 'error' => 'server_error']);
 				die;
 			}
-			$recipient = $form_data->getData()['email'] ?? Config::$email_dest;
-
-			if(!EmailService::send($entityManager, $recipient, true, $form->getField('name'), $form->getField('email'), $form->getField('message'))){
+			
+			if(!EmailService::send($entityManager, $form_data, false, $form->getField('name'), $form->getField('email'), $form->getField('message'))){
 				$error = 'email_not_sent';
 			}
 		}
@@ -67,9 +71,8 @@ class ContactFormController
 			echo json_encode(['success' => false, 'error' => 'server_error']);
 			die;
 		}
-		$recipient = $form_data->getData()['email'] ?? Config::$email_dest;
 
-		if(EmailService::send($entityManager, $recipient, false, 'nom du visiteur', 'adresse@du_visiteur.fr', "TEST d'un envoi d'e-mail depuis le site web")){
+		if(EmailService::send($entityManager, $form_data, true, 'nom du visiteur', 'adresse@du_visiteur.fr', "TEST d'un envoi d'e-mail depuis le site web")){
 			echo json_encode(['success' => true]);
 		}
 		else{

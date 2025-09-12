@@ -22,9 +22,18 @@
 
 .form .admin_form{
 	background-color: #f0f0f0;
-	margin: auto;
+	margin: 8px auto;
 	padding: 10px;
 	max-width: 800px;
+}
+.form .admin_form h3{
+	margin: 10px 0;
+}
+.form .admin_form p{
+	margin: 5px 0;
+}
+.form .admin_form i{
+	font-size: smaller;
 }
 
 @media screen and (max-width: 600px){

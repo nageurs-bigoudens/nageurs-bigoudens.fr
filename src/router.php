@@ -103,8 +103,8 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 }
 
                 /* -- bloc Formulaire -- */
-                elseif($_GET['action'] === 'recipient_email'){
-                    ContactFormController::updateRecipient($entityManager, $json);
+                elseif($_GET['action'] === 'set_email_param'){
+                    ContactFormController::setEmailParam($entityManager, $json);
                 }
                 elseif($_GET['action'] === 'test_email'){
                     ContactFormController::sendTestEmail($entityManager, $json);
