@@ -22,22 +22,17 @@ declare(strict_types=1);
 	</p>
 	<p>
 	    <label for="smtp_username_<?= $node->getNodeData()->getId() ?>">Identifiant (adresse e-mail)</label>
-	    <input id="smtp_username_<?= $node->getNodeData()->getId() ?>" type="email" name="smtp_username" placeholder="mon-adresse@email.fr" value="<?= htmlspecialchars($smtp_username) ?>">
+	    <input id="smtp_username_<?= $node->getNodeData()->getId() ?>" type="email" name="smtp_username" autocomplete="new-password" placeholder="mon-adresse@email.fr" value="<?= htmlspecialchars($smtp_username) ?>">
 	    <input type="hidden" id="smtp_username_hidden_<?= $node->getNodeData()->getId() ?>" value="">
 	    <button onclick="setEmailParam('smtp_username', <?= $node->getNodeData()->getId() ?>)">Valider</button>
 	</p>
 	<p>
 	    <label for="smtp_password_<?= $node->getNodeData()->getId() ?>">Mot de passe</label>
-	    <input id="smtp_password_<?= $node->getNodeData()->getId() ?>" type="password" name="smtp_password">
+	    <input id="smtp_password_<?= $node->getNodeData()->getId() ?>" type="password" name="smtp_password" autocomplete="new-password">
 	    <input type="hidden" id="smtp_password_hidden_<?= $node->getNodeData()->getId() ?>" value="">
 	    <button onclick="setEmailParam('smtp_password', <?= $node->getNodeData()->getId() ?>)">Valider</button>
 	</p>
 	<p><i>Il s'agit du service qui acheminera les messages envoyés par ce formulaire. Les services d'envoi de courriels nécéssitent généralement de s'y connecter avec un identifiant et un mot de passe. Les adresses d'envoi et de réception peuvent être identiques. Le site web peut ne pas réussir à se connecter à certains fournisseurs.</i></p>
-</div>
-<div class="admin_form">
-	<p><button onclick="sendTestEmail(<?= $node->getNodeData()->getId() ?>)">Envoi d'un e-mail de test</button></p>
-	<p><i>Vérifie la connexion au serveur d'envoi. Pour tester la réception, consultez vos e-mails à l'adresse de réception.</i></p>
-	<p class="test_email_success_<?= $node->getNodeData()->getId() ?> full_width_column"></p>
 </div>
 <div class="admin_form">
 	<h3>Paramètres de réception</h3>
@@ -47,4 +42,9 @@ declare(strict_types=1);
 	    <input type="hidden" id="email_dest_hidden_<?= $node->getNodeData()->getId() ?>" value="">
 	    <button onclick="setEmailParam('email_dest', <?= $node->getNodeData()->getId() ?>)">Valider</button>
 	</p>
+</div>
+<div class="admin_form">
+	<p><button onclick="sendTestEmail(<?= $node->getNodeData()->getId() ?>)">Envoi d'un e-mail de test</button></p>
+	<p><i>Vérifie la connexion au serveur d'envoi. Pour tester la réception, consultez vos e-mails à l'adresse de réception.</i></p>
+	<p class="test_email_success_<?= $node->getNodeData()->getId() ?> full_width_column"></p>
 </div>

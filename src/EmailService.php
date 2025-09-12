@@ -20,7 +20,10 @@ class EmailService
 	    $smtp_secure = $form_data->getData()['smtp_secure'] ?? Config::$smtp_secure;
 		$smtp_username = $form_data->getData()['smtp_username'] ?? Config::$smtp_username;
 		$smtp_password = $form_data->getData()['smtp_password'] ?? Config::$smtp_password;
+		$email_from = $form_data->getData()['email_from'] ?? Config::$email_from; // une adresse bidon est donnée à setFrom()
+		$email_from_name = $form_data->getData()['email_from_name'] ?? Config::$email_from_name; // = site web
 		$email_dest = $form_data->getData()['email_dest'] ?? Config::$email_dest;
+		$email_dest_name = $form_data->getData()['email_dest_name'] ?? Config::$email_dest_name; // = destinataire formulaire
 
 	    try{
 	        // Paramètres du serveur
@@ -43,8 +46,9 @@ class EmailService
 	        //var_dump($mail->smtpConnect());die; // test de connexion
 
 	        // Expéditeur et destinataire
-	        $mail->setFrom(strtolower(Config::$email_from), Config::$email_from_name);  // paramètre modifiable uniquement dans le config.ini pour l'instant
-	        $mail->addAddress(strtolower($email_dest), Config::$email_dest_name);  // // paramètre modifiable uniquement dans le config.ini pour l'instant
+	        // $email_from, $email_from_name et $email_dest_name sont modifiables uniquement dans le config.ini pour l'instant
+	        $mail->setFrom(strtolower($email_from), $email_from_name);
+	        $mail->addAddress(strtolower($email_dest), $email_dest_name);
 
 	        // Contenu
 	        $mail->isHTML(true);
