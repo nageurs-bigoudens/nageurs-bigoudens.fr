@@ -41,12 +41,6 @@ class NewsBlockBuilder extends AbstractBuilder
 
                 $modify_js = 'onclick="openEditor(\'' . $id . '\')"';
                 $modify_article = '<p id="edit-' . $id . '" class="hidden"><img class="action_icon" src="assets/edit.svg" ' . $modify_js . '></p>' . "\n";
-
-                $up_js = 'onclick="switchPositions(\'' . $id . '\', \'up\')"';
-                $up_button = '<p id="position_up-' . $id . '" class="hidden"><img class="action_icon" src="assets/arrow-up.svg" ' . $up_js . '></p>' . "\n";
-                
-                $down_js = 'onclick="switchPositions(\'' . $id . '\', \'down\')"';
-                $down_button = '<p id="position_down-' . $id . '" class="hidden"><img class="action_icon" src="assets/arrow-down.svg" ' . $down_js . '></p>' . "\n";
                 
                 $delete_js = 'onclick="deleteArticle(\'' . $id . '\')"';
                 $delete_article = '<p id="delete-' . $id . '" class="hidden"><img class="action_icon" src="assets/delete-bin.svg" ' . $delete_js . '></p>' . "\n";
@@ -58,7 +52,7 @@ class NewsBlockBuilder extends AbstractBuilder
                 $submit_article = '<p id="submit-' . $id . '" class="hidden"><button ' . $submit_js . '>Valider</button></p>';
                 
                 $html = '';
-                $admin_buttons = $new_button . $modify_article . $up_button . $down_button . $delete_article . $close_editor . $submit_article;
+                $admin_buttons = $new_button . $modify_article . $delete_article . $close_editor . $submit_article;
 
                 // post vide mis là pour le bouton "Nouvel article" => déplace vers page "article"
                 ob_start();

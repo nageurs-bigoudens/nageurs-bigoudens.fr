@@ -332,7 +332,11 @@ class Editor
             content = this.tiny_instance.getContent();
         }
 
-        let fetch_params = {id: this.id, content: content};
+        let fetch_params = {
+            id: this.id,
+            content: content,
+            from: new URLSearchParams(window.location.search).get('from') // le "$_GET" de javascript
+        };
         if(this.placement){
             fetch_params['placement'] = this.placement;
         }

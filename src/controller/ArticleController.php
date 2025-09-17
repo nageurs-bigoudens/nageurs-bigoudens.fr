@@ -36,14 +36,19 @@ class ArticleController
 	        if($json['id'][0] === 'n') // ici $id est un bloc
 	        {
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
-	        	if(!$director->findNodeById($section_id)){
-	        		echo json_encode(['success' => false, 'error' => 'article_not_saved']);
+	        	if(!$director->findNodeById($section_id)){ // erreur mauvais id
+	        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad id']);
 	        		die;
 	        	}
 	        	$director->makeSectionNode();
 	        	$node = $director->getNode(); // = <section>
-
+	        	
 	        	if(is_array($content)){ // cas d'une nouvelle "news"
+		        	if($node->getPage()->getEndOfPath() !== $json['from']){ // erreur mauvais from
+		        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad from']);
+		        		die;
+		        	}
+
 	                $date = new \DateTime($content['d'] . ':' . (new \DateTime)->format('s')); // l'input type="datetime-local" ne donne pas les secondes, on les ajoute: 'hh:mm' . ':ss'
 	                $article = new Article($content['i'], $date, $content['t'], $content['p']);
 	                $article_node = new Node('new', [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);

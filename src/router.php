@@ -83,8 +83,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
         // requêtes JSON avec fetch()
         if($_SERVER['CONTENT_TYPE'] === 'application/json')
         {
-            $data = file_get_contents('php://input');
-            $json = json_decode($data, true);
+            $json = json_decode($request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
 
             if($request->query->has('action'))
             {
@@ -309,7 +308,7 @@ else{
 
 /* -- utilisation de la réponse -- */
 if(isset($response)){
-    // cas des mauvais id de la page article (d'autres cas à prévoir)
+    // cas gérés (d'autres sont à prévoir): mauvais id de la page article, accès page création d'article sans être admin
     if($request->isMethod('GET') && $response->getStatusCode() == 302){ // 302 redirection temporaire
         header('Location: ' . new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']));
     }

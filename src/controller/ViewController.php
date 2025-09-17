@@ -33,17 +33,24 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         }
 
         // page article: mode création et erreurs d'id
-        if($_SESSION['admin'] && $request->query->has('page') && $request->query->get('page') === 'article'){
-            if(!$request->query->has('id')){
-                return new Response($this->html, 302);
-            }
-            else{
-                if($request->query->get('id')[0] === 'n'){ // mode création d'article (vérification de l'id du bloc dans ArticleController)
-                    NewBuilder::$new_article_mode = true;
-                }
-                elseif(self::$root_node->getNodeByName('main')->getAdoptedChild() === null){ // id inconnu
+        if($request->query->has('page') && $request->query->get('page') === 'article'){
+            if($_SESSION['admin']){
+                if(!$request->query->has('id')){
                     return new Response($this->html, 302);
                 }
+                else{
+                    // mode création d'article
+                    // l'id du bloc et 'from=' sont vérifiés dans ArticleController::editorSubmit
+                    if($request->query->get('id')[0] === 'n' && $request->query->has('from') && !empty($request->query->get('from'))){
+                        NewBuilder::$new_article_mode = true;
+                    }
+                    elseif(self::$root_node->getNodeByName('main')->getAdoptedChild() === null){ // id inconnu
+                        return new Response($this->html, 302);
+                    }
+                }
+            }
+            elseif($request->query->get('id')[0] === 'n'){ // accès page nouvelle article interdit sans être admin
+                return new Response($this->html, 302);
             }
         }
 

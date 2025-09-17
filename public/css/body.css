@@ -7,10 +7,6 @@ body
 	background-color: #0cceec;
 }
 
-.hidden{
-    display: none;
-}
-
 #bloc_page
 {}
 
@@ -176,8 +172,7 @@ button .action_icon:hover
 }
 .delete_button
 {
-    float: right;
-    margin-left: 2px;
+    margin-right: 2px;
 }
 section button, section input[type=submit]
 {
@@ -238,4 +233,9 @@ article a:hover
     {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+.article_admin_zone p
+{
+    align-self: center;
 }

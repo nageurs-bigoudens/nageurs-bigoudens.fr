@@ -2,7 +2,6 @@
 <article>
     <div class="new_content" id="<?= $id ?>">
         <div class="article_title_zone">
-            <?= $share_button ?>
             <div class="data" id="<?= $id_title ?>">
                 <?= $title ?>
             </div>

@@ -55,7 +55,7 @@ class NewBuilder extends AbstractBuilder
             // page article unique
             if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
                 $content = $node->getArticle()->getContent();
-                $from_to_button = '<p><a class="link_to_article" href="' . new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []) . '"><button>Page<br>précédente</button></a></p>';
+                $from_to_button = '<p><a class="link_to_article" href="' . new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []) . '"><button>Retour</button></a></p>';
             }
             else{
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id, 'from' => CURRENT_PAGE]) . '"><button><img class="action_icon" src="assets/book-open.svg">Lire la suite</button></a></p>';
@@ -82,8 +82,7 @@ class NewBuilder extends AbstractBuilder
             $article_buttons = '';
             $date_buttons = '';
             $admin_buttons = '';
-            if($_SESSION['admin'])
-            {
+            if($_SESSION['admin']){
                 if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
                     $title_js = 'onclick="openEditor(\'' . $id_title . '\')"';
                     $modify_title = '<p id="edit-' . $id_title . '"><button ' . $title_js . '><img class="action_icon" src="assets/edit.svg">Titre</button></p>' . "\n";
@@ -122,45 +121,34 @@ class NewBuilder extends AbstractBuilder
                         $delete_article = '';
                         // valider la création d'un nouvel article
                         $submit_js = 'onclick="submitArticle(\'' . $_GET['id'] . '\')"';
-                        $submit_article = '<p id="save-' . $id . '"><button ' . $submit_js . '><img class="action_icon" src="assets/edit.svg"><span class="delete_button">Tout<br>enregistrer</span></button></p>' . "\n";
+                        $submit_article = '<p id="save-' . $id . '"><img class="action_icon delete_button" src="assets/save.svg" ' . $submit_js . '></p>' . "\n";
                     }
                     // mode article existant
                     else{
                         $url = new URL(['action' => 'delete_article', 'id' => $_GET['id'], 'from' => $_GET['from'] ?? '']);
-                        $delete_article = '<form id="delete-' . $id . '" method="post" onsubmit="return confirm(\'Voulez-vous vraiment supprimer cet article ?\');" action="' . $url . '">
-                            <p><button type="submit">
-                                <img class="action_icon" src="assets/delete-bin.svg">
-                                <span class="delete_button">Supprimer<br>cet article</span>
-                            </button></p>
-                        </form>' . "\n";
+                        $delete_article = '<form id="delete-' . $id . '" method="post" action="' . $url . '">
+                            <p>
+                                <img src="assets/delete-bin.svg" alt="Supprimer l\'article" class="action_icon" style="cursor: pointer;" onclick="if(confirm(\'Voulez-vous vraiment supprimer cet article ?\')) { this.closest(\'form\').submit(); }"
+                            </p>
+                        </form>' . "\n"; // this.closest('form').submit() = submit du formulaire avec javascript
                         $submit_article = '';
                     }
                     
-                    $admin_buttons = $delete_article . $from_to_button . $submit_article;
+                    $admin_buttons = $share_button . $delete_article . $submit_article . $from_to_button;
                 }
                 // autre page
                 else{
-                    $modify_article = '<p id="edit-' . $id . '"></p>' . "\n";
-
-                    $up_js = 'onclick="switchPositions(\'' . $id . '\', \'up\')"';
-                    $up_button = '<p id="position_up-' . $id . '"><img class="action_icon" src="assets/arrow-up.svg" ' . $up_js . '></p>' . "\n";
-                    
-                    $down_js = 'onclick="switchPositions(\'' . $id . '\', \'down\')"';
-                    $down_button = '<p id="position_down-' . $id . '"><img class="action_icon" src="assets/arrow-down.svg" ' . $down_js . '></p>' . "\n";
-
                     $delete_js = 'onclick="deleteArticle(\'' . $id . '\')"';
                     $delete_article = '<p id="delete-' . $id . '"><img class="action_icon" src="assets/delete-bin.svg" ' . $delete_js . '></p>' . "\n";
 
                     $close_editor = '<p id="cancel-' . $id . '" class="hidden"></p>';
                     $submit_article = '<p id="submit-' . $id . '" class="hidden"></p>';
 
-                    $submit_article = '<p id="submit-' . $id . '" class="hidden"></p>';
-
-                    $admin_buttons = $from_to_button . $modify_article . $up_button . $down_button . $delete_article . $close_editor . $submit_article;
+                    $admin_buttons = $from_to_button . $share_button . $delete_article . $close_editor . $submit_article;
                 }
             }
             else{
-                $admin_buttons = $from_to_button;
+                $admin_buttons = $share_button . $from_to_button;
             }
 
             ob_start();

@@ -171,7 +171,31 @@ class Node
     public function addChild(self $child): void
     {
         $this->children[] = $child;
-        $this->sortChildren(false);
+
+         // cas particulier des news: utilise les dates au lieu des positions (les positions existent mais sont ignorées)
+        if($this->getName() === 'news_block'){
+            $this->sortNews($this->getNodeData()->getData()['chrono'] ?? false); // faux = ordre chronologique
+        }
+        else{
+            $this->sortChildren(false);
+        }
+    }
+
+    private function sortNews(bool $chrono = false) // affichage du plus récent au plus ancien par défaut
+    {
+        // tri par insertion similaire à Position::sortChildren
+        for($i = 1; $i < count($this->children); $i++){
+            $tmp = $this->children[$i];
+            $j = $i - 1;
+
+            $compare = $chrono ? fn($a, $b) => $a > $b : fn($a, $b) => $a < $b;
+
+            while($j >= 0 && $compare($this->children[$j]->getArticle()->getDateTime(), $tmp->getArticle()->getDateTime())){
+                $this->children[$j + 1] = $this->children[$j];
+                $j--;
+            }
+            $this->children[$j + 1] = $tmp;
+        }
     }
     
     public function removeChild(self $child): void
