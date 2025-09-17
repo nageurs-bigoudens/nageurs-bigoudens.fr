@@ -13,7 +13,7 @@ class MenuBuilder extends AbstractBuilder
     //private int $margin_left_multiplier = 29;
     private string $options = '';
 
-    public function __construct(Node $node, bool $template = true)
+    public function __construct(?Node $node, bool $template = true)
     {
         // impossible de me rappeler pourquoi j'ai écrit ce test sur $node, pourquoi $node serait null?
         $viewFile = $node === null ? self::VIEWS_PATH . 'menu.php' : self::VIEWS_PATH . $node->getName() . '.php';

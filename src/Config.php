@@ -25,7 +25,7 @@ class Config
     static public string $smtp_secure = ''; // tls (smarttls) ou ssl (smtps) ou plain_text/chaine vide
     static public string $email_from = 'mon_adresse@email.fr';
     static public string $email_from_name = 'site web';
-    static public string $email_dest = 'mon_adresse@email.fr';
+    static public string $email_dest = '';
     static public string $email_dest_name = 'destinataire formulaire';
 
     // copier dans ce tableau les variables contenant des chemins

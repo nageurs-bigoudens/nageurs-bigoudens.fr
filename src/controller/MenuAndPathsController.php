@@ -101,7 +101,6 @@ class MenuAndPathsController
                 
                 //Director::$menu_data->addChild($page); // => pour sortChildren
                 $page->getParent()->addChild($page); // => pour sortChildren
-                //Director::$menu_data->sortChildren(true); // positions décaléees des nouveaux petits frères
                 $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
                 $page->setParent(null);
 
@@ -116,7 +115,6 @@ class MenuAndPathsController
                 $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
                 $page->fillChildrenPagePath($page->getParent()->getPagePath());
             }
-            //$parent->sortChildren(true); // positions des enfants restants, inutile si la fonction est récursive?
             $entityManager->flush();
             
             // affichage

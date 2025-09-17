@@ -23,9 +23,13 @@ trait Position
             $this->children[$j + 1] = $tmp;
         }
         
-        foreach($this->children as $child) {
-            if(count($child->children) > 0) {
-                $child->sortChildren($reindexation);
+        // récursivité (utile dans Menu et chemin)
+        // appel dans Page et dans MenuAndPathController (un tri supplémentaire à faire?)
+        if(self::class === 'App\Entity\Page'){
+            foreach($this->children as $child) {
+                if(count($child->children) > 0) {
+                    $child->sortChildren($reindexation);
+                }
             }
         }
 
