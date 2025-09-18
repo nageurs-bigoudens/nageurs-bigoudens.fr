@@ -29,7 +29,7 @@ function copyInClipBoard(link){
 	alert('Cette adresse a été copiée dans le presse-papier:\n\n' + link);
 }
 
-function toastNotify(message) {
+function toastNotify(message){
     var toast = document.getElementById('toast');
     toast.textContent = message;
     toast.className = 'toast show';
@@ -37,7 +37,15 @@ function toastNotify(message) {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => { // pour pouvoir attraper les balises
+// exécuté à la fin du chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+
+	// détection des dates et conversion à l'heure locale
+	document.querySelectorAll('.local_date').forEach(function(element){
+        const utc_date = element.getAttribute('date-utc'); // forme: 2025-10-10T12:17:00+00:00
+        element.innerText = toFormatedLocalDate(utc_date);
+    });
+
 	// ouvrir/fermer les sous-menus avec écran tactile
 	document.querySelectorAll('.sub-menu-toggle').forEach(button => {
 		button.addEventListener('click', e => {
@@ -108,8 +116,7 @@ function switchPositions(article_id, direction)
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success)
-        {
+        if(data.success){
         	if(direction == 'down'){
 				current_article.parentElement.insertBefore(other_article, current_article);
 				console.log('Inversion réussie');
@@ -119,12 +126,11 @@ function switchPositions(article_id, direction)
 				console.log('Inversion réussie');
 			}
 			else{
-				console.error('Échec de l\'inversion');
+				console.error("Échec de l'inversion");
 			}
         }
-        else {
-
-            console.error('Échec de l\'inversion');
+        else{
+            console.error("Échec de l'inversion");
         }
     })
     .catch(error => {
@@ -132,14 +138,42 @@ function switchPositions(article_id, direction)
     });
 }
 
-function changeDate(id_date)
+function closeInput(id)
+{
+    const date_span = document.getElementById(id);
+    const date_input = document.getElementById('input-' + id);
+    const date_label = document.getElementById('label-' + id);
+
+    date_span.classList.remove('hidden');
+    date_input.remove();
+    date_label.remove();
+    document.querySelector(`#edit-${id}`).classList.remove('hidden');
+    document.querySelector(`#cancel-${id}`).classList.add('hidden');
+    document.querySelector(`#submit-${id}`).classList.add('hidden');
+}
+
+function findParentByTagName(element, tag_name){
+    while(element !== null){
+        if(element.tagName === tag_name.toUpperCase()){ // tagName est en majuscules
+            return element;
+        }
+        element = element.parentElement;
+    }
+    return null;
+}
+
+
+/* -- fonctions spécifiques à la gestion des dates -- */
+
+function openDatetimeLocalInput(id_date)
 {
 	const real_id = 'i' + id_date.slice(1);
 	const date_span = document.getElementById(id_date); // = <span>
-	var old_date = date_span.innerHTML;
-	
-	old_date = dateToISO(old_date);
 
+	/*var old_date = date_span.innerHTML;*/
+	let old_date = new Date(date_span.getAttribute('date-utc'));
+	old_date = forInputTypeDatetimeLocal(old_date); // 2025-06-03T17:24
+	
 	var label = document.createElement('label');
 	label.textContent = 'Choisir une date: ';
 	label.id = 'label-' + id_date;
@@ -159,39 +193,22 @@ function changeDate(id_date)
     document.querySelector(`#submit-${id_date}`).classList.remove('hidden');
 }
 
-function dateToISO(date){
-	// changer "le 28-12-2024 à 23h14" en "2024-12-28T23:14"
-	let values = date.split(" à "); // 2 parties: date et heure
-	values[1] = values[1].replace('h', ':');
-	values[0] = values[0].replace("le ", "");
-	let date_array = values[0].split("-"); // tableau jj-mm-aaaa
-    return date_array[2] + '-' + date_array[1] + "-" + date_array[0] + "T" + values[1];
-}
-
-function closeInput(id)
-{
-    const date_span = document.getElementById(id);
-    const date_input = document.getElementById('input-' + id);
-    const date_label = document.getElementById('label-' + id);
-
-    date_span.classList.remove('hidden');
-    date_input.remove();
-    date_label.remove();
-    document.querySelector(`#edit-${id}`).classList.remove('hidden');
-    document.querySelector(`#cancel-${id}`).classList.add('hidden');
-    document.querySelector(`#submit-${id}`).classList.add('hidden');
-}
-
 function submitDate(id_date)
 {
-	var date_input = document.getElementById('input-' + id_date);
+	const date_input = document.getElementById('input-' + id_date);
+	const date_span = document.getElementById(id_date);
+
+	let date = new Date(date_input.value); // forme: 2025-02-04T00:24
+	let utc_date = date.toISOString(); // forme: 2025-02-03T23:24:00.000Z
 
 	// cas des nouvelles "news"
     const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
     if(params != null && params.get("id")[0] === 'n')
 	{
-		// modifier la date dans le <span> caché
-    	date_input = updateDate(id_date, date_input);
+		// modifier la date dans le <span> caché ET l'attribut date-utc
+		date_span.setAttribute('date-utc', utc_date); // heure UTC
+		date_span.innerHTML = toFormatedLocalDate(utc_date); // heure locale
+
         closeInput(id_date);
         return;
 	}
@@ -201,44 +218,41 @@ function submitDate(id_date)
 	        headers: {
 	            'Content-Type': 'application/json'
 	        },
-	        body: JSON.stringify({id: id_date, date: date_input.value})
+	        body: JSON.stringify({id: id_date, date: utc_date.slice(0, 16)}) // heure UTC
 	    })
 	    .then(response => response.json())
 	    .then(data => {
-	        if (data.success) {
-	        	// modifier la date dans le <span> caché
-	        	date_input = updateDate(id_date, date_input);
+	        if(data.success){
+	        	// modifier la date dans le <span> caché ET l'attribut date-utc
+				date_span.setAttribute('date-utc', utc_date); // heure UTC
+				date_span.innerHTML = toFormatedLocalDate(utc_date); // heure locale
+
 	            closeInput(id_date);
 	        }
-	        else {
+	        else{
 	            console.error('Erreur lors de la sauvegarde de la date.');
 	        }
 	    })
 	    .catch(error => {
 	        console.error('Erreur:', error);
 	    });
-	}    
+	}
 }
 
-function updateDate(id_date, date_input){
-	var date_span = document.getElementById(id_date);
-	let date = new Date(date_input.value);
-	date_span.innerHTML = 
-		'le ' + String(date.getDate()).padStart(2, '0') + '-' + 
-		String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-		String(date.getFullYear()).padStart(4, '0') + ' à ' + 
-		String(date.getHours()).padStart(2, '0') + 'h' + 
-		String(date.getMinutes()).padStart(2, '0');
+function toFormatedLocalDate(utc_string_date){ // forme: 2025-07-17T13:54:00.000Z ou 2025-02-04T00:24
+	const date = new Date(utc_string_date);
 
-	return date_input;
+	// donne l'heure locale, forme: le 10-10-2025 à 14:17
+	return 'le ' + String(date.getDate()).padStart(2, '0')
+    	+ '-' + String(date.getMonth() + 1).padStart(2, '0') // mois comptés à partir de 0 !!
+    	+ '-' + date.getFullYear()
+    	+ ' à ' + String(date.getHours()).padStart(2, '0')
+    	+ 'h' + String(date.getMinutes()).padStart(2, '0');
 }
-
-function findParentByTagName(element, tag_name){
-    while(element !== null){
-        if(element.tagName === tag_name.toUpperCase()){ // tagName est en majuscules
-            return element;
-        }
-        element = element.parentElement;
-    }
-    return null;
+function forInputTypeDatetimeLocal(date){ // forme: 2024-12-28T23:14
+    return date.getFullYear()
+    	+ '-' + String(date.getMonth() + 1).padStart(2, '0') // mois comptés à partir de 0 !!
+    	+ '-' + String(date.getDate()).padStart(2, '0')
+    	+ 'T' + String(date.getHours()).padStart(2, '0')
+    	+ ':' + String(date.getMinutes()).padStart(2, '0');
 }

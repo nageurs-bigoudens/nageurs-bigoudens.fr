@@ -61,9 +61,8 @@ class NewBuilder extends AbstractBuilder
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id, 'from' => CURRENT_PAGE]) . '"><button><img class="action_icon" src="assets/book-open.svg">Lire la suite</button></a></p>';
             }
 
-            
-            $date_object = $node->getArticle()->getDateTime(); // class DateTime
-            $date = 'le ' . str_replace(':', 'h', $date_object->format('d-m-Y à H:i'));
+            $date = $node->getArticle()->getDateTime()->format('Y-m-d\TH:i:s.v\Z'); // format: 2025-07-17T13:54:00.000Z
+            // format(\DateTime::ATOM) produit le format: 2025-10-10T12:17:00+00:00, c'est aussi de la norme ISO, mais à éviter pour être compatible avec date.toISOString en JS
 
             // partage
             $share_link = new URL(['page' => 'article', 'id' => $id]);
@@ -108,7 +107,7 @@ class NewBuilder extends AbstractBuilder
                     $submit_article = '<p id="submit-' . $id_content . '" class="hidden"><button ' . $submit_js_article . '>Valider</button></p>';
                     $article_buttons = '<div class="button_zone">' . $modify_article . $close_editor_article . $submit_article . '</div>';
 
-                    $date_js = 'onclick="changeDate(\'' . $id_date . '\', \'article\');';
+                    $date_js = 'onclick="openDatetimeLocalInput(\'' . $id_date . '\', \'article\');';
                     $modify_date = '<p id="edit-' . $id_date . '"><button ' . $date_js . '"><img class="action_icon" src="assets/edit.svg">Date</button></p>' . "\n";
                     $close_js_date = 'onclick="closeInput(\'' . $id_date . '\')"';
                     $close_editor_date = '<p id="cancel-' . $id_date . '" class="hidden"><button ' . $close_js_date . '>Annuler</button></p>';

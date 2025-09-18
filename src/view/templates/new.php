@@ -18,7 +18,7 @@
         <div class="under_an_article">
             <p>
                 <img src="assets/calendar.svg">
-                <span class="data" id="<?= $id_date ?>"><?= $date ?></span>
+                <span class="data local_date" id="<?= $id_date ?>" date-utc="<?= $date ?>">Chargement...</span>
             </p>
         </div>
         <?= $date_buttons ?>

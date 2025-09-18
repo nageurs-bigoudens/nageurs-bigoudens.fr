@@ -292,7 +292,6 @@ class Editor
     }
 
     submit(clone = null){
-        //var editor;
         var content;
         const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
         // à comparer avec: new URLSearchParams(window.location.search);
@@ -312,9 +311,12 @@ class Editor
                     if(first_letter === 'i'){
                         id_from_builder = element.id;
                     }
+                    else if(first_letter === 'd'){
+                        content[first_letter] = element.getAttribute('date-utc');
+                    }
                 }
             })
-            content['d'] = dateToISO(content['d']);
+            content['d'] = new Date(content['d']).toISOString().slice(0, 16); // date UTC, format: 2025-09-18T15:21
         }
         // champs à remplir des nouvelles "news"
         else if(window.Config.page === 'article' && params != null && params.get("id")[0] === 'n'){
@@ -324,7 +326,6 @@ class Editor
         // dans les autres cas, on doit pouvoir récupérer l'éditeur
         else{
             // l'éditeur correspond à l'article OU si page = "article" à un élément: titre, aperçu, article
-            //editor = editors[id];
             if(!this.tiny_instance){
                 console.error("Éditeur non trouvé pour l'article:", this.id);
                 return;
