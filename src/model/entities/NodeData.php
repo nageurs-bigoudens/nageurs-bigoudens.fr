@@ -27,9 +27,8 @@ class NodeData
     #[ORM\Column(type: "json")]
     private array $data;
 
-    #[ORM\ManyToOne(targetEntity: Presentation::class)]
-    #[ORM\JoinColumn(name: "presentation_id", referencedColumnName: "id_presentation", nullable: true)]
-    private ?Presentation $presentation;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $presentation;
 
     #[ORM\Column(type: "integer", length: 255, nullable: true)]
     private ?int $grid_cols_min_width = null; // pour le mode grille
@@ -43,12 +42,12 @@ class NodeData
     )]
     private Collection $images;
 
-    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, Presentation $presentation = null)
+    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, string $presentation = null)
     {
         $this->data = $data;
         $this->node = $node;
         $this->images = $images;
-        if(!empty($presentation) && $presentation->getName() === 'grid'){
+        if(!empty($presentation) && $presentation === 'grid'){
             $this->grid_cols_min_width = 250;
         }
     }
@@ -75,11 +74,11 @@ class NodeData
             unset($this->data[$key]);
         }
     }
-    public function getPresentation(): ?Presentation
+    public function getPresentation(): ?string
     {
         return $this->presentation;
     }
-    public function setPresentation(Presentation $presentation): void
+    public function setPresentation(string $presentation): void
     {
         $this->presentation = $presentation;
     }

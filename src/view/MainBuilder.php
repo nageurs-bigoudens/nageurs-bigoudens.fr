@@ -55,14 +55,11 @@ class MainBuilder extends AbstractBuilder
     // mode modification de page uniquement
     private function viewEditBlocks($node): void
     {
-        $blocks = Blocks::getTypeNamePairs();
-
         $options = '';
-        for($i = 0; $i < count($blocks); $i++){
-            $options .= '<option value= "' . $blocks[$i]['type'] . '">' . $blocks[$i]['name'] . "</option>\n";
+        foreach(Blocks::$blocks as $key => $value){
+            $options .= '<option value= "' . $key . '">' . $value . "</option>\n";
         }
 
-        //$page_id = Director::$page_path->getLast()->getId();
         $head_node = null;
         foreach(ViewController::$root_node->getChildren() as $first_level_node){
             if($first_level_node->getName() === 'head'){
@@ -88,7 +85,7 @@ class MainBuilder extends AbstractBuilder
     private function makePresentationOptions(string $presentation): string
     {
         $options = '';
-        foreach(Presentation::$option_list as $key => $value){
+        foreach(Blocks::$presentations as $key => $value){
             $options .= '<option value="' . $key . '" ' . ($presentation === $key ? 'selected' : '') . '>' . $value . '</option>';
         }
         return $options;

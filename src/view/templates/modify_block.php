@@ -1,6 +1,6 @@
 <div class="modify_one_block" id="bloc_edit_<?= $child_node->getId() ?>">
     <div class="block_options">
-        <label for="bloc_rename_<?= $child_node->getId() ?>">Type <b><?= Blocks::getNameFromType($child_node->getName()) ?></b>
+        <label for="bloc_rename_<?= $child_node->getId() ?>">Type <b><?= Blocks::$blocks[$child_node->getName()] ?></b>
         </label>
         <p>
             <input type="text" id="bloc_rename_<?= $child_node->getId() ?>" name="bloc_rename_title" value="<?= $child_node->getNodeData()->getdata()['title'] ?>" required>
@@ -24,9 +24,9 @@ if($child_node->getNodeData()->getPresentation() !== null){
     <div class="grid_options"><p>
         <label for="presentation_select_<?= $child_node->getId() ?>">Présentation</label>
         <select id="presentation_select_<?= $child_node->getId() ?>" onchange="changePresentation(<?= $child_node->getId() ?>)">
-			<?= $this->makePresentationOptions($child_node->getNodeData()->getPresentation()->getName()) ?>
+			<?= $this->makePresentationOptions($child_node->getNodeData()->getPresentation()) ?>
     	</select>
-    	<div id="cols_min_width_edit_<?= $child_node->getId() ?>" class="<?= ($child_node->getNodeData()->getPresentation()->getName() === 'grid' ? '' : 'hidden') ?>">
+    	<div id="cols_min_width_edit_<?= $child_node->getId() ?>" class="<?= ($child_node->getNodeData()->getPresentation() === 'grid' ? '' : 'hidden') ?>">
         	<label for="cols_min_width_select_<?= $child_node->getId() ?>">Largeur minimum </label>
     		<input type="number" id="cols_min_width_select_<?= $child_node->getId() ?>" onchange="changeColsMinWidth(<?= $child_node->getId() ?>)" min="150" max="400" value="<?= $child_node->getNodeData()->getColsMinWidth() ?>"> pixels
 		</div>

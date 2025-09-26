@@ -16,15 +16,14 @@ class Log
     #[ORM\Column(type: "integer")]
     private int $id_log;
 
-    #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
-    //#[ORM\Column(type: 'datetime', columnDefinition: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")]
-    private ?\DateTime $date_time ; // le type datetime de doctrine convertit en type \DateTime de PHP
+    #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])] // CURRENT_TIMESTAMP "inutile", date générée par PHP
+    private \DateTime $date_time; // type datetime de doctrine <=> type \DateTime de PHP
 
     #[ORM\Column(type: "boolean")]
     private bool $success;
 
     public function __construct(bool $success){
-        $this->date_time = new \DateTime();
+        $this->date_time = new \DateTime;
         $this->success = $success;
     }
 }

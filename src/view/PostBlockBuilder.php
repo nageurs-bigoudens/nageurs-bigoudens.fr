@@ -22,7 +22,7 @@ class PostBlockBuilder extends AbstractBuilder
             }
 
             // stratégie d'affichage du contenu (utilisation de méthodes ou de classe List, GridPresentation, etc)
-            $section_class = $node->getNodeData()->getPresentation()->getName(); // = list, grid , mosaic ou carousel
+            $section_class = $node->getNodeData()->getPresentation(); // = list, grid , mosaic ou carousel
             $cols_min_width = '';
             if($section_class === 'grid'){
                 $min_width = $node->getNodeData()->getColsMinWidth();

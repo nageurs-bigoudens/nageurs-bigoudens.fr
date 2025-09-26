@@ -135,7 +135,7 @@ class PageManagementController
 	    $main = $director->getNode();
 	    $position = count($main->getChildren()) + 1; // position dans la fraterie
 
-	    if(!in_array($_POST["bloc_select"], Blocks::getNameList(), true)) // 3è param: contrôle du type
+	    if(!in_array($_POST["bloc_select"], array_keys(Blocks::$blocks), true)) // 3è param: contrôle du type
 	    {
 	        header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'bad_bloc_type']));
 	        die;
@@ -168,13 +168,13 @@ class PageManagementController
 
 	    // valeurs par défaut
 	    if($_POST["bloc_select"] === 'post_block'){
-	    	$data->setPresentation(Presentation::findPresentation($entityManager, 'fullwidth')); // pas génial l'utilisation de l'index dans la table
+	    	$data->setPresentation('fullwidth');
 	    }
 	    elseif($_POST["bloc_select"] === 'news_block'){
-	    	$data->setPresentation(Presentation::findPresentation($entityManager, 'grid'));
+	    	$data->setPresentation('grid');
 	    }
 	    elseif($_POST["bloc_select"] === 'galery'){
-	    	$data->setPresentation(Presentation::findPresentation($entityManager, 'mosaic')); // mieux que carousel pour commencer
+	    	$data->setPresentation('mosaic'); // mieux que carousel pour commencer
 	    }
 	    // else = null par défaut
 
@@ -274,9 +274,8 @@ class PageManagementController
 			$director = new Director($entityManager, false);
 			$director->findNodeById($json['id']);
 
-			$presentation = Presentation::findPresentation($entityManager, $json['presentation']);
-			if($presentation !== null){
-				$director->getNode()->getNodeData()->setPresentation($presentation);
+			if(in_array($json['presentation'], array_keys(Blocks::$presentations))){
+				$director->getNode()->getNodeData()->setPresentation($json['presentation']);
 
 				$entityManager->flush();
 
