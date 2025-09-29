@@ -176,6 +176,35 @@ function switchBlocsPositions(bloc_id, direction) {
     });
 }
 
+function articlesOrderSelect(bloc_id){
+    const articles_order_select = document.getElementById('articles_order_select_' + bloc_id).value;
+
+    fetch('index.php?bloc_edit=change_articles_order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bloc_id, chrono_order: articles_order_select })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            // inverser l'ordre des articles!!
+            const parent = document.getElementById(bloc_id).querySelector(".section_child");
+            const articles = Array.from(parent.querySelectorAll("article"));
+            articles.reverse().forEach(article => {
+                parent.appendChild(article); // déplace dans le DOM, ne copie pas
+            });
+
+            console.log('ordre ' + articles_order_select);
+        }
+        else{
+            console.log("Erreur au changement de l'ordre d'affichage côté serveur");
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
 function changePresentation(bloc_id){
     const presentation = document.getElementById('presentation_select_' + bloc_id).value;
 

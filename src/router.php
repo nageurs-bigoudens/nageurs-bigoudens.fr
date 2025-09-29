@@ -186,6 +186,9 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 elseif($request->query->get('bloc_edit') === 'switch_blocs_positions'){
                     PageManagementController::SwitchBlocsPositions($entityManager, $json);
                 }
+                elseif($request->query->get('bloc_edit') === 'change_articles_order'){
+                    PageManagementController::changeArticlesOrder($entityManager, $json);
+                }
                 elseif($request->query->get('bloc_edit') === 'change_presentation'){
                     PageManagementController::changePresentation($entityManager, $json);
                 }

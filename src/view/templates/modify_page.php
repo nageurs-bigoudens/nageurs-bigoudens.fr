@@ -44,6 +44,11 @@
                 <input type="hidden" name="bloc_title_hidden">
                 <input type="submit" value="Valider"></p>
             </form>
+            <div class="explanations">
+                <p><b>Articles libres</b>: textes riches générés par l'éditeur et librement positionnables</p>
+                <p><b>Actualilés</b>: contenus structurés avec titre, aperçu, date et possédant une page dédiée</p>
+                <p><b>Galerie</b>: photos parcourables en mode plein écran (cette fonctionalité n'est pas encore disponible)</p>
+            </div>
         </div>
         <div class="modify_block">
             <p>Modifier un bloc</p>

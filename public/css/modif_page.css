@@ -53,15 +53,19 @@
 	justify-content: space-evenly;
 	flex-wrap: wrap;
 }
-.edit_page_zone p, .edit_block_zone p, .edit_page_zone form
+.new_block
 {
-	margin: 5px;
+	max-width: 300px;
 }
-
 .new_block #bloc_title
 {
 	width: 70%;
 	max-width: 300px;
+}
+.explanations
+{
+	font-style: italic;
+	font-size: smaller;
 }
 
 .modify_block img
@@ -76,16 +80,20 @@
 {
 	background-color: white;
 	margin: 8px 0;
-	padding: 5px;
 }
-.modify_one_block > *
+.modify_one_block p
 {
-	/*text-wrap: nowrap;*/
+	margin: 0px;
 }
 .modify_one_block > div
 {
+	padding: 4px;
 	display: flex;
 	align-items: center;
+}
+.modify_one_block > div > *
+{
+	margin: 4px;
 }
 .block_options
 {

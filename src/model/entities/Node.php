@@ -174,7 +174,7 @@ class Node
 
          // cas particulier des news: utilise les dates au lieu des positions (les positions existent mais sont ignorées)
         if($this->getName() === 'news_block'){
-            $this->sortNews($this->getNodeData()->getData()['chrono'] ?? false); // faux = ordre chronologique
+            $this->sortNews($this->getNodeData()->getChronoOrder() ?? false); // faux = ordre chronologique
         }
         else{
             $this->sortChildren(false);

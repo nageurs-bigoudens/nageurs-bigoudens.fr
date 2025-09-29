@@ -19,13 +19,26 @@
 	    </div>
 	</div>
 <?php
+if($child_node->getName() === 'news_block'){
+?>
+	<div class="news_order">
+		<label>Ordre des articles</label>
+		<select id="articles_order_select_<?= $child_node->getId() ?>" onchange="articlesOrderSelect(<?= $child_node->getId() ?>)">
+			<option value="antichrono" <?= $order === 'antichrono' ? 'selected' : '' ?>>Antichronologique</option>
+			<option value="chrono" <?= $order === 'chrono' ? 'selected' : '' ?>>Chronologique</option>
+		</select>
+	</div>
+<?php
+}
 if($child_node->getNodeData()->getPresentation() !== null){
 ?>
-    <div class="grid_options"><p>
-        <label for="presentation_select_<?= $child_node->getId() ?>">Présentation</label>
-        <select id="presentation_select_<?= $child_node->getId() ?>" onchange="changePresentation(<?= $child_node->getId() ?>)">
-			<?= $this->makePresentationOptions($child_node->getNodeData()->getPresentation()) ?>
-    	</select>
+    <div class="grid_options">
+    	<div>
+	        <label for="presentation_select_<?= $child_node->getId() ?>">Présentation</label>
+	        <select id="presentation_select_<?= $child_node->getId() ?>" onchange="changePresentation(<?= $child_node->getId() ?>)">
+				<?= $this->makePresentationOptions($child_node->getNodeData()->getPresentation()) ?>
+	    	</select>
+    	</div>
     	<div id="cols_min_width_edit_<?= $child_node->getId() ?>" class="<?= ($child_node->getNodeData()->getPresentation() === 'grid' ? '' : 'hidden') ?>">
         	<label for="cols_min_width_select_<?= $child_node->getId() ?>">Largeur minimum </label>
     		<input type="number" id="cols_min_width_select_<?= $child_node->getId() ?>" onchange="changeColsMinWidth(<?= $child_node->getId() ?>)" min="150" max="400" value="<?= $child_node->getNodeData()->getColsMinWidth() ?>"> pixels

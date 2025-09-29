@@ -85,10 +85,7 @@ class PageManagementController
 	        $page);
 	    $node->useDefaultAttributes(); // fichiers CSS et JS
 
-	    $data = new NodeData([
-	        // pas de titre, il est dans $page
-	        'description' => trim(htmlspecialchars($_POST["page_description"]))],
-	        $node);
+	    $data = new NodeData(['description' => trim(htmlspecialchars($_POST["page_description"]))], $node);
 
 	    $bulk_data = $entityManager
 	        ->createQuery('SELECT n FROM App\Entity\Image n WHERE n.file_name LIKE :name')
@@ -162,9 +159,7 @@ class PageManagementController
 	    }
 
 	    $block = new Node($_POST["bloc_select"], [], $position, $main, $page);
-	    $data = new NodeData(
-	        ['title' => trim(htmlspecialchars($_POST["bloc_title"]))],
-	        $block);
+	    $data = new NodeData(['title' => trim(htmlspecialchars($_POST["bloc_title"]))], $block);
 
 	    // valeurs par défaut
 	    if($_POST["bloc_select"] === 'post_block'){
@@ -268,6 +263,33 @@ class PageManagementController
 		die;
 	}
 
+	static public function changeArticlesOrder(EntityManager $entityManager, array $json): void
+	{
+		if(isset($json['id']) && isset($json['chrono_order'])){
+			$director = new Director($entityManager, false);
+			$director->findNodeById($json['id']);
+
+			if($json['chrono_order'] === 'chrono'){
+				$chrono_order = true;
+			}
+			elseif($json['chrono_order'] === 'antichrono'){
+				$chrono_order = false;
+			}
+			else{
+				echo json_encode(['success' => false]);
+				die;
+			}
+			$director->getNode()->getNodeData()->setChronoOrder($chrono_order);
+			$entityManager->flush();
+			
+			echo json_encode(['success' => true, 'chrono_order' => $json['chrono_order']]);
+		}
+		else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+	}
+
 	static public function changePresentation(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['presentation'])){
@@ -276,7 +298,6 @@ class PageManagementController
 
 			if(in_array($json['presentation'], array_keys(Blocks::$presentations))){
 				$director->getNode()->getNodeData()->setPresentation($json['presentation']);
-
 				$entityManager->flush();
 
 				$response_data = ['success' => true, 'presentation' => $json['presentation']];

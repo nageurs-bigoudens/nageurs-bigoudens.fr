@@ -71,6 +71,11 @@ class MainBuilder extends AbstractBuilder
         // ceci pourrait être déplacé au début des blocs
         $bloc_edit = '';
         foreach($node->getChildren() as $child_node){
+            // ordre des articles 'news'
+            if($child_node->getName() === 'news_block'){
+                $order = $child_node->getNodeData()->getChronoOrder() ? 'chrono' : 'antichrono';
+            }
+            
             ob_start();
             require self::VIEWS_PATH . 'modify_block.php';
             $bloc_edit .= ob_get_clean();

@@ -30,7 +30,10 @@ class NodeData
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $presentation;
 
-    #[ORM\Column(type: "integer", length: 255, nullable: true)]
+    #[ORM\Column(type: "boolean", length: 255, nullable: true)]
+    private ?bool $chrono_order = null;
+
+    #[ORM\Column(type: "integer", nullable: true)]
     private ?int $grid_cols_min_width = null; // pour le mode grille
 
     // liaison avec table intermédiaire
@@ -42,7 +45,7 @@ class NodeData
     )]
     private Collection $images;
 
-    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, string $presentation = null)
+    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
         $this->data = $data;
         $this->node = $node;
@@ -50,6 +53,7 @@ class NodeData
         if(!empty($presentation) && $presentation === 'grid'){
             $this->grid_cols_min_width = 250;
         }
+        $this->chrono_order = $chrono_order ?? null;
     }
 
     public function getId(): int
@@ -60,7 +64,7 @@ class NodeData
     {
         return $this->data;
     }
-    /*public function setData(array $data): void
+    /*public function setData(array $data): void // entrée = tableau associatif
     {
         $this->data = $data;
     }*/
@@ -74,6 +78,8 @@ class NodeData
             unset($this->data[$key]);
         }
     }
+
+    // spécifique aux blocs contenant des articles
     public function getPresentation(): ?string
     {
         return $this->presentation;
@@ -90,6 +96,14 @@ class NodeData
     public function setColsMinWidth(int $columns): void
     {
         $this->grid_cols_min_width = $columns;
+    }
+    public function getChronoOrder(): bool
+    {
+        return $this->chrono_order ?? false;
+    }
+    public function setChronoOrder(bool $reverse_order): void
+    {
+        $this->chrono_order = $reverse_order;
     }
     
     /*public function setNode(Node $node): void
