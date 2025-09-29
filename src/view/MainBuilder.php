@@ -75,6 +75,11 @@ class MainBuilder extends AbstractBuilder
             if($child_node->getName() === 'news_block'){
                 $order = $child_node->getNodeData()->getChronoOrder() ? 'chrono' : 'antichrono';
             }
+
+            // présentation par défaut
+            if(Blocks::hasPresentation($child_node->getName()) && $child_node->getNodeData()->getPresentation() === null){
+                $child_node->getNodeData()->setPresentation('full_width'); // pas de persistence ici
+            }
             
             ob_start();
             require self::VIEWS_PATH . 'modify_block.php';

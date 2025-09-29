@@ -30,7 +30,7 @@ if($child_node->getName() === 'news_block'){
 	</div>
 <?php
 }
-if($child_node->getNodeData()->getPresentation() !== null){
+if(Blocks::hasPresentation($child_node->getName())){
 ?>
     <div class="grid_options">
     	<div>
