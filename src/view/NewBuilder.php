@@ -56,9 +56,11 @@ class NewBuilder extends AbstractBuilder
             if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
                 $content = $node->getArticle()->getContent();
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []) . '"><button>Retour</button></a></p>';
+                $overflow = '';
             }
             else{
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(['page' => 'article', 'id' => $id, 'from' => CURRENT_PAGE]) . '"><button><img class="action_icon" src="assets/book-open.svg">Lire la suite</button></a></p>';
+                $overflow = ' overflow_hidden';
             }
 
             $date = $node->getArticle()->getDateTime()->format('Y-m-d\TH:i:s.v\Z'); // format: 2025-07-17T13:54:00.000Z

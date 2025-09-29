@@ -49,11 +49,11 @@ abstract class AbstractBuilder
     	return str_replace('_', '', ucwords($input, '_'));
     }
 
-    public function render(): string // = getHTML()
+    protected function render(): string // = getHTML()
     {
         return $this->html;
     }
-    public function addHTML(string $html): void
+    protected function addHTML(string $html): void
     {
         $this->html .= $html;
     }

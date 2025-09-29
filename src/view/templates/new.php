@@ -1,12 +1,10 @@
 <?php declare(strict_types=1); ?>
 <article>
-    <div class="new_content" id="<?= $id ?>">
-        <div class="article_title_zone">
-            <div class="data" id="<?= $id_title ?>">
-                <?= $title ?>
-            </div>
-            <?= $title_buttons ?>
+    <div class="new_content <?= $overflow ?>" id="<?= $id ?>">
+        <div class="data" id="<?= $id_title ?>">
+            <?= $title ?>
         </div>
+        <?= $title_buttons ?>
         <div class="data new_content_text" id="<?= $id_preview ?>">
             <?= $preview ?>
         </div>

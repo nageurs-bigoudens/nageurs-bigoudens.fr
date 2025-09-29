@@ -1,10 +1,10 @@
 <?php declare(strict_types=1); ?>
 <article>
-    <div class="article_content">
+    <div class="post_content">
         <div class="article_title_zone">
             <?= $share_button ?>
         </div>
-        <div id="<?= $id ?>" class="html_from_editor">
+        <div id="<?= $id ?>">
             <?= $html ?>
         </div>
         <div class="article_admin_zone">

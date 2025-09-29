@@ -46,8 +46,8 @@
             </form>
             <div class="explanations">
                 <p><b>Articles libres</b>: textes riches générés par l'éditeur et librement positionnables</p>
-                <p><b>Actualilés</b>: contenus structurés avec titre, aperçu, date et possédant une page dédiée</p>
-                <p><b>Galerie</b>: photos parcourables en mode plein écran (cette fonctionalité n'est pas encore disponible)</p>
+                <p><b>Actualités</b>: contenus structurés avec titre, aperçu, date et possédant une page dédiée</p>
+                <!-- <p><b>Galerie</b>: photos parcourables en mode plein écran (cette fonctionalité n'est pas encore disponible)</p> -->
             </div>
         </div>
         <div class="modify_block">
