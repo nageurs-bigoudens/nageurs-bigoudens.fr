@@ -12,9 +12,8 @@ B -
     1/ passer à des chemins modernes "ciblant des ressources" genre /chemin/de/la/page
         le mode modification de page doit thérioquement être appelé comme ça: /chemin/de/la/page/modif_page
         apparemment, le from=nom_page pour les formulaires ne se fait pas...
-    2/ utiliser le routeur de symfony: nécéssite que tous les contrôleurs soient des classes avec un namespace */
-
-// http-foundation possède aussi une classe Session. intéressant!
+    2/ utiliser le routeur de symfony: nécéssite que tous les contrôleurs soient des classes avec un namespace
+    3/ http-foundation possède aussi une classe Session. intéressant! */
 
 declare(strict_types=1);
 
@@ -53,7 +52,8 @@ ini_set('session.cookie_httponly', 'On');
 ini_set('session.use_strict_mode', 'On');
 ini_set('session.cookie_secure', 'On');
 session_start();
-$_SESSION['admin'] = !isset($_SESSION['admin']) ? false : $_SESSION['admin']; // intialisation sur faux
+
+$_SESSION['admin'] = $_SESSION['admin'] ?? false;
 if($_SESSION['admin'] === false || empty($_SESSION['user'])){ // OUT !!
     $_SESSION['user'] = '';
     $_SESSION['admin'] = false;

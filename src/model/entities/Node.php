@@ -32,7 +32,7 @@ class Node
     private int $position;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
-    //#[ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER')] // À TESTER
+    //#[ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER')] // fetch: 'eager' désactive le mode fainéant de doctrine
     #[ORM\JoinColumn(name: "parent_id", referencedColumnName: "id_node", onDelete: "SET NULL", nullable: true)]
     private ?self $parent = null;
 

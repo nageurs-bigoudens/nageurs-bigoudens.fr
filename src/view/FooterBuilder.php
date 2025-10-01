@@ -72,7 +72,8 @@ class FooterBuilder extends AbstractBuilder
     private function makePageModifModeButton(): string
     {
         $link_edit_page = new URL(['page' => CURRENT_PAGE]);
-        if(CURRENT_PAGE !== 'article'){
+        if(!in_array(CURRENT_PAGE, ['article', 'nouvelle_page', 'menu_chemins'])) // ajouter 'user_edit' et 'connection' le jour où ces pages auront un footer
+        {
             if(MainBuilder::$modif_mode){
                 $link_edit_label = 'Sortir du mode modification';
             }

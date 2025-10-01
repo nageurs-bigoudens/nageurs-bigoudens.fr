@@ -5,7 +5,6 @@
 
 declare(strict_types=1);
 
-use App\Entity\Article;
 use App\Entity\Node;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,21 +18,24 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
 
     public function buildView(EntityManager $entityManager, Request $request): Response
     {
-        // accès au modèle
+        /* 1/ accès au modèle */
         $director = new Director($entityManager, true);
         $director->makeRootNode(htmlspecialchars($request->query->get('id') ?? ''));
         self::$root_node = $director->getNode();
 
+
+        /* 2/ traitement de quelques paramètres */
+
         // mode modification d'une page activé
-        if($_SESSION['admin'] && $request->query->has('page')
+        if($_SESSION['admin']
             && $request->query->has('mode') && $request->query->get('mode') === 'page_modif'
-            && $request->query->get('page') !== 'connexion' && $request->query->get('page') !== 'article' && $request->query->get('page') !== 'nouvelle_page' && $request->query->get('page') !== 'menu_chemins'){
-            // les contrôles de la 2è ligne devraient utiliser un tableau
+            && !in_array(CURRENT_PAGE, ['article', 'nouvelle_page', 'menu_chemins', 'user_edit', 'connection']))
+        {
             MainBuilder::$modif_mode = true;
         }
 
         // page article: mode création et erreurs d'id
-        if($request->query->has('page') && $request->query->get('page') === 'article'){
+        if(CURRENT_PAGE === 'article'){
             if($_SESSION['admin']){
                 if(!$request->query->has('id')){
                     return new Response($this->html, 302);
@@ -54,7 +56,8 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
             }
         }
 
-        //début de la construction de la page
+
+        /* 3/ construction de la page avec builders et vues */
         $this->useChildrenBuilder(self::$root_node);
 
         return new Response($this->html, 200);
