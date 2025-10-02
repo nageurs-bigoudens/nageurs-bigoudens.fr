@@ -21,7 +21,7 @@
                     <div class="social">
                         <?= $social_networks ?>
                     </div>
-                    <?= $breadcrumb ?>
+                    <?= $breadcrumb ?? '' ?>
                 </div>
             </div>
         </header>
