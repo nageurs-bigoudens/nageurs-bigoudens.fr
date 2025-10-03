@@ -55,7 +55,8 @@ class PageManagementController
 	static public function newPage(EntityManager $entityManager): void
 	{
 	    // titre et chemin
-	    $director = new Director($entityManager, true);
+	    $director = new Director($entityManager);
+	    $director->makeMenuAndPaths();
 	    //Director::$menu_data = new Menu($entityManager);
 	    $previous_page = Director::$menu_data->findPageById((int)$_POST["page_location"]); // (int) à cause de declare(strict_types=1);
 	    $parent = $previous_page->getParent();
@@ -125,7 +126,8 @@ class PageManagementController
 	/* partie "blocs" */
 	static public function addBloc(EntityManager $entityManager): void
 	{
-	    $director = new Director($entityManager, true); // on a besoin de page_path qui dépend de menu_data
+	    $director = new Director($entityManager);
+	    $director->makeMenuAndPaths(); // on a besoin de page_path qui dépend de menu_data
 	    $page = Director::$page_path->getLast();
 	    $director->findUniqueNodeByName('main');
 	    $director->findItsChildren();
@@ -182,7 +184,8 @@ class PageManagementController
 
 	static public function deleteBloc(EntityManager $entityManager): void
 	{
-	    $director = new Director($entityManager, true);
+	    $director = new Director($entityManager);
+	    $director->makeMenuAndPaths();
 	    $director->findUniqueNodeByName('main');
 	    $director->findItsChildren();
 	    //$director->findNodeById((int)$_POST['delete_bloc_id']);
@@ -228,7 +231,8 @@ class PageManagementController
 	static public function SwitchBlocsPositions(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id1']) && is_int($json['id1']) && isset($json['id2']) && is_int($json['id2']) && isset($_GET['page'])){
-    		$director = new Director($entityManager, true); // true pour $director->findItsChildren();
+    		$director = new Director($entityManager);
+    		$director->makeMenuAndPaths(); // true pour $director->findItsChildren();
     		$director->findUniqueNodeByName('main');
             $director->findItsChildren();
             $main = $director->getNode();
@@ -266,7 +270,7 @@ class PageManagementController
 	static public function changeArticlesOrder(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['chrono_order'])){
-			$director = new Director($entityManager, false);
+			$director = new Director($entityManager);
 			$director->findNodeById($json['id']);
 
 			if($json['chrono_order'] === 'chrono'){
@@ -293,7 +297,7 @@ class PageManagementController
 	static public function changePresentation(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['presentation'])){
-			$director = new Director($entityManager, false);
+			$director = new Director($entityManager);
 			$director->findNodeById($json['id']);
 
 			if(in_array($json['presentation'], array_keys(Blocks::$presentations))){
@@ -318,7 +322,7 @@ class PageManagementController
 	static public function changeColsMinWidth(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['cols_min_width'])){
-			$director = new Director($entityManager, false);
+			$director = new Director($entityManager);
 			$director->findNodeById($json['id']);
 			$director->getNode()->getNodeData()->setColsMinWidth((int)$json['cols_min_width']); // attention conversion?
 

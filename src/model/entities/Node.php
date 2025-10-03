@@ -177,7 +177,8 @@ class Node
         }
     }
 
-    private function sortNews(bool $chrono = false) // affichage du plus récent au plus ancien par défaut
+    // remplacée par "ORDER BY a.date_time" en DQL
+    /*private function sortNews(bool $chrono = false) // affichage du plus récent au plus ancien par défaut
     {
         // tri par insertion similaire à Position::sortChildren
         for($i = 1; $i < count($this->children); $i++){
@@ -192,7 +193,7 @@ class Node
             }
             $this->children[$j + 1] = $tmp;
         }
-    }
+    }*/
     
     public function removeChild(self $child): void
     {

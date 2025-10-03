@@ -18,16 +18,18 @@ class Director
 	private ?Node $node;
     private Node $article;
 
-	public function __construct(EntityManager $entityManager, bool $get_menu = false)
+	public function __construct(EntityManager $entityManager)
 	{
 		$this->entityManager = $entityManager;
-        if($get_menu){
-            self::$menu_data = new Menu($entityManager);
-            self::$page_path = new Path();
-            $this->page = self::$page_path->getLast();
-        }
         $this->node = new Node; // instance mère "vide" ne possédant rien d'autre que des enfants
 	}
+
+    public function makeMenuAndPaths(): void
+    {
+        self::$menu_data = new Menu($this->entityManager);
+        self::$page_path = new Path();
+        $this->page = self::$page_path->getLast();
+    }
 
     public function getNode(): Node
     {

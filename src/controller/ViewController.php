@@ -45,11 +45,12 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
                 return new Response($this->html, 302);
             }
         }
-        //else // l'id dans l'adresse n'a pas d'effet sur la suite
+        //else // l'id dans l'URL n'a pas d'effet ailleurs
 
 
         /* 2/ accès au modèle */
-        $director = new Director($entityManager, true);
+        $director = new Director($entityManager);
+        $director->makeMenuAndPaths();
         $director->getWholePageData($request);
         self::$root_node = $director->getNode();
 
