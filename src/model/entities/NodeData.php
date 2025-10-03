@@ -36,6 +36,9 @@ class NodeData
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $grid_cols_min_width = null; // pour le mode grille
 
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $pagination_limit = null; // pour les post_block et news_block
+
     // liaison avec table intermédiaire
     #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "node_data")]
     #[ORM\JoinTable(
@@ -104,6 +107,11 @@ class NodeData
     public function setChronoOrder(bool $reverse_order): void
     {
         $this->chrono_order = $reverse_order;
+    }
+
+    public function getPaginationLimit(): ?int
+    {
+        return $this->pagination_limit ?? null;
     }
     
     /*public function setNode(Node $node): void

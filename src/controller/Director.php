@@ -6,6 +6,8 @@ declare(strict_types=1);
 use Doctrine\ORM\EntityManager;
 use App\Entity\Page;
 use App\Entity\Node;
+//use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\HttpFoundation\Request;
 
 class Director
 {
@@ -37,30 +39,91 @@ class Director
     }
 
     // affichage d'une page ordinaire
-	public function makeRootNode(string $id = ''): void
+	public function getWholePageData(Request $request): void
     {
-        // on récupère toutes les entrées
-        $dql = 'SELECT n FROM App\Entity\Node n WHERE n.page = :page OR n.page IS null';
-        if($id == '')
+        $id = CURRENT_PAGE === 'article' ? htmlspecialchars($request->query->get('id')) : '';
+
+        if($id === '') // page "normale"
         {
+            // tous les noeuds sauf les articles, tri par page
+            $dql = "SELECT n FROM App\Entity\Node n WHERE n.name_node != 'new' AND n.name_node != 'post' AND (n.page = :page OR n.page IS null)";
             $bulk_data = $this->entityManager
                 ->createQuery($dql)
                 ->setParameter('page', $this->page)
                 ->getResult();
+
+            // groupes d'articles triés par bloc, permet de paginer par bloc
+            foreach($bulk_data as $parent_block){
+                if(Blocks::hasPresentation($parent_block->getName())){ // = post_block ou news_block
+                    $qb = $this->entityManager->createQueryBuilder();
+                    $qb->select('n')
+                       ->from('App\Entity\Node', 'n')
+                       ->where('n.parent = :parent')
+                       ->setParameter('parent', $parent_block);
+
+                    if($parent_block->getName() === 'post_block'){
+                        $qb->orderBy('n.position');
+                    }
+                    elseif($parent_block->getName() === 'news_block'){
+                        $qb->join('n.article', 'a');
+                        if($parent_block->getNodeData()->getChronoOrder() ?? false){ // ordre antichrono par défaut
+                            $qb->orderBy('a.date_time', 'ASC');
+                        }
+                        else{
+                            $qb->orderBy('a.date_time', 'DESC');
+                        }
+                    }
+
+                    // pagination
+                    $limit = $parent_block->getNodeData()->getPaginationLimit() ?? 0; // 0 par défaut = pas de pagination, sinon 12 rend bien avec des grilles de 2, 3 ou 4 colonnes
+                    if($limit > 0){
+                        //$this->paginateWithCursor($qb, $request->query->get('last_position') ?? 0, $limit);
+                        $qb->andWhere('n.position > :last_position')
+                           ->setParameter('last_position', $request->query->get('last_position') ?? 0)
+                           ->setMaxResults($limit);
+
+                        $nb_pages = $this->getNumberOfPages($parent_block, $limit); // nombres de "pages" d'articles
+                        if($nb_pages > 1){
+                            //$parent_block->setNumberOfPages($nb_pages); // => navigation en HTML
+                        }
+                    }
+
+                    $bulk_data = array_merge($bulk_data, $qb->getQuery()->getResult());
+                }
+            }
         }
-        else // avec $_GET['id'] dans l'URL
+        else // page "article"
         {
-            $dql .= ' OR n.id_node = :id';
+            $dql = 'SELECT n FROM App\Entity\Node n WHERE n.page = :page OR n.page IS null OR n.id_node = :id';
             $bulk_data = $this->entityManager
                 ->createQuery($dql)
                 ->setParameter('page', $this->page)
                 ->setParameter('id', $id)
                 ->getResult();
         }
-        $this->feedRootNodeObjects($bulk_data);
+        $this->makeNodeTree($bulk_data);
     }
 
-    private function feedRootNodeObjects(array $bulk_data): void // $bulk_data = tableau de Node
+    /*private function paginateWithCursor(QueryBuilder $qb, int $last_position = 0, int $limit = 0): void
+    {
+        $qb->andWhere('n.position > :last_position')
+           ->setParameter('last_position', $last_position)
+           ->setMaxResults($limit);
+    }*/
+
+    // requête à part n'alimentant pas $bulk_data
+    // fonctionnalité offerte par le Paginator de doctrine si on décidait de s'en servir
+    private function getNumberOfPages(Node $parent_block, int $limit): int
+    {
+        $dql = 'SELECT COUNT(n.id_node) FROM App\Entity\Node n WHERE n.parent = :parent';
+        $nb_articles = $this->entityManager
+            ->createQuery($dql)
+            ->setParameter('parent', $parent_block)
+            ->getSingleScalarResult();
+        return (int)ceil($nb_articles / $limit); // que PHP fasse une division non euclidienne (pas comme en C) nous arrange ici
+    }
+
+    private function makeNodeTree(array $bulk_data): void // $bulk_data = tableau de Node
     {
         // puis on les range
         // (attention, risque de disfonctionnement si les noeuds de 1er niveau ne sont pas récupérés en 1er dans la BDD)

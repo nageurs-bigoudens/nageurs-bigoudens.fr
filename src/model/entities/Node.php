@@ -172,11 +172,7 @@ class Node
     {
         $this->children[] = $child;
 
-         // cas particulier des news: utilise les dates au lieu des positions (les positions existent mais sont ignorées)
-        if($this->getName() === 'news_block'){
-            $this->sortNews($this->getNodeData()->getChronoOrder() ?? false); // faux = ordre chronologique
-        }
-        else{
+        if(!\Blocks::hasPresentation($this->getName())){ // post_block et news_block ont leurs enfants ordonnés avec ORDER BY
             $this->sortChildren(false);
         }
     }

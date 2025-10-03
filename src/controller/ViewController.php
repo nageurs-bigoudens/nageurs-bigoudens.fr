@@ -18,22 +18,15 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
 
     public function buildView(EntityManager $entityManager, Request $request): Response
     {
-        /* 1/ accès au modèle */
-        $director = new Director($entityManager, true);
-        $director->makeRootNode(htmlspecialchars($request->query->get('id') ?? ''));
-        self::$root_node = $director->getNode();
+        /* 1/ 1er contrôle des paramètres */
 
-
-        /* 2/ traitement de quelques paramètres */
-
-        // mode modification d'une page activé
+        // mode modification d'une page
         if($_SESSION['admin']
             && $request->query->has('mode') && $request->query->get('mode') === 'page_modif'
             && !in_array(CURRENT_PAGE, ['article', 'nouvelle_page', 'menu_chemins', 'user_edit', 'connection']))
         {
             MainBuilder::$modif_mode = true;
         }
-
         // page article: mode création et erreurs d'id
         if(CURRENT_PAGE === 'article'){
             if($_SESSION['admin']){
@@ -46,18 +39,30 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
                     if($request->query->get('id')[0] === 'n' && $request->query->has('from') && !empty($request->query->get('from'))){
                         NewBuilder::$new_article_mode = true;
                     }
-                    elseif(self::$root_node->getNodeByName('main')->getAdoptedChild() === null){ // id inconnu
-                        return new Response($this->html, 302);
-                    }
                 }
             }
             elseif($request->query->get('id')[0] === 'n'){ // accès page nouvelle article interdit sans être admin
                 return new Response($this->html, 302);
             }
         }
+        //else // l'id dans l'adresse n'a pas d'effet sur la suite
 
 
-        /* 3/ construction de la page avec builders et vues */
+        /* 2/ accès au modèle */
+        $director = new Director($entityManager, true);
+        $director->getWholePageData($request);
+        self::$root_node = $director->getNode();
+
+
+        /* 3/ 2ème contrôle utilisant les données récupérées */
+
+        // article non trouvé en BDD
+        if(CURRENT_PAGE === 'article' && !$_SESSION['admin'] && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
+            return new Response($this->html, 302);
+        }
+
+
+        /* 4/ construction de la page avec builders et vues */
         $this->useChildrenBuilder(self::$root_node);
 
         return new Response($this->html, 200);
