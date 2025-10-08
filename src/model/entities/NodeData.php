@@ -48,6 +48,8 @@ class NodeData
     )]
     private Collection $images;
 
+    private int $nb_pages = 1;
+
     public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
         $this->data = $data;
@@ -111,7 +113,20 @@ class NodeData
 
     public function getPaginationLimit(): ?int
     {
-        return $this->pagination_limit ?? null;
+        $default = 12; // si 0 pas de pagination, 12 rend bien avec des grilles de 2, 3 ou 4 colonnes
+        return $this->pagination_limit === null ? $default : $this->pagination_limit;
+    }
+    public function setPaginationLimit(int $pagination_limit): void
+    {
+        $this->pagination_limit = $pagination_limit;
+    }
+    public function getNumberOfPages(): int
+    {
+        return $this->nb_pages;
+    }
+    public function setNumberOfPages(int $nb_pages): void
+    {
+        $this->nb_pages = $nb_pages;
     }
     
     /*public function setNode(Node $node): void

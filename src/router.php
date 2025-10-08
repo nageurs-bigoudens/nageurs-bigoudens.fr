@@ -1,7 +1,7 @@
 <?php
 // src/router.php
 //
-/* fonctionnement du routeur
+/* fonctionnement:
 => 1er test, méthode http: GET, POST ou autre chose
 => 2ème test, type de contenu (méthode POST uniquement):
 "application/x-www-form-urlencoded" = formulaire
@@ -13,22 +13,27 @@ $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' requête AJAX xhs, non uti
 
 declare(strict_types=1);
 
-if($_SERVER['REQUEST_METHOD'] === 'GET'){
+if($request->getMethod() === 'GET'){
     // table "user" vide
     if(!UserController::existUsers($entityManager)){
-        require '../src/view/templates/user_create.php';
+        require AbstractBuilder::VIEWS_PATH . 'user_create.php';
         die;
     }
 
-    // bouton déconnexion
+    // bouton déconnexion (méthode GET parce que l'utilisateur ne modifie plus de données à partir de là)
     if($request->query->has('action') && $request->query->get('action') === 'deconnection'){
         UserController::disconnect($entityManager);
     }
 
+    // articles suivants
+    if($request->query->has('fetch') && $request->query->get('fetch') === 'next_articles'){
+        ArticleController::fetch($entityManager, $request);
+    }
+
     // données du calendrier
     // création du calendrier et changement de dates affichées (boutons flèches mais pas changement de vue)
-    if($_SERVER['REQUEST_METHOD'] === 'GET' && $request->query->has('action') && $request->query->get('action') === 'get_events'
-        && $request->query->has('start') && $request->query->has('end') && empty($_POST))
+    if($request->query->has('action') && $request->query->get('action') === 'get_events'
+        && $request->query->has('start') && $request->query->has('end') && empty($request->getPayload()->all())) // getPayload ne récupère pas que des POST
     {
         CalendarController::getData($entityManager);
     }
@@ -43,7 +48,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 }
 
 
-elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
+elseif($request->getMethod() === 'POST'){
     /* -- contrôleurs appellables par tout le monde -- */
 
     // table "user" vide
@@ -54,8 +59,7 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
     // requêtes JSON avec fetch()
     if($_SERVER['CONTENT_TYPE'] === 'application/json')
     {
-        $data = file_get_contents('php://input');
-        $json = json_decode($data, true);
+        $json = json_decode($request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
 
         if(isset($_GET['action']))
         {
@@ -195,6 +199,9 @@ elseif($_SERVER['REQUEST_METHOD'] === 'POST'){
                 elseif($request->query->get('bloc_edit') === 'change_cols_min_width'){
                     PageManagementController::changeColsMinWidth($entityManager, $json);
                 }
+                elseif($request->query->get('bloc_edit') === 'change_pagination_limit'){
+                    PageManagementController::changePaginationLimit($entityManager, $json);
+                }
             }
         }
 
@@ -316,7 +323,7 @@ if(isset($response)){
         header('Location: ' . new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']));
     }
     // redirection après traitement de formulaires HTTP
-    elseif($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
+    elseif($request->getMethod() === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         $response_data = json_decode(($response)->getContent(), true);
         $url = new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']);
         $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
@@ -329,7 +336,7 @@ if(isset($response)){
 }
 // pas utilisation de RESPONSE (cas destiné à disparaître)
 else{
-    if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
+    if($request->getMethod() === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         header("Location: " . new URL(['error' => 'erreur côté serveur']));
     }
     else{
@@ -337,4 +344,4 @@ else{
         echo "erreur côté serveur";
     }
 }
-//die; // inutile normalement
+//die; // inutile

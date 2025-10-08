@@ -1,5 +1,5 @@
 // code à réorganiser
-// seule certaines fonctions ont leur place dans Editor, d'autres servent à manipuler les articles d'une autre manière (déplacer, supprimer...)
+// seules certaines fonctions ont leur place dans Editor, d'autres servent à manipuler les articles d'une autre manière (déplacer, supprimer...)
 // => encapsuler Editor dans une classe Article (comme la balise) qui existe même quand l'éditeur est fermé
 
 
@@ -292,7 +292,7 @@ class Editor
     }
 
     submit(clone = null){
-        var content;
+        let content;
         const params = new URL(document.location).searchParams; // "search" = ? et paramètres, searchParams = objet avec des getters
         // à comparer avec: new URLSearchParams(window.location.search);
         // c'est pareil ou pas?
@@ -302,7 +302,7 @@ class Editor
             const prefixes = ['t', 'p', 'i', 'd'];
             const allElemsWithId = document.querySelectorAll('.data');
             content = {};
-            var id_from_builder;
+            let id_from_builder;
 
             allElemsWithId.forEach(element => {
                 const first_letter = element.id.charAt(0).toLowerCase();
@@ -394,14 +394,14 @@ class Editor
 // restera ici jusqu'à ce que la gestion des balises soient faite ailleurs
 function makeNewArticleButtons(id, article_id, clone, placement = 'last')
 {
-    var share_btn = document.querySelector(`.share.hidden`); // combinaison de deux classes
-    var new_btn = document.getElementById(`new-${id}`);
-    var edit_btn = document.getElementById(`edit-${id}`);
-    var pos_up_btn = document.getElementById(`position_up-${id}`);
-    var pos_down_btn = document.getElementById(`position_down-${id}`);
-    var delete_btn = document.getElementById(`delete-${id}`);
-    var cancel_btn = document.getElementById(`cancel-${id}`);
-    var submit_btn = document.getElementById(`submit-${id}`);
+    let share_btn = document.querySelector(`.share.hidden`); // combinaison de deux classes
+    let new_btn = document.getElementById(`new-${id}`);
+    let edit_btn = document.getElementById(`edit-${id}`);
+    let pos_up_btn = document.getElementById(`position_up-${id}`);
+    let pos_down_btn = document.getElementById(`position_down-${id}`);
+    let delete_btn = document.getElementById(`delete-${id}`);
+    let cancel_btn = document.getElementById(`cancel-${id}`);
+    let submit_btn = document.getElementById(`submit-${id}`);
 
     share_btn.classList.remove('hidden');
     new_btn.classList.add('hidden');
@@ -412,8 +412,8 @@ function makeNewArticleButtons(id, article_id, clone, placement = 'last')
     //cancel_btn.classList.add('hidden');
     //submit_btn.classList.add('hidden');
 
-    var article = document.getElementById(id);
-    var article_elem_parent = findParentByTagName(article, 'article');
+    let article = document.getElementById(id);
+    let article_elem_parent = findParentByTagName(article, 'article');
     
     share_btn.setAttribute('onclick', "copyInClipBoard('" + window.location.href + article_id + "')"); // # de l'ancre ajouté au clic sur le lien ouvrant l'éditeur
     article.id = article_id;
@@ -430,7 +430,7 @@ function makeNewArticleButtons(id, article_id, clone, placement = 'last')
     submit_btn.id = 'submit-' + article_id;
     submit_btn.querySelector('button').setAttribute('onclick', "submitArticle('" + article_id + "')");
     
-    var section_child = article_elem_parent.parentNode.querySelector('.section_child'); // renommer section_child
+    let section_child = article_elem_parent.parentNode.querySelector('.section_child'); // renommer section_child
     
     // parentNode vise la balise section
     article_elem_parent.parentNode.replaceChild(clone.cloneNode(true), article_elem_parent); // clone du squelette pour le garder intact

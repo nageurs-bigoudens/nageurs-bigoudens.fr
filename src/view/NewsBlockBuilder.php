@@ -28,6 +28,7 @@ class NewsBlockBuilder extends AbstractBuilder
                 $min_width = $node->getNodeData()->getColsMinWidth();
                 $cols_min_width = 'grid-template-columns: repeat(auto-fit, minmax(' . (string)$min_width . 'px, 1fr));';
             }
+            $fetch_button_hidden = $node->getNodeData()->getNumberOfPages() > 1 ? '' : ' hidden';
 
             // ajouter un article
             $new_article = '';
@@ -54,7 +55,7 @@ class NewsBlockBuilder extends AbstractBuilder
                 $html = '';
                 $admin_buttons = $new_button . $modify_article . $delete_article . $close_editor . $submit_article;
 
-                // post vide mis là pour le bouton "Nouvel article" => déplace vers page "article"
+                // insérer post.php pour le bouton "Nouvel article", new.php pour les vrais articles
                 ob_start();
                 require self::VIEWS_PATH . 'post.php'; // nécéssite $admin_buttons et $html
                 $new_article = ob_get_clean();

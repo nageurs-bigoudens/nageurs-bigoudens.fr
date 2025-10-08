@@ -28,6 +28,7 @@ class PostBlockBuilder extends AbstractBuilder
                 $min_width = $node->getNodeData()->getColsMinWidth();
                 $cols_min_width = 'grid-template-columns: repeat(auto-fit, minmax(' . (string)$min_width . 'px, 1fr));';
             }
+            $fetch_button_hidden = $node->getNodeData()->getNumberOfPages() > 1 ? '' : ' hidden';
 
             // ajouter un article
             // => fait un peu double emploi avec PostBuilder

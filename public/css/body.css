@@ -49,11 +49,19 @@ main
 {
     display: none;
 }
+section
+{
+    margin: 10px 0;
+}
 section > h3
 {
     padding: 15px;
     margin: 0;
     text-align: center;
+}
+section .fetch_articles
+{
+    margin-left: 15px;
 }
 .login_form
 {

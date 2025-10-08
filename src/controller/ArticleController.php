@@ -6,10 +6,51 @@ declare(strict_types=1);
 use App\Entity\Node;
 use App\Entity\Article;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController
 {
+	static public function fetch(EntityManager $entityManager, Request $request): void
+	{
+		if($request->query->has('id') && !empty($request->query->get('id')) && $request->query->has('last_article')){
+			//var_dump($request->query->get('last_article'));
+			$id = (int)$request->get('id'); // type et nettoie
+			$director = new Director($entityManager);
+			$director->findNodeById($id);
+			$parent_block = $director->getNode();
+
+			if(Blocks::hasPresentation($parent_block->getName())){
+				$get_articles_return = $director->getNextArticles($parent_block, $request);
+				$bulk_data = $get_articles_return[0];
+
+				if($parent_block->getName() === 'post_block'){
+					$builder_name = 'PostBuilder';
+				}
+				elseif($parent_block->getName() === 'news_block'){
+					$builder_name = 'NewBuilder';
+				}
+
+				$html = '';
+				foreach($bulk_data as $article){
+					$builder = new $builder_name($article);
+					$html .= $builder->render();
+				}
+
+				echo json_encode(['success' => true, 'html' => $html, 'truncated' => $get_articles_return[1]]);
+				die;
+			}
+			else{
+				echo json_encode(['success' => false, 'error' => 'mauvais type de bloc']);
+				die;
+			}
+		}
+		else{
+			echo json_encode(['success' => false, 'error' => 'la requête ne comporte pas les paramètres attendus']);
+			die;
+		}
+	}
+
 	static public function editorSubmit(EntityManager $entityManager, array $json): void
 	{
 		if(json_last_error() === JSON_ERROR_NONE)

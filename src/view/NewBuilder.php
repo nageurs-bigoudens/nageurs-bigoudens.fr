@@ -51,9 +51,7 @@ class NewBuilder extends AbstractBuilder
             }
             
             $content = '';
-
-            // page article unique
-            if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
+            if(CURRENT_PAGE === 'article'){
                 $content = $node->getArticle()->getContent();
                 $from_to_button = '<p><a class="link_to_article" href="' . new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []) . '"><button>Retour</button></a></p>';
                 $overflow = '';
@@ -84,7 +82,7 @@ class NewBuilder extends AbstractBuilder
             $date_buttons = '';
             $admin_buttons = '';
             if($_SESSION['admin']){
-                if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
+                if(CURRENT_PAGE === 'article'){
                     $title_js = 'onclick="openEditor(\'' . $id_title . '\')"';
                     $modify_title = '<p id="edit-' . $id_title . '"><button ' . $title_js . '><img class="action_icon" src="assets/edit.svg">Titre</button></p>' . "\n";
                     $close_js_title = 'onclick="closeEditor(\'' . $id_title . '\')"';

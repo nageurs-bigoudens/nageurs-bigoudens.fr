@@ -36,15 +36,10 @@ function toastNotify(message){
     setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 5000);
 }
 
-
 // exécuté à la fin du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
 
-	// détection des dates et conversion à l'heure locale
-	document.querySelectorAll('.local_date').forEach(function(element){
-        const utc_date = element.getAttribute('date-utc'); // forme: 2025-10-10T12:17:00+00:00
-        element.innerText = toFormatedLocalDate(utc_date);
-    });
+	insertLocalDates();
 
 	// ouvrir/fermer les sous-menus avec écran tactile
 	document.querySelectorAll('.sub-menu-toggle').forEach(button => {
@@ -83,6 +78,48 @@ document.addEventListener('DOMContentLoaded', () => {
 		resize_observer.observe(nav);
 	}
 });
+
+
+function fetchArticles(bloc_id){
+	const parent = document.getElementById(bloc_id);
+	
+	const block_type = parent.getAttribute('block-type');
+	let last_article = '';
+	if(block_type === 'post_block'){
+		// pas parfait, suppose que les positions sont correctes
+		last_article = parent.querySelectorAll('article').length - 1;
+	}
+	else if(block_type === 'news_block'){
+		// date_time du dernier article affiché (heure UTC), date vide si bloc vide
+		const news_elements = parent.querySelector('.section_child').querySelectorAll('article');
+		last_article = news_elements.length !== 0 ? news_elements[news_elements.length - 1].querySelector('.local_date').getAttribute('date-utc') : '';
+	}
+	else{
+		console.log("Erreur, le type de bloc n'est pas reconnu");
+		return;
+	}
+
+	fetch('index.php?fetch=next_articles&id=' + bloc_id + '&last_article=' + last_article) // méthode GET par défaut
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            // insérer les articles
+            parent.querySelector('.section_child').innerHTML += data.html;
+            insertLocalDates();
+
+            // cacher le bouton
+            parent.querySelector('.fetch_articles').querySelector('button').className = data.truncated ? '' : 'hidden';
+            
+            console.log("Articles insérés dans le bloc");
+        }
+        else{
+            console.log("Erreur côté serveur à la récupération d'articles");
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
 
 
 // complète les fonctions dans tinymce.js
@@ -237,6 +274,14 @@ function submitDate(id_date)
 	        console.error('Erreur:', error);
 	    });
 	}
+}
+
+function insertLocalDates(){
+	// détection des dates et conversion à l'heure locale
+	document.querySelectorAll('.local_date').forEach(function(element){
+        const utc_date = element.getAttribute('date-utc'); // forme: 2025-10-10T12:17:00+00:00
+        element.innerText = toFormatedLocalDate(utc_date);
+    });
 }
 
 function toFormatedLocalDate(utc_string_date){ // forme: 2025-07-17T13:54:00.000Z ou 2025-02-04T00:24

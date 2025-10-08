@@ -1,5 +1,8 @@
 /* -- mode modification d'une page -- */
 
+// beaucoup de fonctions similaires
+// à factoriser avec le pattern stratégie?
+
 // même fonction que dans new_page.js
 function makePageNamePath(){
     document.getElementById("page_name_path").value = document.getElementById("page_name").value
@@ -92,7 +95,7 @@ function changeDescription(node_data_id){
 			toastNotify("la nouvelle description de la page est: " + data.description);
         }
         else{
-            console.error('Erreur à la modification de la description de la page.');
+            console.error('Erreur côté serveur à la modification de la description de la page.');
         }
     })
     .catch(error => {
@@ -119,7 +122,7 @@ function renamePageBloc(bloc_id){
         	toastNotify('Le bloc a été renommé: ' + data.title);
         }
         else{
-            console.error('Erreur au renommage du titre.');
+            console.error('Erreur côté serveur au renommage du titre.');
         }
     })
     .catch(error => {
@@ -168,7 +171,7 @@ function switchBlocsPositions(bloc_id, direction) {
         }
         else {
 
-            console.error('Échec de l\'inversion');
+            console.error("Échec de l'inversion côté serveur");
         }
     })
     .catch(error => {
@@ -187,17 +190,21 @@ function articlesOrderSelect(bloc_id){
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            // inverser l'ordre des articles!!
-            const parent = document.getElementById(bloc_id).querySelector(".section_child");
+            // inversion des articles
+            /*const parent = document.getElementById(bloc_id).querySelector(".section_child");
             const articles = Array.from(parent.querySelectorAll("article"));
             articles.reverse().forEach(article => {
                 parent.appendChild(article); // déplace dans le DOM, ne copie pas
-            });
+            });*/
+
+            // à cause de la pagination, au lieu d'inverser, on remplace les articles par les 1er dans le nouveau sens
+            document.getElementById(bloc_id).querySelector('.section_child').innerHTML = '';
+            fetchArticles(bloc_id);
 
             console.log('ordre ' + articles_order_select);
         }
         else{
-            console.log("Erreur au changement de l'ordre d'affichage côté serveur");
+            console.log("Erreur côté serveur au changement de l'ordre d'affichage");
         }
     })
     .catch(error => {
@@ -219,10 +226,10 @@ function changePresentation(bloc_id){
             document.getElementById(bloc_id).className = presentation;
             document.getElementById(bloc_id).querySelector(".section_child").style.gridTemplateColumns = presentation === 'grid' ? 'repeat(auto-fit, minmax(' + data.cols_min_width + 'px, 1fr))' : '';
             document.getElementById('cols_min_width_edit_' + bloc_id).className = presentation === 'grid' ? '' : 'hidden';
-            console.log('changement de présentation');
+            console.log('Changement de présentation');
         }
         else{
-            console.log('Erreur au changement de présentation côté serveur');
+            console.log('Erreur côté serveur au changement de présentation');
         }
     })
     .catch(error => {
@@ -230,6 +237,7 @@ function changePresentation(bloc_id){
     });
 }
 
+// ressemble à changePaginationLimit
 function changeColsMinWidth(bloc_id){
     const cols_min_width_input = document.getElementById('cols_min_width_select_' + bloc_id);
     
@@ -250,10 +258,58 @@ function changeColsMinWidth(bloc_id){
         if(data.success){
             document.getElementById(bloc_id).className = 'grid';
             document.getElementById(bloc_id).querySelector(".section_child").style.gridTemplateColumns = 'repeat(auto-fit, minmax(' + data.cols_min_width + 'px, 1fr))';
-            console.log('changement de la largeur minimum en mode grille');
+            console.log('Changement de la largeur minimum en mode grille');
         }
         else{
-            console.log('Erreur au changement du nb de colonnes en mode grille côté serveur');
+            console.log('Erreur côté serveur au changement du nb de colonnes en mode grille');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
+// ressemble à changeColsMinWidth
+function changePaginationLimit(bloc_id){
+    const pagination_limit_input = document.getElementById('pagination_limit_' + bloc_id);
+    
+    if(pagination_limit_input.value > 30){
+        pagination_limit_input.value = 30;
+    }
+    else if(pagination_limit_input.value < 0){
+        pagination_limit_input.value = 0; // fait joli dans la BDD, les valeurs négatives ont le même effet que 0
+    }
+
+    fetch('index.php?bloc_edit=change_pagination_limit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bloc_id, pagination_limit: pagination_limit_input.value })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            const parent = document.getElementById(bloc_id).querySelector('.section_child');
+            const articles_list = parent.querySelectorAll('article');
+
+            if(data.new_limit > data.old_limit || data.new_limit <= 0){ // si 0, fetchArticles va TOUT chercher!
+                parent.innerHTML = ''; // pas opti, mais améliorer ça serait très compliqué
+                fetchArticles(bloc_id);
+            }
+            else if(data.new_limit < articles_list.length){
+                // retirer les articles
+                const articles_array = Array.from(articles_list).slice(0, data.new_limit);
+                parent.innerHTML = '';
+                for(let i = 0; i < articles_array.length; i++){
+                    parent.appendChild(articles_array[i]);
+                }
+                // remettre le bouton "Articles suivants"
+                document.getElementById(bloc_id).querySelector('.fetch_articles').querySelector('button').className = '';
+            }
+
+            console.log("Changement du nombre d'articles affichés simultanément dans ce bloc");
+        }
+        else{
+            console.log("Erreur côté serveur au changement du nb d'éléments affichés par la pagination");
         }
     })
     .catch(error => {

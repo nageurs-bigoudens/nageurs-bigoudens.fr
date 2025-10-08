@@ -47,4 +47,11 @@ if(Blocks::hasPresentation($child_node->getName())){
 <?php
 }
 ?>
+	<div class="pagination_limit">
+		<label for="pagination_limit_<?= $child_node->getId() ?>">
+			Nombre max d'articles affichés
+			<input type="number" id="pagination_limit_<?= $child_node->getId() ?>" name="pagination_limit" onchange="changePaginationLimit(<?= $child_node->getId() ?>)" min="0" max="30" value="<?= $child_node->getNodeData()->getPaginationLimit() ?>">
+			<i>(mettre 0 désactive la pagination)</i>
+		</label>
+	</div>
 </div>

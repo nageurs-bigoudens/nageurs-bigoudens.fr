@@ -7,7 +7,7 @@ use App\Entity\Node;
 
 abstract class AbstractBuilder
 {
-	protected const string VIEWS_PATH = '../src/view/templates/';
+	public const string VIEWS_PATH = '../src/view/templates/';
 	protected string $html = '';
     protected int $id_node;
 
@@ -44,7 +44,7 @@ abstract class AbstractBuilder
         }
     }
 
-    protected function snakeToPascalCase(string $input): string
+    private function snakeToPascalCase(string $input): string
     {
     	return str_replace('_', '', ucwords($input, '_'));
     }

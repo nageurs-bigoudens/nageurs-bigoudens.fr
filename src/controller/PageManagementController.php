@@ -334,4 +334,21 @@ class PageManagementController
 		}
 		die;
 	}
+	static public function changePaginationLimit(EntityManager $entityManager, array $json): void
+	{
+		if(isset($json['id']) && isset($json['pagination_limit'])){
+			$director = new Director($entityManager);
+			$director->findNodeById($json['id']);
+			$old_limit = $director->getNode()->getNodeData()->getPaginationLimit() ?? 12;
+			$director->getNode()->getNodeData()->setPaginationLimit((int)$json['pagination_limit']); // attention conversion?
+
+			$entityManager->flush();
+
+			echo json_encode(['success' => true, 'old_limit' => $old_limit, 'new_limit' => $json['pagination_limit']]);
+		}
+		else{
+			echo json_encode(['success' => false]);
+		}
+		die;
+	}
 }
