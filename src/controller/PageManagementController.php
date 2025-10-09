@@ -45,25 +45,26 @@ class PageManagementController
 
 	static public function setPageDescription(EntityManager $entityManager, array $json): void
 	{
-		$node_data = $entityManager->find('App\Entity\NodeData', $json['node_data_id']);
-		$node_data->updateData('description', htmlspecialchars($json['description']));
+		$page = $entityManager->find('App\Entity\Page', $json['page_id']);
+		$page->setDescription(htmlspecialchars($json['description']));
 		$entityManager->flush();
-		echo json_encode(['success' => true, 'description' => $node_data->getData()['description']]);
+		echo json_encode(['success' => true, 'description' => $page->getDescription()]);
 		die;
 	}
 
-	static public function newPage(EntityManager $entityManager): void
+	static public function newPage(EntityManager $entityManager, array $post): void
 	{
 	    // titre et chemin
 	    $director = new Director($entityManager);
 	    $director->makeMenuAndPaths();
 	    //Director::$menu_data = new Menu($entityManager);
-	    $previous_page = Director::$menu_data->findPageById((int)$_POST["page_location"]); // (int) à cause de declare(strict_types=1);
+	    $previous_page = Director::$menu_data->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
 	    $parent = $previous_page->getParent();
 
 	    $page = new Page(
-	        trim(htmlspecialchars($_POST["page_name"])),
-	        trim(htmlspecialchars($_POST["page_name_path"])),
+	        trim(htmlspecialchars($post["page_name"])),
+	        trim(htmlspecialchars($post["page_name_path"])),
+	        trim(htmlspecialchars($post["page_description"])),
 	        true, true, false,
 	        $previous_page->getPosition(),
 	        $parent); // peut et DOIT être null si on est au 1er niveau
@@ -86,7 +87,7 @@ class PageManagementController
 	        $page);
 	    $node->useDefaultAttributes(); // fichiers CSS et JS
 
-	    $data = new NodeData(['description' => trim(htmlspecialchars($_POST["page_description"]))], $node);
+	    $data = new NodeData([], $node);
 
 	    $bulk_data = $entityManager
 	        ->createQuery('SELECT n FROM App\Entity\Image n WHERE n.file_name LIKE :name')

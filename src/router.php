@@ -232,7 +232,7 @@ elseif($request->getMethod() === 'POST'){
                 && isset($_POST['page_description']) && $_POST['page_description'] !== null
                 && isset($_POST['new_page_hidden']) && $_POST['new_page_hidden'] === '')
             {
-                PageManagementController::newPage($entityManager);
+                PageManagementController::newPage($entityManager, $_POST);
             }
             
             /* -- suppression d'une page -- */

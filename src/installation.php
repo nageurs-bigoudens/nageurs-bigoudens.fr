@@ -90,13 +90,13 @@ HTACCESS;
 function makeStartPage(EntityManager $entityManager){
 	/* -- table page -- */
 	// paramètres: name_page, end_of_path, reachable, in_menu, hidden, position, parent
-	$accueil = new Page('Accueil', 'accueil', true, true, false, 1, NULL);
-	$article = new Page('Article', 'article', true, false, false, NULL, NULL);
-	$connection = new Page('Connexion', 'connection', true, false, false, NULL, NULL);
-	$my_account = new Page('Mon compte', 'user_edit', true, false, false, NULL, NULL);
-	$menu_paths = new Page("Menu et chemins", 'menu_chemins', true, false, false, NULL, NULL);
-	//$edit_page = new Page("Modification d'une page", 'modif_page', true, false, false, NULL, NULL); // pas de page "Modification de la page"
-	$new_page = new Page('Nouvelle page', 'nouvelle_page', true, false, false, NULL, NULL);
+	$accueil = new Page('Accueil', 'accueil', "Page d'accueil", true, true, false, 1, NULL);
+	$article = new Page('Article', 'article', "", true, false, false, NULL, NULL);
+	$connection = new Page('Connexion', 'connection', "Connexion", true, false, false, NULL, NULL);
+	$my_account = new Page('Mon compte', 'user_edit', "Mon compte", true, false, false, NULL, NULL);
+	$menu_paths = new Page("Menu et chemins", 'menu_chemins', "Menu et chemins", true, false, false, NULL, NULL);
+	//$edit_page = new Page("Modification d'une page", 'modif_page', '', true, false, false, NULL, NULL); // hypothétique page "Modification de la page"
+	$new_page = new Page('Nouvelle page', 'nouvelle_page', "Nouvelle page", true, false, false, NULL, NULL);
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
@@ -126,15 +126,15 @@ function makeStartPage(EntityManager $entityManager){
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
-	$head_accueil_data = new NodeData(["description" => "Page d'accueil"], $head_accueil, new ArrayCollection([$favicon]));
-	$head_login_data = new NodeData(["description" => "Connexion"], $head_login, new ArrayCollection([$favicon]));
-	$head_my_account_data = new NodeData(["description" => "Mon compte"], $head_my_account, new ArrayCollection([$favicon]));
-	$head_article_data = new NodeData(["description" => ""], $head_article, new ArrayCollection([$favicon]));
-	$head_edit_menu_data = new NodeData(["description" => "Menu et chemins"], $head_edit_menu, new ArrayCollection([$favicon]));
-	$head_new_page_data = new NodeData(["description" => "Nouvelle page"], $head_new_page, new ArrayCollection([$favicon]));
+	$head_accueil_data = new NodeData([], $head_accueil, new ArrayCollection([$favicon]));
+	$head_login_data = new NodeData([], $head_login, new ArrayCollection([$favicon]));
+	$head_my_account_data = new NodeData([], $head_my_account, new ArrayCollection([$favicon]));
+	$head_article_data = new NodeData([], $head_article, new ArrayCollection([$favicon]));
+	$head_edit_menu_data = new NodeData([], $head_edit_menu, new ArrayCollection([$favicon]));
+	$head_new_page_data = new NodeData([], $head_new_page, new ArrayCollection([$favicon]));
 	$header_data = new NodeData(["title" => "Titre", "description" => "Sous-titre", "header_logo" => "assets/logo-nb-et-ffn.png", "header_background" => "assets/fond-piscine.jpg",
 		"social" => ["facebook" => "https://www.facebook.com", "instagram" => "https://www.instagram.com", "linkedin" => "https://www.linkedin.com"]],
-		$header, new ArrayCollection([$facebook, $instagram, $linkedin, $github]));
+	$header, new ArrayCollection([$facebook, $instagram, $linkedin, $github]));
 	$footer_data = new NodeData(["contact_nom" => "Nom", "adresse" => "adresse", "e_mail" => "e-mail", "footer_logo" => "assets/logo-nb-et-ffn.png"], $footer);
 
 	/* -- table page -- */
@@ -143,7 +143,7 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($connection);
 	$entityManager->persist($my_account);
 	$entityManager->persist($menu_paths);
-	//$entityManager->persist($edit_page); // pas de page "Modification de la page"
+	//$entityManager->persist($edit_page); // hypothétique page "Modification de la page"
 	$entityManager->persist($new_page);
 	
 	/* -- table node -- */

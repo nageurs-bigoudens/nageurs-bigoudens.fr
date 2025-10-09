@@ -47,14 +47,8 @@ class HeadBuilder extends AbstractBuilder
                 $js .= '<script src="' . self::versionedFileURL('js', 'tinymce') . '"></script>' . "\n";
             }
 
-            // titre
             $title = Director::$page_path->getLast()->getPageName();
-            
-            // description
-            if(!empty($node->getNodeData()->getData()))
-            {
-                extract($node->getNodeData()->getData());
-            }
+            $description = Director::$page_path->getLast()->getDescription();
 
             // favicon
             foreach($node->getNodeData()->getImages() as $image)

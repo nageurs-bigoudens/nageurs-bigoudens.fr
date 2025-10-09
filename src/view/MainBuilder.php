@@ -59,14 +59,6 @@ class MainBuilder extends AbstractBuilder
         foreach(Blocks::$blocks as $key => $value){
             $options .= '<option value= "' . $key . '">' . $value . "</option>\n";
         }
-
-        $head_node = null;
-        foreach(ViewController::$root_node->getChildren() as $first_level_node){
-            if($first_level_node->getName() === 'head'){
-                $head_node = $first_level_node; // normalement c'est le 1er enfant
-                break;
-            }
-        }
         
         // ceci pourrait être déplacé au début des blocs
         $bloc_edit = '';

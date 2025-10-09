@@ -28,6 +28,9 @@ class Page
 
     private string $page_path = '';
 
+    #[ORM\Column(type: "text")]
+    private string $description;
+
     #[ORM\Column(type: "boolean")]
     private bool $reachable;
 
@@ -50,10 +53,11 @@ class Page
     /*#[ORM\Column(type: "json", nullable: true)]
     private ?array $metadata = null;*/
 
-    public function __construct(string $name, string $eop, bool $reachable, bool $in_menu, bool $hidden, ?int $position, ?Page $parent)
+    public function __construct(string $name, string $eop, string $description, bool $reachable, bool $in_menu, bool $hidden, ?int $position, ?Page $parent)
     {
         $this->name_page = $name;
         $this->end_of_path = $eop;
+        $this->description = $description;
         $this->reachable = $reachable;
         $this->in_menu = $in_menu;
         $this->hidden = $hidden;
@@ -90,6 +94,14 @@ class Page
     public function setEndOfPath(string $end_of_path):void
     {
         $this->end_of_path = $end_of_path;
+    }
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
     public function isReachable(): bool
     {

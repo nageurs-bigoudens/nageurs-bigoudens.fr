@@ -18,8 +18,8 @@
         <div id="edit_description">
             <label for="description_textarea">Description sous le titre dans les moteurs de recherche</label>
             <div>
-                <textarea id="description_textarea" name="edit_description" cols="40" rows="3" placeholder="ex: nous faisons ceci et cela, etc" required><?= $head_node->getNodeData()->getData()['description'] ?></textarea>
-                <button onclick="changeDescription('<?= $head_node->getNodeData()->getId() ?>')">Modifier</button>
+                <textarea id="description_textarea" name="edit_description" cols="40" rows="3" placeholder="ex: nous faisons ceci et cela, etc" required><?= Director::$page_path->getLast()->getDescription(); ?></textarea>
+                <button onclick="changeDescription('<?= Director::$page_path->getLast()->getId() ?>')">Modifier</button>
             </div>
         </div>
     </div>

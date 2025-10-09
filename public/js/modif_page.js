@@ -79,13 +79,13 @@ function changePageTitle(page_id){
         console.error('Erreur:', error);
     });
 }*/
-function changeDescription(node_data_id){
+function changeDescription(page_id){
 	const textarea = document.getElementById("description_textarea");
 
 	fetch('index.php?page_edit=page_description', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({description: textarea.value, node_data_id: node_data_id})
+        body: JSON.stringify({description: textarea.value, page_id: page_id})
     })
     .then(response => response.json())
     .then(data => {
