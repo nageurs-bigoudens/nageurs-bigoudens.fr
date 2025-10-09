@@ -14,12 +14,12 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "php bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "php bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
         ],
         "post-update-cmd": [
-            "php bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "php bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
         ]
     },
     "authors": [

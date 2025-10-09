@@ -42,43 +42,6 @@ function changePageTitle(page_id){
         console.error('Erreur:', error);
     });
 }
-/*function changePageMenuPath(page_id){
-	const page_name_path = document.getElementById("page_name_path");
-	
-	fetch('index.php?page_edit=page_menu_path', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({page_menu_path: page_name_path.value, page_id: page_id})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success){
-        	// oh putaing...
-			let url = new URL(document.getElementById("m_" + page_id).parentElement.href); // url attrapée dans une balise <a>
-			let params = new URLSearchParams(url.search); // params à droite du ?
-			let path_array = params.get('page').split('/'); // chemin 'page' découpé dans un tableau
-            console.log(data.page_name_path);
-			path_array[path_array.length - 1] = data.page_name_path; // modif de la dernière case
-			params.set('page', path_array.join('/')); // réassemblage du chemin et MAJ de params
-			url.search = params.toString(); // MAJ de url
-			document.getElementById("m_" + page_id).parentElement.href = url.toString(); // MAJ de la balise <a>
-
-            //  modifier l'URL sans rafraichir en touchant à l'historique
-            params.set('action', 'modif_page'); // on veut rester en mode "modif"
-            url.search = params.toString();
-            history.pushState({}, '', url.toString())
-            
-            console.log("la nouveau chemin est: " + data.page_name_path);
-            toastNotify("la nouveau chemin est: " + data.page_name_path);
-        }
-        else{
-            console.error("Erreur à la modification du chemin de la page dans l'URL.");
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
-}*/
 function changeDescription(page_id){
 	const textarea = document.getElementById("description_textarea");
 
