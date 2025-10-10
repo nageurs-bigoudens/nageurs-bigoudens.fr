@@ -16,12 +16,12 @@ class ArticleController
 		if($request->query->has('id') && !empty($request->query->get('id')) && $request->query->has('last_article')){
 			//var_dump($request->query->get('last_article'));
 			$id = (int)$request->get('id'); // type et nettoie
-			$director = new Director($entityManager);
-			$director->findNodeById($id);
-			$parent_block = $director->getNode();
+			$model = new Model($entityManager);
+			$model->findNodeById($id);
+			$parent_block = $model->getNode();
 
 			if(Blocks::hasPresentation($parent_block->getName())){
-				$get_articles_return = $director->getNextArticles($parent_block, $request);
+				$get_articles_return = $model->getNextArticles($parent_block, $request);
 				$bulk_data = $get_articles_return[0];
 
 				if($parent_block->getName() === 'post_block'){
@@ -60,7 +60,7 @@ class ArticleController
 	        	$id = substr($id, 1);
 	        }
 
-	        $director = new Director($entityManager);
+	        $model = new Model($entityManager);
 	        $content = $json['content'];
 
 	        // nettoyage
@@ -77,12 +77,12 @@ class ArticleController
 	        if($json['id'][0] === 'n') // ici $id est un bloc
 	        {
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
-	        	if(!$director->findNodeById($section_id)){ // erreur mauvais id
+	        	if(!$model->findNodeById($section_id)){ // erreur mauvais id
 	        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad id']);
 	        		die;
 	        	}
-	        	$director->makeSectionNode();
-	        	$node = $director->getNode(); // = <section>
+	        	$model->makeSectionNode();
+	        	$node = $model->getNode(); // = <section>
 	        	
 	        	if(is_array($content)){ // cas d'une nouvelle "news"
 		        	if($node->getPage()->getEndOfPath() !== $json['from']){ // erreur mauvais from
@@ -118,9 +118,9 @@ class ArticleController
 	        // modification article
 	        //else{}
 
-	        if($director->makeArticleNode($id)) // une entrée est trouvée
+	        if($model->makeArticleNode($id)) // une entrée est trouvée
 	        {
-	        	$node = $director->getArticleNode(); // article
+	        	$node = $model->getArticleNode(); // article
 	        	switch($json['id'][0]){
 					case 'i':
 						$node->getArticle()->setContent($content);
@@ -153,14 +153,14 @@ class ArticleController
 
 	static public function deleteArticle(EntityManager $entityManager, array $data): Response // $data peut être un $_GET ou du JSON
 	{
-		$director = new Director($entityManager);
-		if(!$director->makeArticleNode($data['id'], true)){
+		$model = new Model($entityManager);
+		if(!$model->makeArticleNode($data['id'], true)){
 			return new Response(
 	    		'{"success": false, "message": "Erreur: pas d\'article à supprimer"}',
                 Response::HTTP_INTERNAL_SERVER_ERROR); // 500
 		}
-	    $article = $director->getArticleNode();
-		$section = $director->getNode();
+	    $article = $model->getArticleNode();
+		$section = $model->getNode();
 
 	    $entityManager->remove($article);
 	    $section->removeChild($article);
@@ -181,10 +181,10 @@ class ArticleController
 
 	static public function switchPositions(EntityManager $entityManager, array $json): void
 	{
-		$director = new Director($entityManager);
-		$director->makeArticleNode($json['id1'], true);
-	    $article1 = $director->getArticleNode();
-		$section = $director->getNode();
+		$model = new Model($entityManager);
+		$model->makeArticleNode($json['id1'], true);
+	    $article1 = $model->getArticleNode();
+		$section = $model->getNode();
 
 	    $section->sortChildren(true); // régénère les positions avant inversion
 	    $article2 = null;
@@ -211,9 +211,9 @@ class ArticleController
 		$id = substr($json['id'], 1);
 		$date = new DateTime($json['date']);
 
-		$director = new Director($entityManager);
-		$director->makeArticleNode($id);
-	    $node = $director->getArticleNode();
+		$model = new Model($entityManager);
+		$model->makeArticleNode($id);
+	    $node = $model->getArticleNode();
 		$node->getArticle()->setDateTime($date);
 		$entityManager->flush();
 		

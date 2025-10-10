@@ -5,28 +5,28 @@
         <div class="edit_page_title_zone">
             <p id="edit_page_title">
                 <label for="page_name">Titre de la page</label>
-                <input type="text" id="page_name" name="edit_page_title" value="<?= Director::$page_path->getLast()->getPageName() ?>" onchange="makePageNamePath()" required>
-                <button onclick="changePageTitle('<?= Director::$page_path->getLast()->getId() ?>')">Renommer</button>
+                <input type="text" id="page_name" name="edit_page_title" value="<?= Model::$page_path->getLast()->getPageName() ?>" onchange="makePageNamePath()" required>
+                <button onclick="changePageTitle('<?= Model::$page_path->getLast()->getId() ?>')">Renommer</button>
             </p>
             <form id="edit_page_menu_path" method="post" action="<?= new URL(['page' => CURRENT_PAGE]) ?>">
                 <label for="page_name_path">Chemin en "snake_case"</label>
-                <input type="text" id="page_name_path" name="page_menu_path" value="<?= Director::$page_path->getLast()->getEndOfPath() ?>" placeholder="ex: nouvelle_page" required>
-                <input type="hidden" name="page_id" value="<?= Director::$page_path->getLast()->getId() ?>"><input type="hidden" name="page_name_path_hidden">
+                <input type="text" id="page_name_path" name="page_menu_path" value="<?= Model::$page_path->getLast()->getEndOfPath() ?>" placeholder="ex: nouvelle_page" required>
+                <input type="hidden" name="page_id" value="<?= Model::$page_path->getLast()->getId() ?>"><input type="hidden" name="page_name_path_hidden">
                 <input type="submit" value="Modifier">
             </form>
         </div>
         <div id="edit_description">
             <label for="description_textarea">Description sous le titre dans les moteurs de recherche</label>
             <div>
-                <textarea id="description_textarea" name="edit_description" cols="40" rows="3" placeholder="ex: nous faisons ceci et cela, etc" required><?= Director::$page_path->getLast()->getDescription(); ?></textarea>
-                <button onclick="changeDescription('<?= Director::$page_path->getLast()->getId() ?>')">Modifier</button>
+                <textarea id="description_textarea" name="edit_description" cols="40" rows="3" placeholder="ex: nous faisons ceci et cela, etc" required><?= Model::$page_path->getLast()->getDescription(); ?></textarea>
+                <button onclick="changeDescription('<?= Model::$page_path->getLast()->getId() ?>')">Modifier</button>
             </div>
         </div>
     </div>
     <div class="delete_page_zone">
         <form method="post" action="<?= new URL ?>">
             <label>Supprimer cette page</label>
-            <input type="hidden" name="page_id" value="<?= Director::$page_path->getLast()->getId() ?>">
+            <input type="hidden" name="page_id" value="<?= Model::$page_path->getLast()->getId() ?>">
             <input type="hidden" name="submit_hidden">
             <input type="submit" value="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer cette page?');">
         </form>

@@ -49,10 +49,10 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
 
 
         /* 2/ accès au modèle */
-        $director = new Director($entityManager);
-        $director->makeMenuAndPaths();
-        $director->getWholePageData($request);
-        self::$root_node = $director->getNode();
+        $model = new Model($entityManager);
+        $model->makeMenuAndPaths();
+        $model->getWholePageData($request);
+        self::$root_node = $model->getNode();
 
 
         /* 3/ 2ème contrôle utilisant les données récupérées */

@@ -14,9 +14,9 @@ class NavBuilder extends AbstractBuilder
     {
         $this->html .= '<nav class="nav_main"><ul>';
         $this->html .= $this->navMainHTML(
-            Director::$menu_data,
-            // param nullable, ça retire une dépendance stricte entre NavBuilder et Director
-            Director::$page_path != null ? Director::$page_path->getArray() : []);
+            Model::$menu_data,
+            // param nullable, ça retire une dépendance stricte entre NavBuilder et Model
+            Model::$page_path != null ? Model::$page_path->getArray() : []);
         $this->html .= '</ul></nav>';
     }
 

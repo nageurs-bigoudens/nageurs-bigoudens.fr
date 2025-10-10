@@ -10,8 +10,8 @@ class MenuAndPathsController
 {
     static public function newUrlMenuEntry(EntityManager $entityManager): void
     {
-        Director::$menu_data = new Menu($entityManager);
-        $previous_page = Director::$menu_data->findPageById((int)$_POST["location"]); // (int) à cause de declare(strict_types=1);
+        Model::$menu_data = new Menu($entityManager);
+        $previous_page = Model::$menu_data->findPageById((int)$_POST["location"]); // (int) à cause de declare(strict_types=1);
         $parent = $previous_page->getParent();
 
         $url_input = trim($_POST["url_input"]); // faire htmlspecialchars à l'affichage
@@ -31,7 +31,7 @@ class MenuAndPathsController
         // addChild l'ajoute à la fin du tableau "children" puis on trie
         // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
         if(!$parent){
-            $parent = Director::$menu_data;
+            $parent = Model::$menu_data;
         }
         $parent->addChild($page); // true pour réindexer les positions en BDD
         $parent->reindexPositions();
@@ -63,11 +63,11 @@ class MenuAndPathsController
 
     static public function deleteUrlMenuEntry(EntityManager $entityManager): void
     {
-        Director::$menu_data = new Menu($entityManager);
-        $page = Director::$menu_data->findPageById((int)$_POST["delete"]);
+        Model::$menu_data = new Menu($entityManager);
+        $page = Model::$menu_data->findPageById((int)$_POST["delete"]);
         $parent = $page->getParent();
         if($parent == null){
-            $parent = Director::$menu_data;
+            $parent = Model::$menu_data;
         }
 
         $parent->removeChild($page); // suppression de $children avant de trier
@@ -82,7 +82,7 @@ class MenuAndPathsController
 	static public function MoveOneLevelUp(EntityManager $entityManager, array $json): void
 	{
 		$id = $json['id'];
-		$page = Director::$menu_data->findPageById((int)$id);
+		$page = Model::$menu_data->findPageById((int)$id);
 
         $parent = $page->getParent(); // peut être null
         if($parent === null){
@@ -97,9 +97,9 @@ class MenuAndPathsController
             // 2ème niveau: le parent devient $menu_data, puis null après tri
             if($parent->getParent() === null){
                 // connexion dans les deux sens
-                $page->setParent(Director::$menu_data); // => pour la persistance
+                $page->setParent(Model::$menu_data); // => pour la persistance
                 
-                //Director::$menu_data->addChild($page); // => pour sortChildren
+                //Model::$menu_data->addChild($page); // => pour sortChildren
                 $page->getParent()->addChild($page); // => pour sortChildren
                 $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
                 $page->setParent(null);
@@ -129,11 +129,11 @@ class MenuAndPathsController
 	static public function MoveOneLevelDown(EntityManager $entityManager, array $json): void
 	{
 		$id = $json['id'];
-		$page = Director::$menu_data->findPageById((int)$id);
+		$page = Model::$menu_data->findPageById((int)$id);
 
         $parent = $page->getParent(); // peut être null
         if($parent == null){
-            $parent = Director::$menu_data;
+            $parent = Model::$menu_data;
         }
 
         // BDD
@@ -166,8 +166,8 @@ class MenuAndPathsController
         $id2 = $json['id2'];
 
         // vérifier qu'ils ont le même parent
-        $page1 = Director::$menu_data->findPageById((int)$id1);
-        $page2 = Director::$menu_data->findPageById((int)$id2);
+        $page1 = Model::$menu_data->findPageById((int)$id1);
+        $page2 = Model::$menu_data->findPageById((int)$id2);
 
         // double le contrôle fait en JS
         if($page1->getParent() === $page2->getParent()) // comparaison stricte d'objet (même instance du parent?)
@@ -176,7 +176,7 @@ class MenuAndPathsController
 	        $tmp = $page1->getPosition();
 	        $page1->setPosition($page2->getPosition());
 	        $page2->setPosition($tmp);
-	        Director::$menu_data->sortChildren(true); // modifie tableau children 
+	        Model::$menu_data->sortChildren(true); // modifie tableau children 
 	        $entityManager->flush();
 	        
 	        // nouveau menu
@@ -194,7 +194,7 @@ class MenuAndPathsController
 		$id = $json['id'];
 		$checked = $json['checked'];
 
-		$page = Director::$menu_data->findPageById((int)$id);
+		$page = Model::$menu_data->findPageById((int)$id);
 		if($page->isHidden() === $checked){
 			$page->setHidden(!$checked);
 			$entityManager->flush();

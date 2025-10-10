@@ -15,7 +15,7 @@ class BreadcrumbBuilder extends AbstractBuilder
     private function breadcrumbHTML(): string
     {
         $asset = 'assets/home.svg'; // => BDD?
-        $breadcrumb_array = Director::$page_path->getArray(); // tableau de Page
+        $breadcrumb_array = Model::$page_path->getArray(); // tableau de Page
         $html = '';
         $nb_of_entries = count($breadcrumb_array);
         

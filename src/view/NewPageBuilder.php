@@ -25,7 +25,7 @@ class NewPageBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }*/
 
-            $this->unfoldOptions(Director::$menu_data);
+            $this->unfoldOptions(Model::$menu_data);
 
             ob_start();
             require $viewFile; // insertion de $this->html généré par unfoldMenu

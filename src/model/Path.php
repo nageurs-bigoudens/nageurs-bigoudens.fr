@@ -17,7 +17,7 @@ class Path extends Page
         $path_array = explode('/', CURRENT_PAGE);
         try{
         	// parcourir le menu de haut en bas pour obtenir un ou plusieurs objets Page
-        	$this->findPage(Director::$menu_data, $path_array); // remplit $this->current_page
+        	$this->findPage(Model::$menu_data, $path_array); // remplit $this->current_page
         }
 		catch(Exception $e){}
 	}

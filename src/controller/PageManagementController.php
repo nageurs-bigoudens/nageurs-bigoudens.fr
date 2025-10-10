@@ -25,16 +25,16 @@ class PageManagementController
 
 	static public function updatePageMenuPath(EntityManager $entityManager): void
 	{
-	    Director::$menu_data = new Menu($entityManager);
-	    Director::$page_path = new Path();
-	    $page = Director::$page_path->getLast();
+	    Model::$menu_data = new Menu($entityManager);
+	    Model::$page_path = new Path();
+	    $page = Model::$page_path->getLast();
 	    $path = htmlspecialchars($_POST['page_menu_path']);
 
 	    // mise en snake_case: filtre caractères non-alphanumériques, minuscule, doublons d'underscore, trim des underscores
 	    $path = trim(preg_replace('/_+/', '_', strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $path))), '_');
 	    $page->setEndOfPath($path);
-	    foreach(Director::$menu_data->getChildren() as $child){
-	        if($child->getEndOfPath() === Director::$page_path->getArray()[0]->getEndOfPath()){
+	    foreach(Model::$menu_data->getChildren() as $child){
+	        if($child->getEndOfPath() === Model::$page_path->getArray()[0]->getEndOfPath()){
 	            $child->fillChildrenPagePath(); // MAJ de $page_path
 	        }
 	    }
@@ -55,10 +55,10 @@ class PageManagementController
 	static public function newPage(EntityManager $entityManager, array $post): void
 	{
 	    // titre et chemin
-	    $director = new Director($entityManager);
-	    $director->makeMenuAndPaths();
-	    //Director::$menu_data = new Menu($entityManager);
-	    $previous_page = Director::$menu_data->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
+	    $model = new Model($entityManager);
+	    $model->makeMenuAndPaths();
+	    //Model::$menu_data = new Menu($entityManager);
+	    $previous_page = Model::$menu_data->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
 	    $parent = $previous_page->getParent();
 
 	    $page = new Page(
@@ -73,7 +73,7 @@ class PageManagementController
 	    // addChild l'ajoute à la fin du tableau "children" puis on trie
 	    // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
 	    if($parent == null){
-	        $parent = Director::$menu_data;
+	        $parent = Model::$menu_data;
 	    }
 	    $parent->addChild($page);
 	    $parent->reindexPositions();
@@ -127,12 +127,12 @@ class PageManagementController
 	/* partie "blocs" */
 	static public function addBloc(EntityManager $entityManager): void
 	{
-	    $director = new Director($entityManager);
-	    $director->makeMenuAndPaths(); // on a besoin de page_path qui dépend de menu_data
-	    $page = Director::$page_path->getLast();
-	    $director->findUniqueNodeByName('main');
-	    $director->findItsChildren();
-	    $main = $director->getNode();
+	    $model = new Model($entityManager);
+	    $model->makeMenuAndPaths(); // on a besoin de page_path qui dépend de menu_data
+	    $page = Model::$page_path->getLast();
+	    $model->findUniqueNodeByName('main');
+	    $model->findItsChildren();
+	    $main = $model->getNode();
 	    $position = count($main->getChildren()) + 1; // position dans la fraterie
 
 	    if(!in_array($_POST["bloc_select"], array_keys(Blocks::$blocks), true)) // 3è param: contrôle du type
@@ -185,12 +185,12 @@ class PageManagementController
 
 	static public function deleteBloc(EntityManager $entityManager): void
 	{
-	    $director = new Director($entityManager);
-	    $director->makeMenuAndPaths();
-	    $director->findUniqueNodeByName('main');
-	    $director->findItsChildren();
-	    //$director->findNodeById((int)$_POST['delete_bloc_id']);
-	    $main = $director->getNode();
+	    $model = new Model($entityManager);
+	    $model->makeMenuAndPaths();
+	    $model->findUniqueNodeByName('main');
+	    $model->findItsChildren();
+	    //$model->findNodeById((int)$_POST['delete_bloc_id']);
+	    $main = $model->getNode();
 	    $bloc = null;
 	    foreach($main->getChildren() as $child){
 	        if($child->getId() === (int)$_POST['delete_bloc_id']){
@@ -212,13 +212,13 @@ class PageManagementController
 	static public function renameBloc(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['bloc_title']) && $json['bloc_title'] !== null && isset($json['bloc_id']) && is_int($json['bloc_id'])){
-            $director = new Director($entityManager);
-            $director->findNodeById($json['bloc_id']);
+            $model = new Model($entityManager);
+            $model->findNodeById($json['bloc_id']);
 
             // le titre (du JSON en BDD) est récupéré sous forme de tableau, modifié et renvoyé
-            $data = $director->getNode()->getNodeData()->getData();
+            $data = $model->getNode()->getNodeData()->getData();
             $data['title'] = htmlspecialchars($json['bloc_title']);
-            $director->getNode()->getNodeData()->updateData('title', htmlspecialchars($json['bloc_title']));
+            $model->getNode()->getNodeData()->updateData('title', htmlspecialchars($json['bloc_title']));
 
             $entityManager->flush();
             echo json_encode(['success' => true, 'title' => $data['title']]);
@@ -232,11 +232,11 @@ class PageManagementController
 	static public function SwitchBlocsPositions(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id1']) && is_int($json['id1']) && isset($json['id2']) && is_int($json['id2']) && isset($_GET['page'])){
-    		$director = new Director($entityManager);
-    		$director->makeMenuAndPaths(); // true pour $director->findItsChildren();
-    		$director->findUniqueNodeByName('main');
-            $director->findItsChildren();
-            $main = $director->getNode();
+    		$model = new Model($entityManager);
+    		$model->makeMenuAndPaths(); // true pour $model->findItsChildren();
+    		$model->findUniqueNodeByName('main');
+            $model->findItsChildren();
+            $main = $model->getNode();
             $main->sortChildren(true); // régénère les positions avant inversion
 
             $bloc1 = null;
@@ -271,8 +271,8 @@ class PageManagementController
 	static public function changeArticlesOrder(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['chrono_order'])){
-			$director = new Director($entityManager);
-			$director->findNodeById($json['id']);
+			$model = new Model($entityManager);
+			$model->findNodeById($json['id']);
 
 			if($json['chrono_order'] === 'chrono'){
 				$chrono_order = true;
@@ -284,7 +284,7 @@ class PageManagementController
 				echo json_encode(['success' => false]);
 				die;
 			}
-			$director->getNode()->getNodeData()->setChronoOrder($chrono_order);
+			$model->getNode()->getNodeData()->setChronoOrder($chrono_order);
 			$entityManager->flush();
 			
 			echo json_encode(['success' => true, 'chrono_order' => $json['chrono_order']]);
@@ -298,16 +298,16 @@ class PageManagementController
 	static public function changePresentation(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['presentation'])){
-			$director = new Director($entityManager);
-			$director->findNodeById($json['id']);
+			$model = new Model($entityManager);
+			$model->findNodeById($json['id']);
 
 			if(in_array($json['presentation'], array_keys(Blocks::$presentations))){
-				$director->getNode()->getNodeData()->setPresentation($json['presentation']);
+				$model->getNode()->getNodeData()->setPresentation($json['presentation']);
 				$entityManager->flush();
 
 				$response_data = ['success' => true, 'presentation' => $json['presentation']];
 				if($json['presentation'] === 'grid'){
-					$response_data['cols_min_width'] = $director->getNode()->getNodeData()->getColsMinWidth();
+					$response_data['cols_min_width'] = $model->getNode()->getNodeData()->getColsMinWidth();
 				}
 				echo json_encode($response_data);
 			}
@@ -323,9 +323,9 @@ class PageManagementController
 	static public function changeColsMinWidth(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['cols_min_width'])){
-			$director = new Director($entityManager);
-			$director->findNodeById($json['id']);
-			$director->getNode()->getNodeData()->setColsMinWidth((int)$json['cols_min_width']); // attention conversion?
+			$model = new Model($entityManager);
+			$model->findNodeById($json['id']);
+			$model->getNode()->getNodeData()->setColsMinWidth((int)$json['cols_min_width']); // attention conversion?
 
 			$entityManager->flush();
 			echo json_encode(['success' => true, 'cols_min_width' => $json['cols_min_width']]);
@@ -338,10 +338,10 @@ class PageManagementController
 	static public function changePaginationLimit(EntityManager $entityManager, array $json): void
 	{
 		if(isset($json['id']) && isset($json['pagination_limit'])){
-			$director = new Director($entityManager);
-			$director->findNodeById($json['id']);
-			$old_limit = $director->getNode()->getNodeData()->getPaginationLimit() ?? 12;
-			$director->getNode()->getNodeData()->setPaginationLimit((int)$json['pagination_limit']); // attention conversion?
+			$model = new Model($entityManager);
+			$model->findNodeById($json['id']);
+			$old_limit = $model->getNode()->getNodeData()->getPaginationLimit() ?? 12;
+			$model->getNode()->getNodeData()->setPaginationLimit((int)$json['pagination_limit']); // attention conversion?
 
 			$entityManager->flush();
 

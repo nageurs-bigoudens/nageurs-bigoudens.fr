@@ -16,7 +16,7 @@ class MainBuilder extends AbstractBuilder
         $this->html .= "<main>\n";
 
         // page article: cas particulier où l'article est greffé sur main
-        if(Director::$page_path->getLast()->getEndOfPath() === 'article'){
+        if(Model::$page_path->getLast()->getEndOfPath() === 'article'){
             // pas censé arriver
             if(!isset($_GET['id'])){
                 header('Location: ' . new URL);

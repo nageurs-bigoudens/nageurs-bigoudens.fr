@@ -57,7 +57,7 @@ class FooterBuilder extends AbstractBuilder
             {
                 $div_admin = 'logged_out';
                 $url = new URL(['page' => 'connection', 'from' => CURRENT_PAGE]);
-                if(Director::$page_path->getLast()->getEndOfPath() === 'article' && isset($_GET['id'])){
+                if(Model::$page_path->getLast()->getEndOfPath() === 'article' && isset($_GET['id'])){
                     $url->addParams(['id' => $_GET['id']]);
                 }
                 $zone_admin = '<button><a href="' . $url . '">Mode admin</a></button>';

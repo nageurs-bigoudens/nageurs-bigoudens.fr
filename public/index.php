@@ -4,7 +4,7 @@
 /* plan d'action pour "symfonyfier" le site
 A - 
     1/ de vrais contrôleurs: classes et méthodes prenant une requête en entrée et retournant une réponse
-    (début de séparation contrôleurs et classes métier, exemple: ViewController/Director)
+    (début de séparation contrôleurs et classes métier, exemple: ViewController/Model)
     2/ routeur structuré: méthodes GET et POST, content-type, admin
     3/ routeur amélioré: pré-routage avec méthodes HTTP: GET, HEAD, POST, PUT, PATCH, DELETE, etc
     4/ réécriture avec les classes Request et Response sans toucher les liens

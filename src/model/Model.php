@@ -1,7 +1,5 @@
 <?php
-// src/controller/Director.php
-
-// => src/model/Model.php serait mieux
+// src/model/Model.php
 
 declare(strict_types=1);
 
@@ -11,7 +9,7 @@ use App\Entity\Node;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
-class Director
+class Model
 {
 	private EntityManager $entityManager;
     static public Menu $menu_data; // pour NavBuilder
@@ -27,7 +25,7 @@ class Director
 	}
 
     // à déplacer dans Path ou un truc comme ça?
-    // couper Director en deux classes NodeModel et PageModel?
+    // couper Model en deux classes NodeModel et PageModel?
     public function makeMenuAndPaths(): void // lit la table "page"
     {
         self::$menu_data = new Menu($this->entityManager);
