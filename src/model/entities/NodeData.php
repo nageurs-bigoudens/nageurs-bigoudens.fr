@@ -40,21 +40,21 @@ class NodeData
     private ?int $pagination_limit = null; // pour les post_block et news_block
 
     // liaison avec table intermédiaire
-    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "node_data")]
+    #[ORM\ManyToMany(targetEntity: Asset::class, inversedBy: "node_data")]
     #[ORM\JoinTable(
-        name: TABLE_PREFIX . "node_image",
+        name: TABLE_PREFIX . "node_asset",
         joinColumns: [new ORM\JoinColumn(name: "node_data_id", referencedColumnName: "id_node_data", onDelete: "CASCADE")],
-        inverseJoinColumns: [new ORM\JoinColumn(name: "image_id", referencedColumnName: "id_image", onDelete: "CASCADE")]
+        inverseJoinColumns: [new ORM\JoinColumn(name: "asset_id", referencedColumnName: "id_asset", onDelete: "CASCADE")]
     )]
-    private Collection $images;
+    private Collection $assets;
 
     private int $nb_pages = 1;
 
-    public function __construct(array $data, Node $node, Collection $images = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
+    public function __construct(array $data, Node $node, Collection $assets = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
         $this->data = $data;
         $this->node = $node;
-        $this->images = $images;
+        $this->assets = $assets;
         if(!empty($presentation) && $presentation === 'grid'){
             $this->grid_cols_min_width = 250;
         }
@@ -133,12 +133,12 @@ class NodeData
     {
         $this->node = $node;
     }*/
-    public function getImages(): Collection
+    public function getAssets(): Collection
     {
-        return $this->images;
+        return $this->assets;
     }
-    public function setImages(Collection $images): void
+    public function setAssets(Collection $assets): void
     {
-        $this->images = $images;
+        $this->assets = $assets;
     }
 }

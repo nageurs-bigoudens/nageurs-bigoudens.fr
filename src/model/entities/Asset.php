@@ -1,5 +1,5 @@
 <?php
-// src/model/entities/Image.php
+// src/model/entities/Asset.php
 
 declare(strict_types=1);
 
@@ -8,13 +8,13 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: TABLE_PREFIX . "image")]
-class Image
+#[ORM\Table(name: TABLE_PREFIX . "asset")]
+class Asset
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id_image;
+    private int $id_asset;
 
     #[ORM\Column(type: "string", length: 255, unique: true)] // nom d'image UNIQUE
     private string $file_name;
@@ -41,8 +41,8 @@ class Image
     => Déplacement du fichier sur le serveur : Le fichier est déplacé depuis son emplacement temporaire vers le répertoire uploads/.
     => Enregistrement dans la base de données : On enregistre les informations de l'image dans la base de données. */
 
-    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: "images")]
-    private $article;
+    #[ORM\ManyToMany(targetEntity: NodeData::class, mappedBy: "assets")]
+    private $node_data;
 
     public function __construct(string $name, ?string $path, ?string $path_mini, string $mime_type, string $alt)
     {

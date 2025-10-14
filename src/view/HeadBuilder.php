@@ -51,14 +51,18 @@ class HeadBuilder extends AbstractBuilder
             $description = Model::$page_path->getLast()->getDescription();
 
             // favicon
-            foreach($node->getNodeData()->getImages() as $image)
+            /*foreach($node->getNodeData()->getImages() as $image)
             {
                 if(str_contains($image->getFileName(), 'favicon'))
                 {
                     $favicon = rtrim($image->getFilePathMini(), '/');
                     $alt = $image->getAlt();
                 }
-            }
+            }*/
+
+            // en dur temporairement
+            $favicon = 'assets/favicon48x48.png';
+            $alt = 'favicon';
 
             ob_start();
             require $viewFile;

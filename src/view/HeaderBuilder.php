@@ -51,7 +51,7 @@ class HeaderBuilder extends AbstractBuilder
             $keys = array_keys($social);
             $social_networks = '';
             $head_logo = '';
-            foreach($node->getNodeData()->getImages() as $image)
+            /*foreach($node->getNodeData()->getImages() as $image)
             {
                 for($i = 0; $i < count($keys); $i++)
                 {
@@ -62,18 +62,23 @@ class HeaderBuilder extends AbstractBuilder
                         break;
                     }
                     // logo en-tête
-                    /*if(str_contains($image->getFileName(), 'header_logo')){
-                        $header_logo = rtrim($image->getFilePathMini(), '/');
-                        break;
-                    }*/
+                    //if(str_contains($image->getFileName(), 'header_logo')){
+                        //$header_logo = rtrim($image->getFilePathMini(), '/');
+                        //break;
+                    //}
                     // image de fond
-                    /*if(str_contains($image->getFileName(), 'header_background')){
-                        $header_background = rtrim($image->getFilePath(), '/');
-                        break;
-                    }*/
+                    //if(str_contains($image->getFileName(), 'header_background')){
+                        //$header_background = rtrim($image->getFilePath(), '/');
+                        //break;
+                    //}
                 }
+            }*/
+            // chemin du ficher dans node_data, à déplacer dans asset
+            foreach($keys as $one_key){
+                $social_networks .= '<a href="' . $social[$one_key] . '" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/' . $one_key . '.svg" alt="' . $one_key . '_alt"></a>';
             }
-
+            
             ob_start();
             require $viewFile;
             $this->html .= ob_get_clean();
