@@ -6,7 +6,7 @@ declare(strict_types=1);
 use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\NodeData;
-use App\Entity\Image;
+use App\Entity\Asset;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 
@@ -116,13 +116,13 @@ function makeStartPage(EntityManager $entityManager){
 	$head_new_page = new Node('head', ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
 	$bloc_new_page = new Node('new_page', [], 1, $main, $new_page, NULL);
 
-	/* -- table image -- */
+	/* -- table asset -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
-	$favicon = new Image("favicon48x48.png", NULL, "assets/favicon48x48.png", "image/png", "favicon");
-	$facebook = new Image("facebook.svg", NULL, "assets/facebook.svg", "image/svg+xml", "facebook");
-	$instagram = new Image("instagram.svg", NULL, "assets/instagram.svg", "image/svg+xml", "instagram");
-	$linkedin = new Image("linkedin.svg", NULL, "assets/linkedin.svg", "image/svg+xml", "linkedin");
-	$github = new Image("github.svg", NULL, "assets/github.svg", "image/svg+xml", "github");
+	$favicon = new Asset("favicon48x48.png", NULL, "assets/favicon48x48.png", "image/png", "favicon");
+	$facebook = new Asset("facebook.svg", NULL, "assets/facebook.svg", "image/svg+xml", "facebook");
+	$instagram = new Asset("instagram.svg", NULL, "assets/instagram.svg", "image/svg+xml", "instagram");
+	$linkedin = new Asset("linkedin.svg", NULL, "assets/linkedin.svg", "image/svg+xml", "linkedin");
+	$github = new Asset("github.svg", NULL, "assets/github.svg", "image/svg+xml", "github");
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
