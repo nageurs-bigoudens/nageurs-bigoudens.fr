@@ -22,9 +22,6 @@ class Node
     #[ORM\Column(type: "string", length: 255)]
     private string $name_node;
 
-    #[ORM\Column(type: "string", length: 255, unique: true, nullable: true)]
-    private ?string $article_timestamp;
-
     #[ORM\Column(type: "json", nullable: true)] // type: "json" crée un longtext avec mariadb
     private ?array $attributes = null;
 
@@ -80,10 +77,6 @@ class Node
     {
         $this->name_node = $name;
     }*/
-    public function getArticleTimestamp(): string
-    {
-        return $this->article_timestamp;
-    }
     public function getAttributes(): array
     {
         return $this->attributes;
