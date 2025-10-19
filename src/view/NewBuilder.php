@@ -33,12 +33,6 @@ class NewBuilder extends AbstractBuilder
             else{
                 $id = (string)$node->getId();
 
-                // id (timestamp)
-                if(!empty($node->getAttributes()))
-                {
-                    extract($node->getAttributes());
-                }
-
                 // html, date
                 $title = $node->getArticle()->getTitle();
                 $preview = $node->getArticle()->getPreview();

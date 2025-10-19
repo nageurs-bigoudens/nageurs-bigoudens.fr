@@ -92,7 +92,7 @@ class ArticleController
 
 	                $date = new \DateTime($content['d'] . ':' . (new \DateTime)->format('s')); // l'input type="datetime-local" ne donne pas les secondes, on les ajoute: 'hh:mm' . ':ss'
 	                $article = new Article($content['i'], $date, $content['t'], $content['p']);
-	                $article_node = new Node('new', [], count($node->getChildren()) + 1, $node, $node->getPage(), $article);
+	                $article_node = new Node('new', count($node->getChildren()) + 1, $node, $node->getPage(), $article);
 	        	}
 	        	else{ // autres cas
 	        		$timestamp = time();
@@ -101,7 +101,7 @@ class ArticleController
 
 		        	$article = new Article($content, $date); // le "current" timestamp est obtenu par la BDD
 		        	$placement = $json['placement'] === 'first' ? 0 : count($node->getChildren()) + 1; // 
-		        	$article_node = new Node('post', [], $placement, $node, $node->getPage(), $article);
+		        	$article_node = new Node('post', $placement, $node, $node->getPage(), $article);
 
 		        	if($json['placement'] === 'first'){
 		        		$node->addChild($article_node);

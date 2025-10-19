@@ -100,21 +100,16 @@ function makeStartPage(EntityManager $entityManager){
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
-	$head_accueil = new Node('head', ['css_array' => ['body', 'head', 'nav', 'foot'], 'js_array' => ['main']], 1, NULL, $accueil, NULL);
-	$head_article = new Node('head', ['css_array' => ['body', 'head', 'nav', 'foot'], 'js_array' => ['main']], 1, NULL, $article, NULL);
-	$header = new Node('header', [], 2, NULL, NULL, NULL);
-	$nav = new Node('nav', [], 1, $header, NULL, NULL);
-	$main = new Node('main', [], 3, NULL, NULL, NULL);
-	$footer = new Node('footer', [], 4, NULL, NULL, NULL);
-	$breadcrumb = new Node('breadcrumb', [], 2, $header, NULL, NULL);
-	$head_login = new Node('head', ["stop" => true, 'css_array' => ['body'], 'js_array' => ['main']], 1, NULL, $connection, NULL);
-	$login = new Node('login', [], 1, $main, $connection, NULL);
-	$head_my_account = new Node('head', ["stop" => true, 'css_array' => ['body'], 'js_array' => ['main']], 1, NULL, $my_account, NULL);
-	$user_edit = new Node('user_edit', [], 1, $main, $my_account, NULL);
-	$head_edit_menu = new Node('head', ['css_array' => ['body', 'head', 'nav', 'menu', 'foot'], 'js_array' => ['main', 'menu']], 1, NULL, $menu_paths, NULL);
-	$bloc_edit_menu = new Node('menu', [], 1, $main, $menu_paths, NULL);
-	$head_new_page = new Node('head', ['css_array' => ['body', 'head', 'nav', 'new_page', 'foot'], 'js_array' => ['main', 'new_page']], 1, NULL, $new_page, NULL);
-	$bloc_new_page = new Node('new_page', [], 1, $main, $new_page, NULL);
+	$head = new Node('head', 1, NULL, NULL, NULL);
+	$header = new Node('header', 2, NULL, NULL, NULL);
+	$nav = new Node('nav', 1, $header, NULL, NULL);
+	$main = new Node('main', 3, NULL, NULL, NULL);
+	$footer = new Node('footer', 4, NULL, NULL, NULL);
+	$breadcrumb = new Node('breadcrumb', 2, $header, NULL, NULL);
+	$login = new Node('login', 1, $main, $connection, NULL);
+	$user_edit = new Node('user_edit', 1, $main, $my_account, NULL);
+	$bloc_edit_menu = new Node('menu', 1, $main, $menu_paths, NULL);
+	$bloc_new_page = new Node('new_page', 1, $main, $new_page, NULL);
 
 	/* -- table asset -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
@@ -128,12 +123,7 @@ function makeStartPage(EntityManager $entityManager){
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
-	$head_accueil_data = new NodeData([], $head_accueil, new ArrayCollection([$favicon]));
-	$head_login_data = new NodeData([], $head_login, new ArrayCollection([$favicon]));
-	$head_my_account_data = new NodeData([], $head_my_account, new ArrayCollection([$favicon]));
-	$head_article_data = new NodeData([], $head_article, new ArrayCollection([$favicon]));
-	$head_edit_menu_data = new NodeData([], $head_edit_menu, new ArrayCollection([$favicon]));
-	$head_new_page_data = new NodeData([], $head_new_page, new ArrayCollection([$favicon]));
+	$head_data = new NodeData([], $head, new ArrayCollection([$favicon]));
 	$header_data = new NodeData(["title" => "Titre", "description" => "Sous-titre", "header_logo" => "assets/logo-nb-et-ffn.png", "header_background" => "assets/fond-piscine.jpg",
 		"social" => ["facebook" => "https://www.facebook.com", "instagram" => "https://www.instagram.com", "linkedin" => "https://www.linkedin.com"]],
 	$header, new ArrayCollection([$facebook, $instagram, $linkedin, $github]));
@@ -149,20 +139,15 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($new_page);
 	
 	/* -- table node -- */
-	$entityManager->persist($head_accueil);
+	$entityManager->persist($head);
 	$entityManager->persist($header);
 	$entityManager->persist($nav);
 	$entityManager->persist($main);
 	$entityManager->persist($footer);
 	$entityManager->persist($breadcrumb);
-	$entityManager->persist($head_login);
 	$entityManager->persist($login);
-	$entityManager->persist($head_my_account);
 	$entityManager->persist($user_edit);
-	$entityManager->persist($head_article);
-	$entityManager->persist($head_edit_menu);
 	$entityManager->persist($bloc_edit_menu);
-	$entityManager->persist($head_new_page);
 	$entityManager->persist($bloc_new_page);
 	
 	/* -- table image -- */
@@ -173,14 +158,9 @@ function makeStartPage(EntityManager $entityManager){
 	$entityManager->persist($github);
 	
 	/* -- table node_data -- */
-	$entityManager->persist($head_accueil_data);
+	$entityManager->persist($head_data);
 	$entityManager->persist($header_data);
 	$entityManager->persist($footer_data);
-	$entityManager->persist($head_login_data);
-	$entityManager->persist($head_my_account_data);
-	$entityManager->persist($head_article_data);
-	$entityManager->persist($head_edit_menu_data);
-	$entityManager->persist($head_new_page_data);
 
     $entityManager->flush();
 	header('Location: ' . new URL);

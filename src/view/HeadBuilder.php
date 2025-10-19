@@ -14,19 +14,16 @@ class HeadBuilder extends AbstractBuilder
         if(file_exists($viewFile))
         {
             // css et js
-            if(!empty($node->getAttributes()))
-            {
-                extract($node->getAttributes());
-            }
+            $page = Model::$page_path->getLast();
 
             $css = '';
-	        foreach($css_array as $name)
+	        foreach($page->getCSS() as $name)
 			{
 				$css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', $name) . '">' . "\n";
 			}
 			
             $js = '';
-	        foreach($js_array as $name)
+	        foreach($page->getJS() as $name)
 			{
 				$js .= '<script src="' . self::versionedFileURL('js', $name) . '"></script>' . "\n";
 			}

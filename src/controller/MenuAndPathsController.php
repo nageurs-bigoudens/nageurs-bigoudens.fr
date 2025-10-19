@@ -22,7 +22,7 @@ class MenuAndPathsController
 
         $page = new Page(
             trim(htmlspecialchars($_POST["label_input"])),
-            $url_input,
+            $url_input, '',
             true, true, false,
             $previous_page->getPosition(),
             $parent); // peut et DOIT être null si on est au 1er niveau

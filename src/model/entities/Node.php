@@ -22,9 +22,6 @@ class Node
     #[ORM\Column(type: "string", length: 255)]
     private string $name_node;
 
-    #[ORM\Column(type: "json", nullable: true)] // type: "json" crée un longtext avec mariadb
-    private ?array $attributes = null;
-
     #[ORM\Column(type: "integer")]
     private int $position;
 
@@ -52,12 +49,10 @@ class Node
     // attributs non destinés à doctrine
     private array $children = []; // tableau de Node
     private ?self $adopted = null; // = "new" est un enfant de "main" lorsque la page est "article"
-    static private array $default_attributes = ['css_array' => ['body', 'head', 'nav', 'foot'],'js_array' => ['main']];
 
-    public function __construct(string $name = '', array $attributes = [], int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
+    public function __construct(string $name = '', int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
     {
         $this->name_node = $name;
-        $this->attributes = $attributes;
         $this->position = $position;
         $this->parent = $parent;
         $this->page = $page;
@@ -77,7 +72,8 @@ class Node
     {
         $this->name_node = $name;
     }*/
-    public function getAttributes(): array
+
+    /*public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -97,7 +93,7 @@ class Node
         if(!in_array($value, $this->attributes[$key])){
             $this->attributes[$key][] = $value;
         }
-    }
+    }*/
     /*public function removeAttribute(string $key, string $value): void
     {
         if(isset($this->attributes[$key]))  // sécurité $key inexistante

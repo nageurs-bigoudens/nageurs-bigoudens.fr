@@ -68,6 +68,8 @@ class PageManagementController
 	        true, true, false,
 	        $previous_page->getPosition(),
 	        $parent); // peut et DOIT être null si on est au 1er niveau
+	   $page->useDefaultCSS();
+	   $page->useDefaultJS();
 
 	    // on a donné à la nouvelle entrée la même position qu'à la précédente,
 	    // addChild l'ajoute à la fin du tableau "children" puis on trie
@@ -80,24 +82,7 @@ class PageManagementController
 
 	    $page->setPagePath(ltrim($parent->getPagePath() . '/' . $page->getEndOfPath(), '/'));
 
-	    // noeud "head"
-	    $node = new Node('head', [],
-	        1, // position d'un head = 1
-	        null, // pas de parent
-	        $page);
-	    $node->useDefaultAttributes(); // fichiers CSS et JS
-
-	    $data = new NodeData([], $node);
-
-	    $bulk_data = $entityManager
-	        ->createQuery('SELECT n FROM App\Entity\Image n WHERE n.file_name LIKE :name')
-	        ->setParameter('name', '%favicon%')
-	        ->getResult();
-	    $data->setImages(new ArrayCollection($bulk_data));
-	    
 	    $entityManager->persist($page);
-	    $entityManager->persist($node);
-	    $entityManager->persist($data);
 	    $entityManager->flush();
 
 	    // page créée, direction la page en mode modification pour ajouter des blocs
@@ -142,26 +127,15 @@ class PageManagementController
 	    }
 
 	    if($_POST["bloc_select"] === 'calendar' || $_POST["bloc_select"] === 'form'){
-	        $dql = 'SELECT n FROM App\Entity\Node n WHERE n.page = :page AND n.name_node = :name'; // noeud 'head' de la page
-	        $bulk_data = $entityManager
-		        ->createQuery($dql)
-		        ->setParameter('page', $page)
-		        ->setParameter('name', 'head')
-		        ->getResult();
+	        $page->setCSS(array_merge($page->getCSS(), [$_POST["bloc_select"]]));
 
-	        if(count($bulk_data) != 1){ // 1 head par page
-	            header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'head_node_not_found']));
-	            die;
-	        }
-
-	        $bulk_data[0]->addAttribute('css_array', $_POST["bloc_select"]);
 	        if($_POST["bloc_select"] === 'form'){
-	            $bulk_data[0]->addAttribute('js_array', $_POST["bloc_select"]);
+	            $page->setJS(array_merge($page->getJS(), [$_POST["bloc_select"]]));
 	        }
-	        $entityManager->persist($bulk_data[0]);
+	        $entityManager->persist($page);
 	    }
 
-	    $block = new Node($_POST["bloc_select"], [], $position, $main, $page);
+	    $block = new Node($_POST["bloc_select"], $position, $main, $page);
 	    $data = new NodeData(['title' => trim(htmlspecialchars($_POST["bloc_title"]))], $block);
 
 	    // valeurs par défaut

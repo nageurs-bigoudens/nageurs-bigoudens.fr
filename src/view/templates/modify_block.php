@@ -44,9 +44,6 @@ if(Blocks::hasPresentation($child_node->getName())){
     		<input type="number" id="cols_min_width_select_<?= $child_node->getId() ?>" onchange="changeColsMinWidth(<?= $child_node->getId() ?>)" min="150" max="400" value="<?= $child_node->getNodeData()->getColsMinWidth() ?>"> pixels
 		</div>
 	</div>
-<?php
-}
-?>
 	<div class="pagination_limit">
 		<label for="pagination_limit_<?= $child_node->getId() ?>">
 			Nombre max d'articles affichés
@@ -54,4 +51,7 @@ if(Blocks::hasPresentation($child_node->getName())){
 			<i>(mettre 0 désactive la pagination)</i>
 		</label>
 	</div>
+<?php
+}
+?>
 </div>

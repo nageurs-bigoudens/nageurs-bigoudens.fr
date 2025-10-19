@@ -31,6 +31,23 @@ class Page
     #[ORM\Column(type: "text")]
     private string $description;
 
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $css = null;
+
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $js = null;
+
+    static private array $default_css = ['body', 'head', 'nav', 'foot'];
+    static private array $default_js = ['main'];
+
+    /* remplissage
+    UPDATE nb_page
+    JOIN nb_node ON nb_node.page_id = nb_page.id_page
+    SET nb_page.css = JSON_EXTRACT(nb_node.attributes, '$.css_array');
+    UPDATE nb_page
+    JOIN nb_node ON nb_node.page_id = nb_page.id_page
+    SET nb_page.js = JSON_EXTRACT(nb_node.attributes, '$.js_array'); */
+
     #[ORM\Column(type: "boolean")]
     private bool $reachable;
 
@@ -102,6 +119,30 @@ class Page
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+    public function getCSS(): array
+    {
+        return $this->css;
+    }
+    public function useDefaultCSS(): void
+    {
+        $this->css = self::$default_css;
+    }
+    public function setCSS(array $css): void
+    {
+        $this->css = $css;
+    }
+    public function getJS(): array
+    {
+        return $this->js;
+    }
+    public function useDefaultJS(): void
+    {
+        $this->js = self::$default_js;
+    }
+    public function setJS(array $js): void
+    {
+        $this->js = $js;
     }
     public function isReachable(): bool
     {

@@ -13,12 +13,6 @@ class PostBuilder extends AbstractBuilder
 
         if(file_exists($viewFile))
         {
-            // id (timestamp)
-            if(!empty($node->getAttributes()))
-            {
-                extract($node->getAttributes());
-            }
-
             // html
             $title = $node->getArticle()->getTitle();
             $html = $node->getArticle()->getContent();

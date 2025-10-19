@@ -27,7 +27,7 @@ class MainBuilder extends AbstractBuilder
             if($node->getAdoptedChild() == null){
                 $date = new \DateTime;
                 $article = new Article('', $date);
-                $new = new Node('new', [], 0, null, null, $article);
+                $new = new Node('new', 0, null, null, $article);
             }
             // modification
             else{

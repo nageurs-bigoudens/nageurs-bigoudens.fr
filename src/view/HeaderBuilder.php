@@ -41,12 +41,6 @@ class HeaderBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }
 
-            // attributs, aucun pour l'instant
-            if(!empty($node->getAttributes()))
-            {
-                extract($node->getAttributes());
-            }
-
             // réseaux sociaux + logo dans l'entête
             $keys = array_keys($social);
             $social_networks = '';
