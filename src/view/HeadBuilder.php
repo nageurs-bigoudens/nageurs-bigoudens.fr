@@ -7,8 +7,6 @@ use App\Entity\Node;
 
 class HeadBuilder extends AbstractBuilder
 {
-    private bool $stop = false;
-
     public function __construct(Node $node)
     {
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
@@ -21,8 +19,6 @@ class HeadBuilder extends AbstractBuilder
                 extract($node->getAttributes());
             }
 
-            // pages spéciales où on n'assemble pas tout
-            $this->stop = isset($stop) ? $stop : false;
             $css = '';
 	        foreach($css_array as $name)
 			{
@@ -68,11 +64,6 @@ class HeadBuilder extends AbstractBuilder
             require $viewFile;
             $this->html .= ob_get_clean();
         }
-    }
-
-    public function getStop(): bool
-    {
-        return $this->stop;
     }
 
     static public function versionedFileURL(string $type, string $filename): string

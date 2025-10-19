@@ -25,7 +25,7 @@ abstract class AbstractBuilder
             $this->html .= $builder->render();
 
             // pages spéciales où on n'assemble pas tout
-            if($builder_name === 'HeadBuilder' && $builder->getStop())
+            if($builder_name === 'HeadBuilder' && in_array(Model::$page_path->getString(), ['connection', 'user_edit']))
             {
                 foreach($node->getChildren() as $target_node){
                     if($target_node->getName() === 'main'){
