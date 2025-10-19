@@ -50,7 +50,10 @@ class HeaderBuilder extends AbstractBuilder
             // réseaux sociaux + logo dans l'entête
             $keys = array_keys($social);
             $social_networks = '';
-            $head_logo = '';
+            //$header_logo;
+            //$header_background;
+
+            // nécéssite des entrées dans la table node_asset
             /*foreach($node->getNodeData()->getAssets() as $asset)
             {
                 for($i = 0; $i < count($keys); $i++)
@@ -73,7 +76,8 @@ class HeaderBuilder extends AbstractBuilder
                     //}
                 }
             }*/
-            // chemin du ficher dans node_data, à déplacer dans asset
+
+            // réseaux sociaux, chemin du ficher dans node_data à déplacer dans asset
             foreach($keys as $one_key){
                 $social_networks .= '<a href="' . $social[$one_key] . '" target="_blank" rel="noopener noreferrer">
                     <img src="assets/' . $one_key . '.svg" alt="' . $one_key . '_alt"></a>';

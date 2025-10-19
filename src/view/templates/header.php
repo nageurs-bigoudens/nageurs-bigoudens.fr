@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 <body>
     <div>
-	   <header style="background-image: url('<?= $header_background ?>');">
+	   <header style="background-image: url('<?= $header_background ?? '' ?>');">
             <div id="nav_zone">
                 <?= $nav ?>
             </div>

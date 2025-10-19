@@ -19,12 +19,9 @@ class Asset
     #[ORM\Column(type: "string", length: 255, unique: true)] // nom d'image UNIQUE
     private string $file_name;
 
-    // choisir un répertoire du genre /var/www/html/uploads/ de préférence hors de /src
+    // choisir un répertoire du genre /var/www/html/uploads/, au moins hors de /src
     #[ORM\Column(type: "string", length: 255, unique: true, nullable: true)]
     private ?string $file_path;
-
-    #[ORM\Column(type: "string", length: 255, unique: true, nullable: true)]
-    private ?string $file_path_mini;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private string $mime_type; // image/jpeg, image/png, etc
@@ -44,11 +41,10 @@ class Asset
     #[ORM\ManyToMany(targetEntity: NodeData::class, mappedBy: "assets")]
     private $node_data;
 
-    public function __construct(string $name, ?string $path, ?string $path_mini, string $mime_type, string $alt)
+    public function __construct(string $name, ?string $path, string $mime_type, string $alt)
     {
         $this->file_name = $name;
         $this->file_path = $path;
-        $this->file_path_mini = $path_mini;
         $this->mime_type = $mime_type;
         $this->alt = $alt;
     }
@@ -60,10 +56,6 @@ class Asset
     public function getFilePath(): string
     {
         return $this->file_path;
-    }
-    public function getFilePathMini(): string
-    {
-        return $this->file_path_mini;
     }
     public function getAlt(): string
     {

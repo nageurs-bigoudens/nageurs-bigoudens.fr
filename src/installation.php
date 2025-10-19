@@ -118,11 +118,13 @@ function makeStartPage(EntityManager $entityManager){
 
 	/* -- table asset -- */
 	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
-	$favicon = new Asset("favicon48x48.png", NULL, "assets/favicon48x48.png", "image/png", "favicon");
-	$facebook = new Asset("facebook.svg", NULL, "assets/facebook.svg", "image/svg+xml", "facebook");
-	$instagram = new Asset("instagram.svg", NULL, "assets/instagram.svg", "image/svg+xml", "instagram");
-	$linkedin = new Asset("linkedin.svg", NULL, "assets/linkedin.svg", "image/svg+xml", "linkedin");
-	$github = new Asset("github.svg", NULL, "assets/github.svg", "image/svg+xml", "github");
+	$favicon = new Asset("favicon48x48.png", "assets/favicon48x48.png", "image/png", "favicon");
+	$background = new Asset("fond-piscine.jpg", "assets/fond-piscine.jpg", "image/jpeg", "background");
+	$logo = new Asset("logo-nb-et-ffn.png", "assets/logo-nb-et-ffn.png", "image/png", "logo");
+	$facebook = new Asset("facebook.svg", "assets/facebook.svg", "image/svg+xml", "facebook");
+	$instagram = new Asset("instagram.svg", "assets/instagram.svg", "image/svg+xml", "instagram");
+	$linkedin = new Asset("linkedin.svg", "assets/linkedin.svg", "image/svg+xml", "linkedin");
+	$github = new Asset("github.svg", "assets/github.svg", "image/svg+xml", "github");
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images

@@ -176,25 +176,6 @@ class Node
             $this->sortChildren(false);
         }
     }
-
-    // remplacée par "ORDER BY a.date_time" en DQL
-    /*private function sortNews(bool $chrono = false) // affichage du plus récent au plus ancien par défaut
-    {
-        // tri par insertion similaire à Position::sortChildren
-        for($i = 1; $i < count($this->children); $i++){
-            $tmp = $this->children[$i];
-            $j = $i - 1;
-
-            $compare = $chrono ? fn($a, $b) => $a > $b : fn($a, $b) => $a < $b;
-
-            while($j >= 0 && $compare($this->children[$j]->getArticle()->getDateTime(), $tmp->getArticle()->getDateTime())){
-                $this->children[$j + 1] = $this->children[$j];
-                $j--;
-            }
-            $this->children[$j + 1] = $tmp;
-        }
-    }*/
-    
     public function removeChild(self $child): void
     {
         foreach($this->children as $key => $object){

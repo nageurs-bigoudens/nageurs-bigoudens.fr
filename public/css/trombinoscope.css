@@ -1,39 +1,6 @@
-/* css personnalissé à cette page,
-.grid_columns utilise un nombre de colonnes spécifique */
+/* css custom
+à faire: rendre uploadable et placer le fichier dans un dossier spécifique */
 article img
 {
 	border-radius: 50%;
-}
-.grid_columns
-{
-	grid-template-columns: repeat(4, 1fr);
-}
-@media screen and (max-width: 900px)
-{
-	.grid_columns
-	{
-		grid-template-columns: repeat(3, 1fr);
-	}
-}
-@media screen and (max-width: 650px)
-{
-	.grid_columns
-	{
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
-@media screen and (max-width: 550px)
-{
-	.grid_columns
-	{
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
-@media screen and (max-width: 350px)
-{
-	.grid_columns
-	{
-		display: block;
-	}
 }
