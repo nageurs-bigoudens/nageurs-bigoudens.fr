@@ -28,7 +28,7 @@ $_SESSION['captcha'] = $captcha->getSolution(); // enregistrement de la réponse
             <section>
                 <h3>Bienvenue.</h3>
                 <p style="text-align: center;">Veuillez choisir les codes que vous utiliserez pour gérer le site.</p>
-                <div class="login_form">
+                <div class="basic_div">
                     <p style="color: red; font-style: italic;"><?= $error ?></p>
                     <form method="post" action="index.php?action=create_user" >
                         <p><label for="login" >Identifiant:</label>

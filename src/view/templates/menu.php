@@ -39,8 +39,10 @@
 <?= $this->html ?>
 	</div>
 </section>
-<section class="basic_section">
-	<a href="<?= new URL ?>">
-		<button>Retour au site</button>
-	</a>
+<section>
+	<div class="basic_div">
+		<a href="<?= new URL ?>">
+			<button>Retour au site</button>
+		</a>
+	</div>
 </section>

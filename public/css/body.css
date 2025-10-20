@@ -52,6 +52,7 @@ main
 section
 {
     margin: 10px 0;
+    padding: 15px;
 }
 section > h3
 {
@@ -63,16 +64,25 @@ section .fetch_articles
 {
     margin-left: 15px;
 }
-.login_form, .basic_section
+.basic_div
 {
     background-color: white;
-    margin: 15px;
     padding: 10px;
 }
 
+.section_child
+{
+    gap: 15px; /* fonctionne avec flexbox et grid */
+    margin-top: 15px;
+}
+.fullwidth > .section_child
+{
+    display: flex;
+    flex-direction: column;
+}
 .grid > .section_child
 {
-    display: grid; /* et c'est tout */
+    display: grid;/* et c'est tout */
     /* la règle grid-template-columns est ajoutée dynamiquement par PHP ou JS*/
 }
 .mosaic > .section_child
@@ -83,7 +93,7 @@ section .fetch_articles
 }
 .mosaic > .section_child article
 {
-    max-width: 300px;
+    max-width: 350px;
 }
 .mosaic > .section_child img /* règle ciblant un élément généré par l'éditeur */
 {
@@ -94,8 +104,8 @@ section .fetch_articles
 article
 {
     background-color: white;
-    margin: 15px;
-    padding: 15px;
+    /*margin: 10px;*/ /* rêmplacé par gap */
+    padding: 10px;
     /*min-height: 150px;*/
 }
 article .logo2
@@ -218,6 +228,7 @@ article a:hover
     flex-wrap: wrap;
     justify-content: space-between;*/
     display: grid;
+    gap: 15px;
     grid-template-columns: repeat(2, 1fr);
 }
 @media screen and (max-width: 900px)

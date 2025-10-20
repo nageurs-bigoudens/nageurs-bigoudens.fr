@@ -45,7 +45,7 @@ class LoginBuilder extends AbstractBuilder
         require $viewFile;
         $this->html = ob_get_clean(); // nouveau contenu
 
-        //$this->html .= <p class='connexionP' style='color: red;'>Ce site utilise un cookie « obligatoire » lorsque vous êtes connecté ainsi que sur cette page.<br>Il sera supprimé à votre déconnexion ou dès que vous aurez quitté le site.</p>;
+        //$this->html .= <p style='color: red;'>Ce site utilise un cookie « obligatoire » lorsque vous êtes connecté ainsi que sur cette page.<br>Il sera supprimé à votre déconnexion ou dès que vous aurez quitté le site.</p>;
         
         //$this->html .= $footer;
     }

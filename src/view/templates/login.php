@@ -1,10 +1,10 @@
 <?php declare(strict_types=1); ?>
 		<section>
-            <h3 class="connexionTitre" >Connexion à l'espace d'administration</h3>
-            <div class="login_form">
-	            <p class="connexionP" >Veuillez saisir votre identifiant et votre mot de passe.</p>
+            <h3>Connexion à l'espace d'administration</h3>
+            <div class="basic_div">
+	            <p>Veuillez saisir votre identifiant et votre mot de passe.</p>
 	            <p style="color: red; font-style: italic;"><?= $error ?></p>
-				<form class="connexionFormulaire" method="post" action="<?= $link_form ?>" >
+				<form method="post" action="<?= $link_form ?>" >
 				    <p><label for="login" >Identifiant:</label>
 				        <input id="login" type="text" name="login" autofocus required></p>
 				    <p><label for="password" >Mot de passe:</label>
@@ -18,14 +18,14 @@
 
 				    <input type="submit" value="Valider">
 				</form>
-				<p class='connexionP' >Au fait? Vous n'utilisez pas votre propre ordinateur ou téléphone?<br/>
+				<p>Au fait? Vous n'utilisez pas votre propre ordinateur ou téléphone?<br/>
 				    Utilisez la navigation privée.</p>
 			</div>
 		</section>
-		<section class="basic_section">
-			<p class="connexionP connexionFooter" >
+		<section>
+			<div class="basic_div">
 			    <a href="<?= $link_exit ?>" >
 			        <button>Retour au site</button>
 			    </a>
-			</p>
+			</div>
 		</section>
