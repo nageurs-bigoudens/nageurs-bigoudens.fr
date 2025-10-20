@@ -95,8 +95,12 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$connection = new Page('Connexion', 'connection', "Connexion", true, false, false, NULL, NULL);
 	$my_account = new Page('Mon compte', 'user_edit', "Mon compte", true, false, false, NULL, NULL);
 	$menu_paths = new Page("Menu et chemins", 'menu_chemins', "Menu et chemins", true, false, false, NULL, NULL);
+	$menu_paths->addCSS('menu');
+	$menu_paths->addJS('menu');
 	//$edit_page = new Page("Modification d'une page", 'modif_page', '', true, false, false, NULL, NULL); // hypothétique page "Modification de la page"
 	$new_page = new Page('Nouvelle page', 'nouvelle_page', "Nouvelle page", true, false, false, NULL, NULL);
+	$new_page->addCSS('new_page');
+	$new_page->addJS('new_page');
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article

@@ -23,6 +23,7 @@
 				<textarea id="page_description" name="page_description" cols="40" rows="3" placeholder="ex: nous faisons ceci et cela, etc"></textarea>
 			</p>
 			<input type="submit" value="Créer la page">
+			<button onclick="window.location.href='<?= new URL ?>';">Retour au site</button><!-- le JS est un hack pour contourner le blocage du bouton par les "required" -->
 		</form>
 	</div>
 </section>

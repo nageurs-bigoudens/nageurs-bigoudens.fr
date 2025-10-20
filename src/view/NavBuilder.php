@@ -13,10 +13,11 @@ class NavBuilder extends AbstractBuilder
     public function __construct(Node $node = null)
     {
         $this->html .= '<nav class="nav_main"><ul>';
-        $this->html .= $this->navMainHTML(
-            Model::$menu_data,
-            // param nullable, ça retire une dépendance stricte entre NavBuilder et Model
-            Model::$page_path != null ? Model::$page_path->getArray() : []);
+        if(count(Model::$menu_data->getChildren()) > 1){
+            $this->html .= $this->navMainHTML(
+                Model::$menu_data, // Menu étend Page
+                Model::$page_path != null ? Model::$page_path->getArray() : []); // param nullable, ça retire une dépendance stricte entre NavBuilder et Model
+        }
         $this->html .= '</ul></nav>';
     }
 

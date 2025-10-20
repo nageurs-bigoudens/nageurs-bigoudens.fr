@@ -38,4 +38,5 @@
 	<div id="menu_edit_buttons">
 <?= $this->html ?>
 	</div>
+	<a href="<?= new URL ?>"><button>Retour au site</button></a>
 </section>
