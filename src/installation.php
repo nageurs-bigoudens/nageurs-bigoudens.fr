@@ -87,7 +87,7 @@ HTACCESS;
 // création d'un site minimal avec une page d'accueil à la toute 1ère visite du site
 // fonctiona appelée après la première requête envoyée en BDD,
 // en l'occurence dans Menu parce que count($bulk_data) === 0
-function makeStartPage(EntityManager $entityManager){
+function fillStartingDatabase(EntityManager $entityManager){
 	/* -- table page -- */
 	// paramètres: name_page, end_of_path, reachable, in_menu, hidden, position, parent
 	$accueil = new Page('Accueil', 'accueil', "Page d'accueil", true, true, false, 1, NULL);

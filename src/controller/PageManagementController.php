@@ -68,8 +68,6 @@ class PageManagementController
 	        true, true, false,
 	        $previous_page->getPosition(),
 	        $parent); // peut et DOIT être null si on est au 1er niveau
-	   $page->useDefaultCSS();
-	   $page->useDefaultJS();
 
 	    // on a donné à la nouvelle entrée la même position qu'à la précédente,
 	    // addChild l'ajoute à la fin du tableau "children" puis on trie
@@ -126,11 +124,10 @@ class PageManagementController
 	        die;
 	    }
 
-	    if($_POST["bloc_select"] === 'calendar' || $_POST["bloc_select"] === 'form'){
-	        $page->setCSS(array_merge($page->getCSS(), [$_POST["bloc_select"]]));
-
+	    if(in_array($_POST["bloc_select"], ['calendar', 'form'])){
+	        $page->addCSS($_POST["bloc_select"]);
 	        if($_POST["bloc_select"] === 'form'){
-	            $page->setJS(array_merge($page->getJS(), [$_POST["bloc_select"]]));
+	            $page->addJS($_POST["bloc_select"]);
 	        }
 	        $entityManager->persist($page);
 	    }
@@ -146,7 +143,7 @@ class PageManagementController
 	    	$data->setPresentation('grid');
 	    }
 	    elseif($_POST["bloc_select"] === 'galery'){
-	    	$data->setPresentation('mosaic'); // mieux que carousel pour commencer
+	    	$data->setPresentation('mosaic'); // un jour on mettra carousel
 	    }
 	    // else = null par défaut
 
@@ -163,19 +160,37 @@ class PageManagementController
 	    $model->makeMenuAndPaths();
 	    $model->findUniqueNodeByName('main');
 	    $model->findItsChildren();
-	    //$model->findNodeById((int)$_POST['delete_bloc_id']);
 	    $main = $model->getNode();
-	    $bloc = null;
+
+	    $block = null;
+	    $type = '';
+	    $nb_same_type = 0;
 	    foreach($main->getChildren() as $child){
 	        if($child->getId() === (int)$_POST['delete_bloc_id']){
-	            $bloc = $child;
-	            break;
+	            $block = $child;
+	            $type = $block->getName();
+	        }
+	        if($child->getName() === $type){
+	        	$nb_same_type++;
 	        }
 	    }
-	    if(!empty($bloc)){ // si $bloc est null c'est que le HTML a été modifié volontairement
-	        $main->removeChild($bloc); // réindex le tableau $children au passage
+
+	    // nettoyage fichiers CSS et JS si on retire le derner bloc de ce type
+	    if($nb_same_type === 1 && in_array($block->getName(), ['calendar', 'form'])){
+	    	$page = $block->getPage();
+	    	$page->removeCSS($block->getName());
+	    	if($block->getName() === 'form'){
+	    		$page->removeJS($block->getName());
+	    	}
+	    }
+	    
+	    if(!empty($block)){ // si $block est null c'est que le HTML a été modifié volontairement
+	        $main->removeChild($block); // réindex le tableau $children au passage
 	        $main->reindexPositions();
-	        $entityManager->remove($bloc); // suppression en BDD
+	        if(isset($page)){
+	        	$entityManager->persist($page);
+	        }
+	        $entityManager->remove($block);
 	        $entityManager->flush();
 	    }
 

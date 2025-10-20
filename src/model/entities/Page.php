@@ -40,14 +40,6 @@ class Page
     static private array $default_css = ['body', 'head', 'nav', 'foot'];
     static private array $default_js = ['main'];
 
-    /* remplissage
-    UPDATE nb_page
-    JOIN nb_node ON nb_node.page_id = nb_page.id_page
-    SET nb_page.css = JSON_EXTRACT(nb_node.attributes, '$.css_array');
-    UPDATE nb_page
-    JOIN nb_node ON nb_node.page_id = nb_page.id_page
-    SET nb_page.js = JSON_EXTRACT(nb_node.attributes, '$.js_array'); */
-
     #[ORM\Column(type: "boolean")]
     private bool $reachable;
 
@@ -120,30 +112,38 @@ class Page
     {
         $this->description = $description;
     }
+
     public function getCSS(): array
     {
-        return $this->css;
+        return array_merge(self::$default_css, $this->css ?? []);
     }
-    public function useDefaultCSS(): void
+    public function addCSS(string $css): void
     {
-        $this->css = self::$default_css;
+        if(!in_array($css, $this->css ?? [])){
+            $this->css[] = $css;
+        }
     }
-    public function setCSS(array $css): void
+    public function removeCSS(string $css): void
     {
-        $this->css = $css;
+        // array_diff renvoie une copie du 1er tableau alégée des élements existants aussi dans le 2è, array_values réindexe
+        $this->css = array_values(array_diff($this->css, [$css]));
     }
     public function getJS(): array
     {
-        return $this->js;
+        return array_merge(self::$default_js, $this->js ?? []);
+        //UPDATE `nb_page` SET `js` = NULL WHERE JSON_EQUALS(`js`, '["main"]');
     }
-    public function useDefaultJS(): void
+    public function addJS(string $js): void
     {
-        $this->js = self::$default_js;
+        if(!in_array($js, $this->js ?? [])){
+            $this->js[] = $js;
+        }
     }
-    public function setJS(array $js): void
+    public function removeJS(string $js): void
     {
-        $this->js = $js;
+        $this->js = array_values(array_diff($this->js, [$js]));
     }
+
     public function isReachable(): bool
     {
         return $this->reachable;

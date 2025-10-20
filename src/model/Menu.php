@@ -20,7 +20,7 @@ class Menu extends Page
             ->getResult(); // :array de Page
 
         if(count($bulk_data) === 0){
-            makeStartPage($entityManager); // => installation.php
+            fillStartingDatabase($entityManager); // => installation.php
         }
 
         foreach($bulk_data as $first_level_entries){
