@@ -20,10 +20,12 @@
 				</form>
 				<p class='connexionP' >Au fait? Vous n'utilisez pas votre propre ordinateur ou téléphone?<br/>
 				    Utilisez la navigation privée.</p>
-				<p class="connexionP connexionFooter" >
-				    <a href="<?= $link_exit ?>" >
-				        <button>Retour au site</button>
-				    </a>
-				</p>
 			</div>
+		</section>
+		<section class="basic_section">
+			<p class="connexionP connexionFooter" >
+			    <a href="<?= $link_exit ?>" >
+			        <button>Retour au site</button>
+			    </a>
+			</p>
 		</section>

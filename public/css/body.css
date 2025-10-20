@@ -63,11 +63,11 @@ section .fetch_articles
 {
     margin-left: 15px;
 }
-.login_form
+.login_form, .basic_section
 {
     background-color: white;
     margin: 15px;
-    padding: 15px;
+    padding: 10px;
 }
 
 .grid > .section_child

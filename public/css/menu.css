@@ -23,7 +23,7 @@
 }*/
 .menu p
 {
-	margin: 5px;
+	margin: 5px 0;
 }
 
 /* explications pour l'utilisateur */
@@ -104,7 +104,7 @@
 }
 .menu .url_form_zone p
 {
-	margin: 5px;
+	margin: 5px 0;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;

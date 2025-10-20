@@ -52,7 +52,7 @@
 					</form>
 				</div>
 			</div>
-			<div class="login_form">
+			<div class="basic_section">
 				<p class="connexionP connexionFooter" >
 					<a href="<?= $link_exit ?>">
 						<button>Retour au site</button></a>
