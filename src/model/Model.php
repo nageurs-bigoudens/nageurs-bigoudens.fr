@@ -185,6 +185,24 @@ class Model
         $this->node = $this->entityManager->find('App\Entity\Node', $id);
         return $this->node === null ? false : true;
     }
+    public function findWhateverNode(string $field, string $value): bool
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('n')
+            ->from('App\Entity\Node', 'n')
+            ->where("n.$field = :value") // avec le querybuilder, ce truc sale reste sécurisé
+            ->setParameter('value', $value);
+        $result = $queryBuilder->getQuery()->getOneOrNullResult();
+
+        if($result === null){
+            return false;
+        }
+        else{
+            $this->node = $result;
+            return true;
+        }
+    }
 
     // récupération d'un article pour modification
     public function makeArticleNode(string $id = '', bool $get_section = false): bool

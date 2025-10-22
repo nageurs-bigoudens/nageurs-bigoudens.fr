@@ -33,8 +33,11 @@ class HeadBuilder extends AbstractBuilder
                 $js .= '<script src="' . self::versionedFileURL('js', 'modif_page') . '"></script>' . "\n";
             }
 
-            // tinymce, nécéssite un script de copie dans composer.json
             if($_SESSION['admin']){
+                // édition éléments sur toutes les pages (header, footer et favicon)
+                $js .= '<script src="' . self::versionedFileURL('js', 'InputText') . '"></script>' . "\n";
+
+                // tinymce, nécéssite un script de copie dans composer.json
                 $css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', 'tinymce') . '">' . "\n";
                 $js .= '<script src="' . self::versionedFileURL('js', 'tinymce/tinymce.min') . '"></script>' . "\n"; // pour js/tinymce/tinymce.min.js
                 $js .= '<script src="' . self::versionedFileURL('js', 'tinymce') . '"></script>' . "\n";

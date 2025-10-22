@@ -77,6 +77,33 @@ class HeaderBuilder extends AbstractBuilder
                     <img src="assets/' . $one_key . '.svg" alt="' . $one_key . '_alt"></a>';
             }
             
+            // boutons mode admin
+            if($_SESSION['admin']){
+                $edit_favicon_hidden = 'hidden';
+                $button_favicon = '';
+                $button_header_logo = '';
+                //$edit_favicon_hidden = '';
+                //$favicon = 'assets/favicon48x48.png'; // double le code dans HeadBuilder
+                //$button_favicon = '<button onclick="editFavicon()"><img class="action_icon" src="' . $favicon . '"> Favicon</button>';
+                //$button_header_logo = '<img class="action_icon" src="assets/edit.svg" onclick="editHeaderLogo()">';
+                $buttons_header_title = '<img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.openTextInput()">
+                    <img id="header_title_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_title.submitTextInput()">
+                    <img id="header_title_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_title.cancelTextInput()">';
+                $buttons_header_description = '<img id="header_description_open" class="action_icon" src="assets/edit.svg" onclick="header_description.openTextInput()">
+                    <img id="header_description_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_description.submitTextInput()">
+                    <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancelTextInput()">';
+                //$buttons_social_networks = '<img class="action_icon" src="assets/edit.svg" onclick="editSocialNetworks()">';
+                $buttons_social_networks = '';
+            }
+            else{
+                $edit_favicon_hidden = 'hidden';
+                $button_favicon = '';
+                $button_header_logo = '';
+                $buttons_header_title = '';
+                $buttons_header_description = '';
+                $buttons_social_networks = '';
+            }
+            
             ob_start();
             require $viewFile;
             $this->html .= ob_get_clean();

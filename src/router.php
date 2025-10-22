@@ -141,11 +141,16 @@ elseif($request->getMethod() === 'POST'){
                 }
             }
 
+            /* -- site entier (header, footer, favicon) -- */
+            elseif($request->query->has('entire_site_edit')){
+                $request_params = explode('_', $request->query->get('entire_site_edit')); // header_title, header_description, footer_text, etc
+                HeadFootController::setTextData($entityManager, $request_params, $json);
+            }
 
             /* -- page Menu et chemins -- */
             elseif(isset($_GET['menu_edit']))
             {
-                // ne suit pas la règle, faire ça dans un contrôleur
+                // ne suit pas la règle, faire ça dans un contrôleur?
                 Model::$menu_data = new Menu($entityManager); // récupération des données
 
                 // flèche gauche <=: position = position du parent + 1, parent = grand-parent, recalculer les positions

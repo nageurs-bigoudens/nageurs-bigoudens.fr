@@ -11,10 +11,14 @@ footer
 }
 footer > div
 {
-	margin: auto;
 	max-width: 1200px;
 	display: flex;
 	justify-content: space-around;
+}
+
+.contact
+{
+	margin: 16px 0; /* alignement avec la <p> autour du logo */
 }
 .contact a
 {
@@ -69,11 +73,6 @@ footer > div
 	margin: 0 3px;
 }*/
 
-.contact
-{
-	padding: 0 15px;
-}
-
 .footer_logo img
 {
 	max-width: 288px;
@@ -115,8 +114,7 @@ footer > div
 }
 .logged_out
 {
-	/*display: none;*/
-	justify-content: start;
+	justify-content: start; /* écrase le space-around dans footer > div */
 }
 .logged_out a
 {

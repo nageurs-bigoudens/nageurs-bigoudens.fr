@@ -26,6 +26,17 @@ class FooterBuilder extends AbstractBuilder
             $empty_admin_zone = '';
             if($_SESSION['admin'])
             {
+                $buttons_footer_name = '<img id="footer_name_open" class="action_icon" src="assets/edit.svg" onclick="footer_name.openTextInput()">
+                    <img id="footer_name_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_name.submitTextInput()">
+                    <img id="footer_name_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_name.cancelTextInput()">';
+                $buttons_footer_address = '<img id="footer_address_open" class="action_icon" src="assets/edit.svg" onclick="footer_address.openTextInput()">
+                    <img id="footer_address_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_address.submitTextInput()">
+                    <img id="footer_address_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_address.cancelTextInput()">';
+                $buttons_footer_email = '<img id="footer_email_open" class="action_icon" src="assets/edit.svg" onclick="footer_email.openTextInput()">
+                    <img id="footer_email_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_email.submitTextInput()">
+                    <img id="footer_email_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_email.cancelTextInput()">';
+
+                // zone admin
                 $empty_admin_zone = 'empty_admin_zone';
                 if(MainBuilder::$modif_mode){
                     $mode = 'modification de page';
@@ -61,6 +72,10 @@ class FooterBuilder extends AbstractBuilder
                     $url->addParams(['id' => $_GET['id']]);
                 }
                 $zone_admin = '<button><a href="' . $url . '">Mode admin</a></button>';
+
+                $buttons_footer_name = '';
+                $buttons_footer_address = '';
+                $buttons_footer_email = '';
             }
 
             ob_start();

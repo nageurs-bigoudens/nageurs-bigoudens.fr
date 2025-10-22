@@ -188,7 +188,7 @@ button .action_icon:hover
 {
     margin-right: 2px;
 }
-section button, section input[type=submit]
+button, section input[type=submit]
 {
     color: #ff1d04;
     font-size: medium;
@@ -196,7 +196,7 @@ section button, section input[type=submit]
     background-color: white;
     border: lightgrey 2px outset; /* rend identiques les boutons firefox et chromium */
 }
-section button:hover, section input[type=submit]:hover
+button:hover, section input[type=submit]:hover
 {
     background-color: yellow;
     border-radius: 4px;

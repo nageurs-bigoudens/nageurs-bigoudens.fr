@@ -24,6 +24,8 @@ header
 	grid-template-columns: 1fr 1fr 1fr;
 	align-items: end;
 }
+/*.header_left_col
+{}*/
 @media screen and (max-width: 1000px){
 	.header-content{
 		padding: 18px 0;
@@ -36,7 +38,7 @@ header
 		display: block;
 		padding: 18px;
 	}
-	.head_logo
+	#header_logo
 	{
 		display: none;
 	}
@@ -74,12 +76,18 @@ header a
 	color: unset; /* ne plus hériter */
 	text-decoration: none;
 }
+#edit_favicon_zone
+{
+	margin-bottom: 10px;
+}
+/*.header_right_col
+{}*/
 .social
 {
 	/*align-self: end;*/
 	/*padding: 4px;*/
 }
-.social img
+.social a img
 {
 	width: 25px;
 	background-color: #ffffffb3;
