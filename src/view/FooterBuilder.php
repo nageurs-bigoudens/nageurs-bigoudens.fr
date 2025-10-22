@@ -22,10 +22,10 @@ class FooterBuilder extends AbstractBuilder
             $this->useChildrenBuilder($node);
             $breadcrumb = $this->html;
 
-            // zone admin
             $empty_admin_zone = '';
             if($_SESSION['admin'])
             {
+                // données du footer
                 $buttons_footer_name = '<img id="footer_name_open" class="action_icon" src="assets/edit.svg" onclick="footer_name.openTextInput()">
                     <img id="footer_name_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_name.submitTextInput()">
                     <img id="footer_name_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_name.cancelTextInput()">';

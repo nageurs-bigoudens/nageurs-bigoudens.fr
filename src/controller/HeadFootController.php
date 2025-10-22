@@ -21,7 +21,7 @@ class HeadFootController
 		$model = new Model($entityManager);
 		if($model->findWhateverNode('name_node', $request_params[0])){
 			$node_data = $model->getNode()->getNodeData();
-			$node_data->updateData($request_params[1], htmlspecialchars($json['new_text'])); // $request_params[1] n'est pas contrôlé
+			$node_data->updateData($request_params[1], $json['new_text']); // $request_params[1] n'est pas contrôlé
 			$entityManager->flush();
 			echo json_encode(['success' => true]);
 		}

@@ -17,7 +17,7 @@
                         </div>
                         <div id="footer_email">
                             <script>let footer_email = new InputText('footer_email');</script>
-                            <a href="mailto:<?= $e_mail ?>"><span id="footer_email_span"><?= htmlspecialchars($email ?? '') ?></span></a>
+                            <a href="mailto:<?= $email ?>"><span id="footer_email_span"><?= htmlspecialchars($email ?? '') ?></span></a>
                             <input type="text" id="footer_email_input" class="hidden" value="<?= htmlspecialchars($email ?? '') ?>" size="30">
                             <?= $buttons_footer_email ?>
                         </div>
