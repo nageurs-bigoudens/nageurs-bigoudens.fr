@@ -11,8 +11,8 @@
                         </div>
                         <div id="footer_address">
                             <script>let footer_address = new InputText('footer_address');</script>
-                            <span id="footer_address_span"><?= htmlspecialchars($adresse ?? '') ?></span>
-                            <input type="text" id="footer_address_input" class="hidden" value="<?= htmlspecialchars($adresse ?? '') ?>" size="30">
+                            <span id="footer_address_span"><?= htmlspecialchars($address ?? '') ?></span>
+                            <input type="text" id="footer_address_input" class="hidden" value="<?= htmlspecialchars($address ?? '') ?>" size="30">
                             <?= $buttons_footer_address ?>
                         </div>
                         <div id="footer_email">
