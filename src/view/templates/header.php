@@ -5,15 +5,22 @@
             <div id="nav_zone">
                 <?= $nav ?>
             </div>
-
-            <div class="header-content">
+            <div class="editing_zone">
+                <div id="head_favicon" style="margin: <?= $editing_zone_margin ?>;">
+                    <input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
+                    <?= $buttons_favicon ?>
+                </div>
+                <div id="header_background">
+                    <input type="file" id="header_background_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                    <?= $buttons_background ?>
+                </div>
+            </div>
+            <div class="header_content">
                 <div class="header_left_col">
-                    <div id="edit_favicon_zone" class="<?= $edit_favicon_hidden ?>">
-                        <?= $button_favicon ?>
-                    </div>
-                    <div>
-                        <a href="<?= new URL ?>"><img id="header_logo" src="<?= $header_logo ?>" alt="logo_alt"></a>
-                        <?= $button_header_logo ?>
+                    <div id="header_logo">
+                        <a href="<?= new URL ?>"><img id="header_logo_img" src="<?= $header_logo ?>" alt="logo_alt"></a>
+                        <input type="file" id="header_logo_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                        <?= $buttons_header_logo ?>
                     </div>
                 </div>
                 <div class="nav_button">
@@ -21,13 +28,11 @@
                 </div>
                 <div class="site_title">
                     <h1 id="header_title">
-                        <script>let header_title = new InputText('header_title');</script>
                         <a href="<?= new URL ?>"><span id="header_title_span"><?= htmlspecialchars($title ?? '') ?></span></a>
                         <input type="text" id="header_title_input" class="hidden" value="<?= htmlspecialchars($title ?? '') ?>" size="30">
                         <?= $buttons_header_title ?>
                     </h1>
                     <h2 id="header_description">
-                        <script>let header_description = new InputText('header_description');</script>
                         <span id="header_description_span"><?= htmlspecialchars($description ?? '') ?></span>
                         <input type="text" id="header_description_input" class="hidden" value="<?= htmlspecialchars($description ?? '') ?>" size="30">
                         <?= $buttons_header_description ?>
@@ -41,4 +46,13 @@
                     <?= $breadcrumb ?? '' ?>
                 </div>
             </div>
+<?php if($_SESSION['admin']){ ?>
+            <script>
+                let head_favicon = new InputFile('head_favicon');
+                let header_background = new InputFile('header_background');
+                let header_logo = new InputFile('header_logo');
+                let header_title = new InputText('header_title');
+                let header_description = new InputText('header_description');
+            </script>
+<?php } ?>
         </header>

@@ -33,11 +33,10 @@ class Article
     #[ORM\Column(type: "text")]
     private string $content; // de l'éditeur html
 
-    // liaison avec table intermédiaire
-    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "article")]
+    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: "article")] // cascade: ['remove'] = très dangereux!
     #[ORM\JoinTable(
         name: TABLE_PREFIX . "article_image",
-        joinColumns: [new ORM\JoinColumn(name: "article_id", referencedColumnName: "id_article", onDelete: "CASCADE")],
+        joinColumns: [new ORM\JoinColumn(name: "article_id", referencedColumnName: "id_article", onDelete: "CASCADE")], // onDelete: "CASCADE": très utile
         inverseJoinColumns: [new ORM\JoinColumn(name: "image_id", referencedColumnName: "id_image", onDelete: "CASCADE")]
     )]
     private Collection $images;

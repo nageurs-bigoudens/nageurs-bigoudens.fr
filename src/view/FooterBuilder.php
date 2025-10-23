@@ -26,15 +26,19 @@ class FooterBuilder extends AbstractBuilder
             if($_SESSION['admin'])
             {
                 // données du footer
-                $buttons_footer_name = '<img id="footer_name_open" class="action_icon" src="assets/edit.svg" onclick="footer_name.openTextInput()">
-                    <img id="footer_name_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_name.submitTextInput()">
-                    <img id="footer_name_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_name.cancelTextInput()">';
-                $buttons_footer_address = '<img id="footer_address_open" class="action_icon" src="assets/edit.svg" onclick="footer_address.openTextInput()">
-                    <img id="footer_address_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_address.submitTextInput()">
-                    <img id="footer_address_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_address.cancelTextInput()">';
-                $buttons_footer_email = '<img id="footer_email_open" class="action_icon" src="assets/edit.svg" onclick="footer_email.openTextInput()">
-                    <img id="footer_email_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_email.submitTextInput()">
-                    <img id="footer_email_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_email.cancelTextInput()">';
+                $buttons_footer_name = '<img id="footer_name_open" class="action_icon" src="assets/edit.svg" onclick="footer_name.open()">
+                    <img id="footer_name_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_name.submit()">
+                    <img id="footer_name_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_name.cancel()">';
+                $buttons_footer_address = '<img id="footer_address_open" class="action_icon" src="assets/edit.svg" onclick="footer_address.open()">
+                    <img id="footer_address_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_address.submit()">
+                    <img id="footer_address_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_address.cancel()">';
+                $buttons_footer_email = '<img id="footer_email_open" class="action_icon" src="assets/edit.svg" onclick="footer_email.open()">
+                    <img id="footer_email_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_email.submit()">
+                    <img id="footer_email_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_email.cancel()">';
+
+                $buttons_footer_logo = '<img id="footer_logo_open" class="action_icon" src="assets/edit.svg" onclick="footer_logo.open()">
+                    <img id="footer_logo_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_logo.submit()">
+                    <img id="footer_logo_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_logo.cancel()">';
 
                 // zone admin
                 $empty_admin_zone = 'empty_admin_zone';
@@ -76,6 +80,7 @@ class FooterBuilder extends AbstractBuilder
                 $buttons_footer_name = '';
                 $buttons_footer_address = '';
                 $buttons_footer_email = '';
+                $buttons_footer_logo = '';
             }
 
             ob_start();

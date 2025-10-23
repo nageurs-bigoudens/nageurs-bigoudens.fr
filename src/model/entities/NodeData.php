@@ -39,11 +39,10 @@ class NodeData
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $pagination_limit = null; // pour les post_block et news_block
 
-    // liaison avec table intermédiaire
-    #[ORM\ManyToMany(targetEntity: Asset::class, inversedBy: "node_data")]
+    #[ORM\ManyToMany(targetEntity: Asset::class, inversedBy: "node_data")] // cascade: ['remove'] = très dangereux!
     #[ORM\JoinTable(
-        name: TABLE_PREFIX . "node_asset",
-        joinColumns: [new ORM\JoinColumn(name: "node_data_id", referencedColumnName: "id_node_data", onDelete: "CASCADE")],
+        name: TABLE_PREFIX . "nodedata_asset",
+        joinColumns: [new ORM\JoinColumn(name: "node_data_id", referencedColumnName: "id_node_data", onDelete: "CASCADE")], // onDelete: "CASCADE": très utile
         inverseJoinColumns: [new ORM\JoinColumn(name: "asset_id", referencedColumnName: "id_asset", onDelete: "CASCADE")]
     )]
     private Collection $assets;
@@ -137,8 +136,18 @@ class NodeData
     {
         return $this->assets;
     }
-    public function setAssets(Collection $assets): void
+    public function addAsset(Asset $asset): void
     {
-        $this->assets = $assets;
+        if(!$this->assets->contains($asset)){
+            $this->assets->add($asset);
+            //$asset->addNodeData($this); // autre sens
+        }
+    }
+     public function removeAsset(Asset $asset): void
+    {
+        $this->assets->removeElement($asset);
+        /*if($this->assets->removeElement($asset)){ // autre sens
+            $asset->removeNodeData($this);
+        }*/
     }
 }

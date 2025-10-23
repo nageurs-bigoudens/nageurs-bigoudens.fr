@@ -14,11 +14,12 @@ footer > div
 	max-width: 1200px;
 	display: flex;
 	justify-content: space-around;
+	flex-wrap: wrap;
 }
 
-.contact
+footer .data > div
 {
-	margin: 16px 0; /* alignement avec la <p> autour du logo */
+	margin: 20px 10px;
 }
 .contact a
 {
@@ -73,7 +74,7 @@ footer > div
 	margin: 0 3px;
 }*/
 
-.footer_logo img
+#footer_logo_img
 {
 	max-width: 288px;
 	min-width: 150px;
@@ -83,14 +84,6 @@ footer > div
 	.footer .contact
 	{
 		width: 70px;
-	}
-}
-@media screen and (max-width: 800px)
-{
-	footer > div
-	{
-		flex-direction: column;
-		align-items: center;
 	}
 }
 

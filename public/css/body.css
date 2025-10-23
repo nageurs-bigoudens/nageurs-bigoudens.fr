@@ -43,7 +43,7 @@ main
     margin: auto;
     /*max-width: 1200px;*/
     background-color: #E3F3FF;
-    padding: 15px 0;
+    padding: 15px;
 }
 .hidden
 {
@@ -51,8 +51,7 @@ main
 }
 section
 {
-    margin: 10px 0;
-    padding: 15px;
+    margin-top: 20px;
 }
 section > h3
 {

@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: TABLE_PREFIX . "asset")]
 class Asset
 {
+    const PATH = 'assets/';
+    const USER_PATH = 'user_data/assets/';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]

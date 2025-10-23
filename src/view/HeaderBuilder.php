@@ -3,6 +3,7 @@
 
 declare(strict_types=1);
 
+use App\Entity\Asset;
 use App\Entity\Node;
 
 class HeaderBuilder extends AbstractBuilder
@@ -79,26 +80,35 @@ class HeaderBuilder extends AbstractBuilder
             
             // boutons mode admin
             if($_SESSION['admin']){
-                $edit_favicon_hidden = 'hidden';
-                $button_favicon = '';
-                $button_header_logo = '';
-                //$edit_favicon_hidden = '';
-                //$favicon = 'assets/favicon48x48.png'; // double le code dans HeadBuilder
-                //$button_favicon = '<button onclick="editFavicon()"><img class="action_icon" src="' . $favicon . '"> Favicon</button>';
-                //$button_header_logo = '<img class="action_icon" src="assets/edit.svg" onclick="editHeaderLogo()">';
-                $buttons_header_title = '<img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.openTextInput()">
-                    <img id="header_title_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_title.submitTextInput()">
-                    <img id="header_title_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_title.cancelTextInput()">';
-                $buttons_header_description = '<img id="header_description_open" class="action_icon" src="assets/edit.svg" onclick="header_description.openTextInput()">
-                    <img id="header_description_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_description.submitTextInput()">
-                    <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancelTextInput()">';
+                $editing_zone_margin = '5px';
+                $favicon = Asset::USER_PATH . 'favicon48x48.png'; // double le code dans HeadBuilder
+                $buttons_favicon = '<button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_img" class="action_icon" src="' . $favicon . '"> Favicon</button>
+                    <img id="head_favicon_submit" class="action_icon hidden" src="assets/save.svg" onclick="head_favicon.submit()">
+                    <img id="head_favicon_cancel" class="action_icon hidden" src="assets/close.svg" onclick="head_favicon.cancel()">';
+                $background = Asset::USER_PATH . 'fond-piscine.jpg';
+                $buttons_background = '<button id="header_background_open" onclick="header_background.open()"><img id="header_background_img" class="background_button" src="' . $background . '"> Image de fond</button>
+                    <img id="header_background_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_background.submit()">
+                    <img id="header_background_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_background.cancel()">';
+
+                $buttons_header_logo = '<img id="header_logo_open" class="action_icon" src="assets/edit.svg" onclick="header_logo.open()">
+                    <img id="header_logo_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_logo.submit()">
+                    <img id="header_logo_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_logo.cancel()">';
+
+                $buttons_header_title = '<img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.open()">
+                    <img id="header_title_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_title.submit()">
+                    <img id="header_title_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_title.cancel()">';
+                $buttons_header_description = '<img id="header_description_open" class="action_icon" src="assets/edit.svg" onclick="header_description.open()">
+                    <img id="header_description_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_description.submit()">
+                    <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancel()">';
+
                 //$buttons_social_networks = '<img class="action_icon" src="assets/edit.svg" onclick="editSocialNetworks()">';
                 $buttons_social_networks = '';
             }
             else{
-                $edit_favicon_hidden = 'hidden';
-                $button_favicon = '';
-                $button_header_logo = '';
+                $editing_zone_margin = '0';
+                $buttons_favicon = '';
+                $buttons_background = '';
+                $buttons_header_logo = '';
                 $buttons_header_title = '';
                 $buttons_header_description = '';
                 $buttons_social_networks = '';

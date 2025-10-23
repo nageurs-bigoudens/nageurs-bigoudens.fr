@@ -61,14 +61,14 @@ class ImageUploadController
 	{
 		if(isset($_FILES['file'])){
 	        $file = $_FILES['file'];
-	        $dest = 'images/';
-	        $dest_mini = 'images-mini/';
+	        $dest = 'user_data/images/';
+	        $dest_mini = 'user_data/images-mini/';
 	        
 	        // Vérifier si les répertoires existent, sinon les créer
-	        if(!is_dir($dest)) {
+	        if(!is_dir($dest)){
 	            mkdir($dest, 0700, true);
 	        }
-	        if(!is_dir($dest_mini)) {
+	        if(!is_dir($dest_mini)){
 	            mkdir($dest_mini, 0700, true);
 	        }
 	        
@@ -78,7 +78,7 @@ class ImageUploadController
 	        if(!in_array($extension, $allowed_extensions) || $extension === 'jpg'){
 	            $extension = 'jpeg';
 	        }
-	        $file_path = $dest . $name . '_' . uniqid() . '.' . $extension;
+	        $file_path = uniqid($dest . $name . '_') . '.' . $extension;
 
 	        // créer une miniature de l'image
 	        //
@@ -105,7 +105,7 @@ class ImageUploadController
 	    
 	    if(isset($json['image_url'])){
 	        $image_data = self::curlDownloadImage($json['image_url']); // téléchargement de l’image par le serveur avec cURL au lieu de file_get_contents
-	        $dest = 'images/';
+	        $dest = 'user_data/images/';
 	        
 	        if(!is_dir($dest)) { // Vérifier si le répertoire existe, sinon le créer
 	            mkdir($dest, 0777, true);
@@ -124,7 +124,7 @@ class ImageUploadController
 	        if(!in_array($extension, $allowed_extensions) || $extension === 'jpg'){
 	            $extension = 'jpeg';
 	        }
-	        $local_path = $dest . $name . '_' . uniqid() . '.' . $extension;
+	        $local_path = uniqid($dest . $name . '_') . '.' . $extension;
 	        
 	        if(self::imagickCleanImage($image_data, $local_path, $extension)){ // recréer l’image pour la nettoyer
 	            echo json_encode(['location' => $local_path]); // nouvelle adresse
@@ -144,10 +144,10 @@ class ImageUploadController
 	static public function uploadImageBase64(): void
 	{
 		$json = json_decode(file_get_contents('php://input'), true);
-	    $dest = 'images/';
+	    $dest = 'user_data/images/';
 
-	    if(!is_dir('images')){
-	        mkdir('images', 0777, true);
+	    if(!is_dir($dest)){
+	        mkdir($dest, 0777, true);
 	    }
 
 	    // détection de data:image/ et de ;base64, et capture du format dans $type
@@ -170,7 +170,7 @@ class ImageUploadController
 	        die;
 	    }
 	    
-	    $local_path = $dest . 'pasted_image_' . uniqid() . '.' . $extension;
+	    $local_path = uniqid($dest . 'pasted_image_') . '.' . $extension;
 
 	    if(self::imagickCleanImage($image_data, $local_path)){
 	        echo json_encode(['location' => $local_path]);

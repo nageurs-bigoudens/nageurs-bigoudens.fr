@@ -7,7 +7,7 @@ use App\Entity\Node;
 
 abstract class AbstractBuilder
 {
-	public const VIEWS_PATH = '../src/view/templates/';
+	const VIEWS_PATH = '../src/view/templates/';
 	protected string $html = '';
     protected int $id_node;
 

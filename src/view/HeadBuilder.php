@@ -3,6 +3,7 @@
 
 declare(strict_types=1);
 
+use App\Entity\Asset;
 use App\Entity\Node;
 
 class HeadBuilder extends AbstractBuilder
@@ -36,6 +37,7 @@ class HeadBuilder extends AbstractBuilder
             if($_SESSION['admin']){
                 // édition éléments sur toutes les pages (header, footer et favicon)
                 $js .= '<script src="' . self::versionedFileURL('js', 'InputText') . '"></script>' . "\n";
+                $js .= '<script src="' . self::versionedFileURL('js', 'InputFile') . '"></script>' . "\n";
 
                 // tinymce, nécéssite un script de copie dans composer.json
                 $css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', 'tinymce') . '">' . "\n";
@@ -57,7 +59,7 @@ class HeadBuilder extends AbstractBuilder
             }*/
 
             // en dur temporairement
-            $favicon = 'assets/favicon48x48.png';
+            $favicon = Asset::USER_PATH . 'favicon48x48.png';
             $alt = 'favicon';
 
             ob_start();

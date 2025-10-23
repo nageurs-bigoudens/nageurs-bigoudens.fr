@@ -17,7 +17,12 @@ header
 	display: none;
 }
 
-.header-content
+.background_button
+{
+	max-height: 24px;
+}
+
+.header_content
 {
 	padding: 20px 0;
 	display: grid;
@@ -27,12 +32,12 @@ header
 /*.header_left_col
 {}*/
 @media screen and (max-width: 1000px){
-	.header-content{
+	.header_content{
 		padding: 18px 0;
 	}
 }
 @media screen and (max-width: 450px){
-	.header-content
+	.header_content
 	{
 		/*grid-template-columns: 1fr 2fr 1fr;*/
 		display: block;
@@ -69,16 +74,16 @@ header img
 {
 	vertical-align: bottom; /* supprime espace sous l'image */
 	max-width: 150px;
-	max-height: 75px;
+	max-height: 100px;
 }
 header a
 {
 	color: unset; /* ne plus hériter */
 	text-decoration: none;
 }
-#edit_favicon_zone
+.editing_zone > div
 {
-	margin-bottom: 10px;
+	/*display: inline;*/ /* à l'ancienne */
 }
 /*.header_right_col
 {}*/

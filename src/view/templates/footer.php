@@ -4,25 +4,34 @@
                 <div class="data">
                     <div class="contact">
                         <div id="footer_name">
-                            <script>let footer_name = new InputText('footer_name');</script>
                             <span id="footer_name_span"><?= htmlspecialchars($name ?? '') ?></span>
                             <input type="text" id="footer_name_input" class="hidden" value="<?= htmlspecialchars($name ?? '') ?>" size="30">
                             <?= $buttons_footer_name ?>
                         </div>
                         <div id="footer_address">
-                            <script>let footer_address = new InputText('footer_address');</script>
                             <span id="footer_address_span"><?= htmlspecialchars($address ?? '') ?></span>
                             <input type="text" id="footer_address_input" class="hidden" value="<?= htmlspecialchars($address ?? '') ?>" size="30">
                             <?= $buttons_footer_address ?>
                         </div>
                         <div id="footer_email">
-                            <script>let footer_email = new InputText('footer_email');</script>
                             <a href="mailto:<?= $email ?>"><span id="footer_email_span"><?= htmlspecialchars($email ?? '') ?></span></a>
                             <input type="text" id="footer_email_input" class="hidden" value="<?= htmlspecialchars($email ?? '') ?>" size="30">
                             <?= $buttons_footer_email ?>
                         </div>
                     </div>
-                    <p class="footer_logo"><img src="<?= $footer_logo ?>" alt="logo"></p>
+                    <div id="footer_logo">
+                        <a href="<?= new URL ?>"><img id="footer_logo_img" src="<?= $footer_logo ?>" alt="logo_alt"></a>
+                        <input type="file" id="footer_logo_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                        <?= $buttons_footer_logo ?>
+                    </div>
+<?php if($_SESSION['admin']){ ?>
+                    <script>
+                        let footer_name = new InputText('footer_name');
+                        let footer_address = new InputText('footer_address');
+                        let footer_email = new InputText('footer_email');
+                        let footer_logo = new InputFile('footer_logo');
+                    </script>
+<?php } ?>
                 </div>
                 <div class="<?= $empty_admin_zone ?>"></div>
                 <div class="<?= $div_admin ?>">

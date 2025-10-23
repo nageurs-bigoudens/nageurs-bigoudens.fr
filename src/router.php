@@ -142,9 +142,8 @@ elseif($request->getMethod() === 'POST'){
             }
 
             /* -- site entier (header, footer, favicon) -- */
-            elseif($request->query->has('entire_site_edit')){
-                $request_params = explode('_', $request->query->get('entire_site_edit')); // header_title, header_description, footer_text, etc
-                HeadFootController::setTextData($entityManager, $request_params, $json);
+            elseif($request->query->has('head_foot_text')){
+                HeadFootController::setTextData($entityManager, $request->query->get('head_foot_text'), $json);
             }
 
             /* -- page Menu et chemins -- */
@@ -211,10 +210,16 @@ elseif($request->getMethod() === 'POST'){
         }
 
         // upload d'image dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur)
-        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false && $request->query->has('action') && $request->query->get('action') === 'upload_image_tinymce')
+        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false)
         {
-            ImageUploadController::imageUploadTinyMce();
+            if($request->query->has('action') && $request->query->get('action') === 'upload_image_tinymce'){
+                ImageUploadController::imageUploadTinyMce();
+            }
+            elseif($request->query->has('head_foot_image')){
+                HeadFootController::uploadAsset($entityManager, $request->query->get('head_foot_image'));
+            }
         }
+
         // requêtes XMLHttpRequest
         elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
         {
