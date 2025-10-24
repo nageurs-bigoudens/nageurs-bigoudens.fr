@@ -38,7 +38,7 @@ class HeadFootController
 		}
 		else{
 			if(!is_dir(Asset::USER_PATH)){
-	            mkdir(Asset::USER_PATH, 0700, true);
+	            mkdir(Asset::USER_PATH, 0755, true);
 	        }
 
 	        /* -- téléchargement -- */

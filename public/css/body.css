@@ -71,7 +71,7 @@ section .fetch_articles
 
 .section_child
 {
-    gap: 15px; /* fonctionne avec flexbox et grid */
+    gap: 15px; /* fonctionne avec flexbox et grid, mais pas avec firefox 52 (win XP/vista) */
     margin-top: 15px;
 }
 .fullwidth > .section_child

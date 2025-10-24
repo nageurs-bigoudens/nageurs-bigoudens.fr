@@ -1,7 +1,8 @@
 <?php
 // src/model/entities/NodeDataAsset.php
 //
-// entité intermédiaire avec 3 colonnes
+// entité intermédiaire 3 colonnes conçue selon le principe "slot <=> ressource unique" (paires node_data/role uniques)
+// doctrine gère mal les clés primaires triples, j'ai donc choisi une clé primaire double node_data_id/role
 
 declare(strict_types=1);
 
@@ -11,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: TABLE_PREFIX . 'nodedata_asset')]
-#[ORM\UniqueConstraint(name: 'unique_role_per_node', columns: ['node_data_id', 'role'])] // un rôle UNIQUE pour chaque node_data_id, excellent!
 class NodeDataAsset
 {
     // clé primaire double
@@ -22,12 +22,12 @@ class NodeDataAsset
     private NodeData $node_data;
 
     #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 50)]
+    private string $role;
+
     #[ORM\ManyToOne(targetEntity: Asset::class)]
     #[ORM\JoinColumn(name: 'asset_id', referencedColumnName: 'id_asset', onDelete: 'CASCADE')]
     private Asset $asset;
-
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $role;
 
     public function __construct(NodeData $node_data, Asset $asset, string $role){
         $this->node_data = $node_data;

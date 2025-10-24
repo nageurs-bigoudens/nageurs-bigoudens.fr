@@ -45,34 +45,9 @@ class HeaderBuilder extends AbstractBuilder
             // réseaux sociaux + logo dans l'entête
             $header_logo = Asset::USER_PATH . $node_data->getAssetByRole('header_logo')?->getFileName() ?? '';
             $header_background = Asset::USER_PATH . $node_data->getAssetByRole('header_background')?->getFileName() ?? '';
+            
             $keys = array_keys($social);
             $social_networks = '';
-
-            // nécéssite des entrées dans la table node_asset
-            /*foreach($node->getNodeData()->getAssets() as $asset)
-            {
-                for($i = 0; $i < count($keys); $i++)
-                {
-                    // réseaux sociaux
-                    if(str_contains($asset->getFileName(), $keys[$i])){
-                        $social_networks .= '<a href="' . $social[$keys[$i]] . '" target="_blank" rel="noopener noreferrer">
-                        <img src="' . rtrim($asset->getFilePathMini(), '/') . '" alt="' . $keys[$i] . '_alt"></a>';
-                        break;
-                    }
-                    // logo en-tête
-                    //if(str_contains($asset->getFileName(), 'header_logo')){
-                        //$header_logo = rtrim($asset->getFilePathMini(), '/');
-                        //break;
-                    //}
-                    // image de fond
-                    //if(str_contains($asset->getFileName(), 'header_background')){
-                        //$header_background = rtrim($asset->getFilePath(), '/');
-                        //break;
-                    //}
-                }
-            }*/
-
-            // réseaux sociaux, chemin du ficher dans node_data à déplacer dans asset
             foreach($keys as $one_key){
                 $social_networks .= '<a href="' . $social[$one_key] . '" target="_blank" rel="noopener noreferrer">
                     <img src="assets/' . $one_key . '.svg" alt="' . $one_key . '_alt"></a>';
