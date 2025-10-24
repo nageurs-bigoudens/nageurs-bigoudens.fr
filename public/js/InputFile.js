@@ -35,7 +35,18 @@ class InputFile{
 	    .then(data => {
 	        if(data.success){
 	        	this.parent.querySelector('#' + this.name + '_img').src = data.location;
-				this.close(this.name);
+
+	        	// cas particulier
+	        	if(this.name === 'head_favicon'){
+	        		const link = document.querySelector('link[rel="icon"]');
+	        		link.type = data.mime_type;
+	        		link.href = data.location;
+	        	}
+	        	else if(this.name === 'header_background'){
+	        		document.querySelector('header').style.backgroundImage = "url('" + data.location + "')";
+	        	}
+
+				this.close();
 	        }
 	        else{
 	            console.error("Erreur: le serveur n'a pas enregistré l'image'.");
@@ -46,6 +57,6 @@ class InputFile{
 	    });
 	}
 	cancel(){
-		this.close(this.name);
+		this.close();
 	}
 }

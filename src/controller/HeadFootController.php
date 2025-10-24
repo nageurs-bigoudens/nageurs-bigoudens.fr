@@ -3,8 +3,7 @@
 
 declare(strict_types=1);
 
-//use App\Entity\Node;
-//use App\Entity\NodeData;
+use App\Entity\NodeDataAsset;
 use App\Entity\Asset;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
@@ -38,40 +37,75 @@ class HeadFootController
 			echo json_encode(['success' => false]);
 		}
 		else{
-			$file = $_FILES['file'];
-
 			if(!is_dir(Asset::USER_PATH)){
 	            mkdir(Asset::USER_PATH, 0700, true);
 	        }
 
+	        /* -- téléchargement -- */
+	        $file = $_FILES['file'];
 	        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif', 'ico', 'bmp']; // pas de SVG
-			$name = Security::secureFileName(pathinfo($file['name'], PATHINFO_FILENAME));
 	        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 	        if(!in_array($extension, $allowed_extensions) || $extension === 'jpg'){
 	            $extension = 'jpeg';
 	        }
-			$file_path = uniqid($name . '_') . '.' . $extension;
+			$mime_type = mime_content_type($file['tmp_name']);
+			$hash = hash_file('sha256', $file['tmp_name']);
 
-			if(ImageUploadController::imagickCleanImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $file_path, $extension)){ // recréer l’image pour la nettoyer
-				$params_array = explode('_', $request_params); // favicon, header_logo, header_background, footer_logo
+			/* -- instance d'Asset -- */
+			$model = new Model($entityManager);
+			$result = $model->getWhatever('App\Entity\Asset', 'hash', $hash);
 
-				$model = new Model($entityManager);
-				if($model->findWhateverNode('name_node', $params_array[0])){
-					$node_data = $model->getNode()->getNodeData();
-					$image = new Asset($name, $file_path, mime_content_type($file['tmp_name']), $request_params);
-					$node_data->addAsset($image);
+			if(count($result) > 0){ // asset existant trouvé
+				$asset = $result[0];
 
-					$entityManager->persist($image);
-					$entityManager->flush();
-					echo json_encode(['success' => true, 'location' => Asset::USER_PATH . $file_path]);
-				}
-				else{
-					echo json_encode(['success' => false, 'message' => 'Erreur noeud non trouvé.']);
-				}
+				// correction des informations
+				$name = $asset->getFileName(); // permet à priori de réécrire par dessus le précédent fichier
+				//$asset->setFileName($name);
+				$asset->setMimeType($mime_type);
 			}
 			else{
+				$name = Security::secureFileName(pathinfo($file['name'], PATHINFO_FILENAME));
+				$name = uniqid($name . '_') . '.' . $extension;
+				$asset = new Asset($name, $mime_type, $hash);
+			}
+
+			/* -- écriture du fichier sur le disque -- */
+			if(!ImageUploadController::imagickCleanImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $name, $extension)){ // recréer l’image pour la nettoyer
 				http_response_code(500);
 	            echo json_encode(['success' => false, 'message' => 'Erreur image non valide.']);
+			}
+			else{
+				$params_array = explode('_', $request_params); // head_favicon, header_logo, header_background, footer_logo
+
+				/* -- table intermédiaire node_data/asset-- */
+				if($model->findWhateverNode('name_node', $params_array[0])){ // noeud (head, header ou footer)
+					$node_data = $model->getNode()->getNodeData();
+					
+					// recherche à l'aide du rôle
+					$old_nda = null;
+					foreach($node_data->getNodeDataAssets() as $nda){
+						if($nda->getRole() === $request_params){
+							$old_nda = $nda;
+							$old_nda->setAsset($asset);
+			                break;
+			            }
+					}
+					// entrée pas trouvée
+					if($old_nda === null){
+						$new_nda = new NodeDataAsset($node_data, $asset, $request_params); // $request_params sera le rôle de l'asset
+						$entityManager->persist($new_nda);
+					}
+					
+					if(count($result) === 0){
+						$entityManager->persist($asset);
+					}
+					$entityManager->flush();
+					echo json_encode(['success' => true, 'location' => Asset::USER_PATH . $name, 'mime_type' => $mime_type]);
+				}
+				else{
+					http_response_code(500);
+					echo json_encode(['success' => false, 'message' => "Erreur noeud non trouvé, c'est pas du tout normal!"]);
+				}
 			}
 		}
 		die;

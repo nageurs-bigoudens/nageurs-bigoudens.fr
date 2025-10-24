@@ -9,6 +9,11 @@ footer
 	/*padding: 0 20px;*/
 	
 }
+footer a
+{
+	color: unset; /* ne plus hériter */
+	text-decoration: none;
+}
 footer > div
 {
 	max-width: 1200px;

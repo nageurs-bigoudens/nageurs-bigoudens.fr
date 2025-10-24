@@ -203,6 +203,17 @@ class Model
             return true;
         }
     }
+    public function getWhatever(string $class, string $field, string $value): array
+    {
+        // penser au entityManager "repository"
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('n')
+            ->from($class, 'n')
+            ->where("n.$field = :value")
+            ->setParameter('value', $value);
+        return $queryBuilder->getQuery()->getResult();
+    }
 
     // récupération d'un article pour modification
     public function makeArticleNode(string $id = '', bool $get_section = false): bool

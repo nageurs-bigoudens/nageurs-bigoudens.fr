@@ -31,7 +31,7 @@ class InputText{
 	    .then(data => {
 	        if(data.success){
 	        	this.parent.querySelector('#' + this.name + '_span').innerHTML = new_text;
-				this.close(this.name);
+				this.close();
 	        }
 	        else{
 	            console.error("Erreur: le serveur n'a pas enregistré le nouveau texte.");
@@ -43,6 +43,6 @@ class InputText{
 	}
 	cancel(){
 		this.parent.querySelector('#' + this.name + '_input').value = this.parent.querySelector('#' + this.name + '_span').innerHTML;
-		this.close(this.name);
+		this.close();
 	}
 }

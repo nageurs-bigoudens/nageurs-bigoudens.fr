@@ -18,7 +18,7 @@
             <div class="header_content">
                 <div class="header_left_col">
                     <div id="header_logo">
-                        <a href="<?= new URL ?>"><img id="header_logo_img" src="<?= $header_logo ?>" alt="logo_alt"></a>
+                        <a href="<?= new URL ?>"><img id="header_logo_img" src="<?= $header_logo ?? '' ?>" alt="header_logo"></a>
                         <input type="file" id="header_logo_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
                         <?= $buttons_header_logo ?>
                     </div>

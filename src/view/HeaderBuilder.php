@@ -3,8 +3,8 @@
 
 declare(strict_types=1);
 
-use App\Entity\Asset;
 use App\Entity\Node;
+use App\Entity\Asset;
 
 class HeaderBuilder extends AbstractBuilder
 {
@@ -35,18 +35,18 @@ class HeaderBuilder extends AbstractBuilder
         
         if(file_exists($viewFile))
         {
+            $node_data = $node->getNodeData();
             // titre et description
-            // => retourne $titre, $description et le tableau associatif: $social
-            if(!empty($node->getNodeData()->getData()))
+            if(!empty($node_data->getData()))
             {
-                extract($node->getNodeData()->getData());
+                extract($node_data->getData());
             }
 
             // réseaux sociaux + logo dans l'entête
+            $header_logo = Asset::USER_PATH . $node_data->getAssetByRole('header_logo')?->getFileName() ?? '';
+            $header_background = Asset::USER_PATH . $node_data->getAssetByRole('header_background')?->getFileName() ?? '';
             $keys = array_keys($social);
             $social_networks = '';
-            //$header_logo;
-            //$header_background;
 
             // nécéssite des entrées dans la table node_asset
             /*foreach($node->getNodeData()->getAssets() as $asset)
@@ -80,20 +80,21 @@ class HeaderBuilder extends AbstractBuilder
             
             // boutons mode admin
             if($_SESSION['admin']){
+                // assets dans classe editing_zone
                 $editing_zone_margin = '5px';
-                $favicon = Asset::USER_PATH . 'favicon48x48.png'; // double le code dans HeadBuilder
-                $buttons_favicon = '<button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_img" class="action_icon" src="' . $favicon . '"> Favicon</button>
+                $buttons_favicon = '<button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_img" class="action_icon"> Favicon</button>
+                    <script>document.getElementById(\'head_favicon_img\').src = window.Config.favicon;</script>
                     <img id="head_favicon_submit" class="action_icon hidden" src="assets/save.svg" onclick="head_favicon.submit()">
                     <img id="head_favicon_cancel" class="action_icon hidden" src="assets/close.svg" onclick="head_favicon.cancel()">';
-                $background = Asset::USER_PATH . 'fond-piscine.jpg';
-                $buttons_background = '<button id="header_background_open" onclick="header_background.open()"><img id="header_background_img" class="background_button" src="' . $background . '"> Image de fond</button>
+                $buttons_background = '<button id="header_background_open" onclick="header_background.open()"><img id="header_background_img" class="background_button" src="' . $header_background . '"> Image de fond</button>
                     <img id="header_background_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_background.submit()">
                     <img id="header_background_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_background.cancel()">';
 
+                // asset dans classe header_content
                 $buttons_header_logo = '<img id="header_logo_open" class="action_icon" src="assets/edit.svg" onclick="header_logo.open()">
                     <img id="header_logo_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_logo.submit()">
                     <img id="header_logo_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_logo.cancel()">';
-
+                // texte dans classe header_content
                 $buttons_header_title = '<img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.open()">
                     <img id="header_title_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_title.submit()">
                     <img id="header_title_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_title.cancel()">';

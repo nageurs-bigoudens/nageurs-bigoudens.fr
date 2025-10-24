@@ -39,21 +39,16 @@ class NodeData
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $pagination_limit = null; // pour les post_block et news_block
 
-    #[ORM\ManyToMany(targetEntity: Asset::class, inversedBy: "node_data")] // cascade: ['remove'] = très dangereux!
-    #[ORM\JoinTable(
-        name: TABLE_PREFIX . "nodedata_asset",
-        joinColumns: [new ORM\JoinColumn(name: "node_data_id", referencedColumnName: "id_node_data", onDelete: "CASCADE")], // onDelete: "CASCADE": très utile
-        inverseJoinColumns: [new ORM\JoinColumn(name: "asset_id", referencedColumnName: "id_asset", onDelete: "CASCADE")]
-    )]
-    private Collection $assets;
+    #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: NodeDataAsset::class, cascade: ['persist', 'remove'])]
+    private Collection $nda_collection;
 
     private int $nb_pages = 1;
 
-    public function __construct(array $data, Node $node, Collection $assets = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
+    public function __construct(array $data, Node $node, Collection $nda_collection = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
         $this->data = $data;
         $this->node = $node;
-        $this->assets = $assets;
+        $this->nda_collection = $nda_collection;
         if(!empty($presentation) && $presentation === 'grid'){
             $this->grid_cols_min_width = 250;
         }
@@ -132,22 +127,54 @@ class NodeData
     {
         $this->node = $node;
     }*/
-    public function getAssets(): Collection
+
+
+    public function getNodeDataAssets(): Collection
     {
-        return $this->assets;
+        return $this->nda_collection;
     }
-    public function addAsset(Asset $asset): void
+    public function getNodeDataAssetByRole(string $role): ?NodeDataAsset
     {
-        if(!$this->assets->contains($asset)){
-            $this->assets->add($asset);
-            //$asset->addNodeData($this); // autre sens
+        foreach($this->nda_collection as $nda){
+            if($nda->getRole() === $role){
+                return $nda;
+            }
         }
+        return null;
     }
-     public function removeAsset(Asset $asset): void
+    public function getAssetByRole(string $role): ?Asset
     {
-        $this->assets->removeElement($asset);
-        /*if($this->assets->removeElement($asset)){ // autre sens
-            $asset->removeNodeData($this);
-        }*/
+        $nda = $this->getNodeDataAssetByRole($role);
+        if($nda === null){
+            return null;
+        }
+        return $nda->getAsset() ?? null;
     }
+    /*public function addNodeDataAsset(NodeDataAsset $nda): self
+    {
+        if(!$this->nda_collection->contains($nda)){ // sécurité contrainte UNIQUE
+            $this->nda_collection->add($nda);
+        }
+        return $this;
+    }*/
+    /*public function removeNodeDataAsset(NodeDataAsset $nda): self // inutile on peut faire: $node_data->getNodeDataAssets()->removeElement($nda);
+    {
+        $this->nda_collection->removeElement($nda);
+        // pas de synchro dans NodeDataAsset, les champs de cette table ne sont pas nullables
+        return $this;
+    }*/
+
+    // LE setter, sélectionne l'asset à utiliser en remplaçant l'entrée dans NodeDataAsset en fonction du rôle
+    // à mettre théoriquement dans une classe metier dans "service"
+    /*public function replaceAssetForRole(string $role, Asset $asset): void
+    {
+        foreach($this->nda_collection as $nda){
+            if($nda->getRole() === $role){
+                $this->removeNodeDataAsset($nda);
+                break;
+            }
+        }
+        $this->new_nda = new NodeDataAsset($this, $asset, $role);
+        $this->addNodeDataAsset($this->new_nda);
+    }*/
 }

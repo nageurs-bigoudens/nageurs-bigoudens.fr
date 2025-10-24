@@ -49,18 +49,9 @@ class HeadBuilder extends AbstractBuilder
             $description = Model::$page_path->getLast()->getDescription();
 
             // favicon
-            /*foreach($node->getNodeData()->getImages() as $image)
-            {
-                if(str_contains($image->getFileName(), 'favicon'))
-                {
-                    $favicon = rtrim($image->getFilePathMini(), '/');
-                    $alt = $image->getAlt();
-                }
-            }*/
-
-            // en dur temporairement
-            $favicon = Asset::USER_PATH . 'favicon48x48.png';
-            $alt = 'favicon';
+            // ?-> est l'opérateur de navigation sécurisée => LOVE!
+            $favicon = Asset::USER_PATH . ($favicon_object = $node->getNodeData()->getAssetByRole('head_favicon'))?->getFileName() ?? '';
+            $favicon_type = $favicon_object?->getMimeType() ?? '';
 
             ob_start();
             require $viewFile;

@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 #[ORM\Table(name: TABLE_PREFIX . "asset")]
@@ -13,71 +14,55 @@ class Asset
 {
     const PATH = 'assets/';
     const USER_PATH = 'user_data/assets/';
+    // choisir un répertoire du genre /var/www/html/uploads/? ou au moins hors de /src? j'en sais rien
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private int $id_asset;
 
-    #[ORM\Column(type: "string", length: 255, unique: true)] // nom d'image UNIQUE
+    #[ORM\Column(type: "string", length: 255)] // nom de fichier modifié avec uniqid (fichiers différents de même nom)
     private string $file_name;
-
-    // choisir un répertoire du genre /var/www/html/uploads/, au moins hors de /src
-    #[ORM\Column(type: "string", length: 255, unique: true, nullable: true)]
-    private ?string $file_path;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private string $mime_type; // image/jpeg, image/png, etc
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
-    private string $alt; // texte alternatif
+    #[ORM\Column(type: "string", length: 64, unique: true)] // doctrine n'a pas d'équivalent au type CHAR des BDD (on voulait CHAR(64)), c'est pas grave!
+    private string $hash; // pour détecter deux fichiers identiques, même si leurs noms et les métadonnées changent
 
-    // autre champs optionnels: file_size, date (default current timestamp)
+    #[ORM\OneToMany(mappedBy: 'asset', targetEntity: NodeDataAsset::class)]
+    private Collection $nda_collection;
 
-    /* étapes au téléchargement:
-    => Validation du type de fichier : On vérifie que le fichier est bien une image en utilisant le type MIME. On peut aussi vérifier la taille du fichier.
-    => Création d'un répertoire structuré : On génère un chemin dynamique basé sur la date (uploads/2024/12/24/) pour organiser les images.
-    => Génération d'un nom de fichier unique : On utilise uniqid() pour générer un nom unique et éviter les conflits de nom.
-    => Déplacement du fichier sur le serveur : Le fichier est déplacé depuis son emplacement temporaire vers le répertoire uploads/.
-    => Enregistrement dans la base de données : On enregistre les informations de l'image dans la base de données. */
-
-    #[ORM\ManyToMany(targetEntity: NodeData::class, mappedBy: "assets")]
-    private $node_data;
-
-    public function __construct(string $name, ?string $path, string $mime_type, string $alt)
+    public function __construct(string $name, string $mime_type, string $hash)
     {
         $this->file_name = $name;
-        $this->file_path = $path;
         $this->mime_type = $mime_type;
-        $this->alt = $alt;
+        $this->hash = $hash;
     }
 
     public function getFileName(): string
     {
         return $this->file_name;
     }
-    public function getFilePath(): string
+    public function setFileName(string $name): void
     {
-        return $this->file_path;
+        $this->file_name = $name;
     }
-    public function getAlt(): string
+    public function getMimeType(): string
     {
-        return $this->alt;
+        return $this->mime_type;
+    }
+    public function setMimeType(string $mime_type): void
+    {
+        $this->mime_type = $mime_type;
+    }
+    public function getHash(): string
+    {
+        return $this->hash;
     }
 
-
-    // pour ViewBuilderController?
-    /*public function displayImage($imageId): void
+    public function getNodeDataAssets(): Collection
     {
-        //$imageId = 1; // Exemple d'ID d'image
-        $stmt = $pdo->prepare("SELECT file_path FROM images WHERE id = ?");
-        $stmt->execute([$imageId]);
-        $image = $stmt->fetch();
-
-        if ($image) {
-            echo "<img src='" . $image['file_path'] . "' alt='Image'>";
-        } else {
-            echo "Image non trouvée.";
-        }
-    }*/
+        return $this->nda_collection;
+    }
 }

@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div id="footer_logo">
-                        <a href="<?= new URL ?>"><img id="footer_logo_img" src="<?= $footer_logo ?>" alt="logo_alt"></a>
+                        <a href="<?= new URL ?>"><img id="footer_logo_img" src="<?= $footer_logo ?? '' ?>" alt="logo_alt"></a>
                         <input type="file" id="footer_logo_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
                         <?= $buttons_footer_logo ?>
                     </div>

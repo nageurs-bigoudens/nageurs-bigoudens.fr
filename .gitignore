@@ -3,6 +3,7 @@ node_modules/
 public/js/tinymce/
 public/js/tinymce-langs/
 config/config.ini
+public/user_data/
 public/images/
 public/images-mini/
 composer.lock

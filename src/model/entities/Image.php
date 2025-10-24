@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -42,7 +43,7 @@ class Image
     => Enregistrement dans la base de données : On enregistre les informations de l'image dans la base de données. */
 
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: "images")]
-    private $article;
+    private Collection $article;
 
     public function __construct(string $name, ?string $path, ?string $path_mini, string $mime_type, string $alt)
     {

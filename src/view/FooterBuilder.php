@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use App\Entity\Node;
+use App\Entity\Asset;
 
 class FooterBuilder extends AbstractBuilder
 {
@@ -13,11 +14,14 @@ class FooterBuilder extends AbstractBuilder
         
         if(file_exists($viewFile))
         {
-            // $adresses postale et e-mail
-            if(!empty($node->getNodeData()->getData()))
+            $node_data = $node->getNodeData();
+            // nom du contact, adresse et e-mail
+            if(!empty($node_data->getData()))
             {
-                extract($node->getNodeData()->getData());
+                extract($node_data->getData());
             }
+
+            $footer_logo = Asset::USER_PATH . $node_data->getAssetByRole('footer_logo')?->getFileName() ?? '';
 
             $this->useChildrenBuilder($node);
             $breadcrumb = $this->html;
