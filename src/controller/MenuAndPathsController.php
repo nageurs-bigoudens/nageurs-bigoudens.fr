@@ -42,21 +42,30 @@ class MenuAndPathsController
         die;
     }
 
-    static public function editUrlEntry(EntityManager $entityManager, array $json): void
+    // on pourrait utiliser FormValidation ici
+    static public function editUrl(EntityManager $entityManager, array $json): void
     {
-        $url_input = trim($json['url_input']); // faire htmlspecialchars à l'affichage
+        $url_data = trim($json['input_data']); // garder htmlspecialchars pour l'affichage
         $page = $entityManager->find('App\Entity\Page', $json['id']);
 
         if(!$page){
             echo json_encode(['success' => false, 'message' => "id invalide"]);
         }
-        elseif(!filter_var($url_input, FILTER_VALIDATE_URL) || !str_starts_with($url_input, 'http')){
+        elseif(!in_array($json['field'], ['url_name', 'url_content'])){
+            echo json_encode(['success' => false, 'message' => "champ invalide"]);
+        }
+        elseif($json['field'] === 'url_content' && (!filter_var($url_data, FILTER_VALIDATE_URL) || !str_starts_with($url_data, 'http'))){
             echo json_encode(['success' => false, 'message' => "la chaîne envoyée n'est pas une URL valide"]);
         }
         else{
-            $page->setEndOfPath($url_input);
+            if($json['field'] === 'url_name'){
+                $page->setPageName($url_data);
+            }
+            elseif($json['field'] === 'url_content'){
+                $page->setEndOfPath($url_data);
+            }
             $entityManager->flush();
-            echo json_encode(['success' => true, 'url_input' => $url_input]);
+            echo json_encode(['success' => true, 'url_data' => $url_data]);
         }
         die;
     }

@@ -4,25 +4,21 @@
                 <div class="data">
                     <div class="contact">
                         <div id="footer_name">
-                            <span id="footer_name_span"><?= htmlspecialchars($name ?? '') ?></span>
-                            <input type="text" id="footer_name_input" class="hidden" value="<?= htmlspecialchars($name ?? '') ?>" size="30">
-                            <?= $buttons_footer_name ?>
+                            <span id="footer_name_content"><?= htmlspecialchars($name ?? '') ?></span>
+                            <?= $admin_footer_name ?>
                         </div>
                         <div id="footer_address">
-                            <span id="footer_address_span"><?= htmlspecialchars($address ?? '') ?></span>
-                            <input type="text" id="footer_address_input" class="hidden" value="<?= htmlspecialchars($address ?? '') ?>" size="30">
-                            <?= $buttons_footer_address ?>
+                            <span id="footer_address_content"><?= htmlspecialchars($address ?? '') ?></span>
+                            <?= $admin_footer_address ?>
                         </div>
                         <div id="footer_email">
-                            <a href="mailto:<?= $email ?>"><span id="footer_email_span"><?= htmlspecialchars($email ?? '') ?></span></a>
-                            <input type="text" id="footer_email_input" class="hidden" value="<?= htmlspecialchars($email ?? '') ?>" size="30">
-                            <?= $buttons_footer_email ?>
+                            <a id="footer_email_content" href="mailto:<?= $email ?>"><?= htmlspecialchars($email ?? '') ?></a>
+                            <?= $admin_footer_email ?>
                         </div>
                     </div>
                     <div id="footer_logo">
-                        <a href="<?= new URL ?>"><img id="footer_logo_img" src="<?= $footer_logo ?? '' ?>" alt="logo_alt"></a>
-                        <input type="file" id="footer_logo_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
-                        <?= $buttons_footer_logo ?>
+                        <a id="footer_logo_content" href="<?= new URL ?>"><img src="<?= $footer_logo ?? '' ?>" alt="logo_alt"></a>
+                        <?= $admin_footer_logo ?>
                     </div>
 <?php if($_SESSION['admin']){ ?>
                     <script>

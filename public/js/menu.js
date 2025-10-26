@@ -147,22 +147,27 @@ function checkMenuEntry(page_id){
     });
 }
 
-// seul la modification des URL est possible pour l'instant, les noms des entrées de menu attendront
-function editUrlEntry(page_id){
+function editUrl(page_id, selector){
     const parent_div = document.getElementById(page_id);
-    const url_input = parent_div.querySelector('.url').querySelector('input').value;
+    const input_data = parent_div.querySelector('.' + selector).querySelector('input').value;
     
-    fetch('index.php?menu_edit=edit_url_entry', {
+    fetch('index.php?menu_edit=url_edit', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id: page_id, url_input: url_input })
+        body: JSON.stringify({ id: page_id, field: selector, input_data: input_data })
     })
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            findParentByTagName(document.getElementById('m_' + page_id), 'a').href = data.url_input; // MAJ menu
+            // MAJ menu
+            if(selector === 'url_name'){
+                document.getElementById('m_' + page_id).innerHTML = data.url_data;
+            }
+            else if(selector === 'url_content'){
+                findParentByTagName(document.getElementById('m_' + page_id), 'a').href = data.url_data;
+            }
             toastNotify("Nouvelle adresse enregistrée avec succès")
         }
         else{
@@ -174,62 +179,3 @@ function editUrlEntry(page_id){
         console.error('Erreur:', error);
     });
 }
-
-
-
-// code à recycler pour pouvoir modifier le nom de l'entrée de menu correspondant aux liens
-/*function editUrlEntry(page_id){
-	const parent_div = document.getElementById(page_id);
-    parent_div.querySelector('i').classList.add('hidden');
-    parent_div.querySelector('.url').querySelector('input').classList.remove('hidden');
-    parent_div.querySelector('#edit-i' + page_id).classList.add('hidden');
-    parent_div.querySelector('#delete-i' + page_id).querySelector('input[type=image]').classList.add('hidden');
-    parent_div.querySelector('#cancel-i' + page_id).querySelector('button').classList.remove('hidden');
-    parent_div.querySelector('#submit-i' + page_id).querySelector('input[type=submit]').classList.remove('hidden');
-}
-function cancelUrlEntry(page_id){
-    const parent_div = document.getElementById(page_id);
-    parent_div.querySelector('.url').querySelector('input').value = parent_div.querySelector('i').textContent; // textContent (contrairement à innerHTML) ne transforme pas les & en entités HTML
-    closeUrlEntry(page_id, parent_div);
-}
-function submitUrlEntry(page_id){
-    const parent_div = document.getElementById(page_id);
-    const url_input = parent_div.querySelector('.url').querySelector('input').value;
-
-    fetch('index.php?menu_edit=edit_url_entry', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: page_id, url_input: url_input })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success){
-            parent_div.querySelector('i').innerHTML = data.url_input; // MAJ <i>
-            findParentByTagName(document.getElementById('m_' + page_id), 'a').href = data.url_input; // MAJ menu
-            closeUrlEntry(page_id, parent_div);
-        }
-        else{
-            toastNotify("Erreur rencontrée par le serveur, changements non pris en compte");
-            console.error("Erreur rencontrée par le serveur, changements non pris en compte");
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
-}
-function closeUrlEntry(page_id, parent_div){
-    parent_div.querySelector('i').classList.remove('hidden');
-    parent_div.querySelector('.url').querySelector('input').classList.add('hidden');
-    parent_div.querySelector('#edit-i' + page_id).classList.remove('hidden');
-    parent_div.querySelector('#delete-i' + page_id).querySelector('input[type=image]').classList.remove('hidden');
-    parent_div.querySelector('#cancel-i' + page_id).querySelector('button').classList.add('hidden');
-    parent_div.querySelector('#submit-i' + page_id).querySelector('input[type=submit]').classList.add('hidden');
-}*/
-
-/*function deleteUrlEntry(page_id){
-	const selected_div = document.getElementById(page_id);
-	console.log(selected_div.id);
-}*/
-

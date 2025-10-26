@@ -58,7 +58,7 @@
 
 .menu button
 {
-	margin: 5px;
+	margin: 4px 0;
 }
 .menu_entry_checkbox
 {
@@ -109,15 +109,11 @@
 	flex-wrap: wrap;
 	align-items: center;
 }
-.menu .url
-{
-	text-wrap: nowrap;
-}
-.menu .url input[type=url]
+.menu .url_content input
 {
 	width: 50%;
 }
 
-@media screen and (min-width: 80rem) {
+/*@media screen and (min-width: 80rem) {
 	i{}
-}
+}*/

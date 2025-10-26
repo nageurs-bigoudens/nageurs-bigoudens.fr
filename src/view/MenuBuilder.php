@@ -55,32 +55,26 @@ class MenuBuilder extends AbstractBuilder
                 <img class="move_entry_icon" onclick="switchMenuPositions(' . $entry->getId() . ', \'down\')" src="assets/arrow-down.svg">
                 <span class="menu_entry_checkbox">
                     <input type="checkbox" ' . $checked . ' onclick="checkMenuEntry(' . $entry->getId() . ')">
-                </span>
-                <button>' . $entry->getPageName() . '</button>';
+                </span>';
 
-            // seul la modification des URL est possible pour l'instant, les noms des entrées de menu attendront
+            // entrées URL: bouton poubelle + nom du lien + adresse
             if(str_starts_with($entry->getEndOfPath(), 'http')){
                 $this->html .= '<form style="display: inline;" id="delete-i' . $entry->getId() . '" method="post" action="' . new URL(['from' => 'menu_chemins']) . '">
                         <input type="hidden" name="delete" value="' . $entry->getId() . '">
                         <input type="image" class="move_entry_icon" src="assets/delete-bin.svg" alt="delete link button" onclick="return confirm(\'Voulez-vous vraiment supprimer cette entrée?\');">
                     </form>
-                    <span class="url">
-                        <input type="url" value="' . htmlspecialchars($entry->getEndOfPath()) . '">
-                        <img class="move_entry_icon" src="assets/save.svg" onclick="editUrlEntry(' . $entry->getId() . ')">
-                    </span>';
-
-                // code à recycler pour pouvoir modifier le nom de l'entrée de menu correspondant aux liens
-                /*$this->html .= '<span id="cancel-i' . $entry->getId() . '">
-                        <input type="hidden" name="cancel" value="' . $entry->getId() . '">
-                        <button class="hidden" onclick="cancelUrlEntry(' . $entry->getId() . ')">Annuler</button>
+                    <span class="url_name">
+                        <button class="url_name"><input type="" value="' . htmlspecialchars($entry->getPageName()) . '"></button>
+                        <img class="move_entry_icon" src="assets/save.svg" onclick="editUrl(' . $entry->getId() . ', \'url_name\')">
                     </span>
-                    <span id="submit-i' . $entry->getId() . '">
-                        <input type="hidden" name="submit" value="' . $entry->getId() . '">
-                        <input type="submit" class="hidden" onclick="submitUrlEntry(' . $entry->getId() . ')">
-                    </span>';*/
+                    <span class="url_content">
+                        <input type="url" value="' . htmlspecialchars($entry->getEndOfPath()) . '">
+                        <img class="move_entry_icon" src="assets/save.svg" onclick="editUrl(' . $entry->getId() . ', \'url_content\')">
+                    </span>';
             }
             else{
-                $this->html .= '<i class="path">' . $entry->getPagePath() . '</i>';
+                $this->html .= '<button>' . $entry->getPageName() . '</button>
+                    <i class="path">' . $entry->getPagePath() . '</i>';
             }
             
             if(count($entry->getChildren()) > 0){

@@ -1,27 +1,36 @@
-// étendre une classe parente avec InputFile?
-class InputFile{
+class Input{
 	constructor(name){
 		this.name = name;
+		/*const name_array = name.split('_');
+		this.node = name_array[0];
+		this.what = name_array[1];*/
 		this.parent = document.getElementById(name);
 	}
 	open(){
-		this.parent.querySelector('#' + this.name + '_img').classList.add('hidden');
+		this.parent.querySelector('#' + this.name + '_content').classList.add('hidden');
 		this.parent.querySelector('#' + this.name + '_input').classList.remove('hidden');
 		this.parent.querySelector('#' + this.name + '_open').classList.add('hidden');
 		this.parent.querySelector('#' + this.name + '_submit').classList.remove('hidden');
 		this.parent.querySelector('#' + this.name + '_cancel').classList.remove('hidden');
 	}
 	close(){
-		this.parent.querySelector('#' + this.name + '_img').classList.remove('hidden');
+		this.parent.querySelector('#' + this.name + '_content').classList.remove('hidden');
 		this.parent.querySelector('#' + this.name + '_input').classList.add('hidden');
 		this.parent.querySelector('#' + this.name + '_open').classList.remove('hidden');
 		this.parent.querySelector('#' + this.name + '_submit').classList.add('hidden');
 		this.parent.querySelector('#' + this.name + '_cancel').classList.add('hidden');
 	}
+	cancel(){
+		this.close();
+	}
+}
+
+class InputFile extends Input{
 	submit(){
 		const file = this.parent.querySelector('#' + this.name + '_input').files[0];
 		if(!file){
 			console.error("Erreur: aucun fichier sélectionné.");
+			toastNotify("Erreur: aucun fichier sélectionné.");
 			return;
 		}
 		const form_data = new FormData();
@@ -34,9 +43,7 @@ class InputFile{
 	    .then(response => response.json())
 	    .then(data => {
 	        if(data.success){
-	        	this.parent.querySelector('#' + this.name + '_img').src = data.location;
-
-	        	// cas particulier
+	        	// cas particuliers
 	        	if(this.name === 'head_favicon'){
 	        		const link = document.querySelector('link[rel="icon"]');
 	        		link.type = data.mime_type;
@@ -46,6 +53,7 @@ class InputFile{
 	        		document.querySelector('header').style.backgroundImage = "url('" + data.location + "')";
 	        	}
 
+	        	this.parent.querySelector('#' + this.name + '_content').src = data.location;
 				this.close();
 	        }
 	        else{
@@ -56,7 +64,33 @@ class InputFile{
 	        console.error('Erreur:', error);
 	    });
 	}
-	cancel(){
+}
+
+class InputText extends Input{
+	submit(){
+		const new_text = this.parent.querySelector('#' + this.name + '_input').value;
+
+		fetch('index.php?head_foot_text=' + this.name, {
+	        method: 'POST',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify({new_text: new_text})
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	        if(data.success){
+	        	this.parent.querySelector('#' + this.name + '_content').innerHTML = new_text;
+				this.close();
+	        }
+	        else{
+	            console.error("Erreur: le serveur n'a pas enregistré le nouveau texte.");
+	        }
+	    })
+	    .catch(error => {
+	        console.error('Erreur:', error);
+	    });
+	}
+	cancel(){ // surcharge
+		this.parent.querySelector('#' + this.name + '_input').value = this.parent.querySelector('#' + this.name + '_content').innerHTML;
 		this.close();
 	}
 }

@@ -49,7 +49,7 @@ header
 	}
 }
 
-.site_title
+.header_center_col
 {
 	background-color: #ffffff7f;
 	border-radius: 10px;
@@ -81,25 +81,15 @@ header a
 	color: unset; /* ne plus hériter */
 	text-decoration: none;
 }
-.editing_zone > div
-{
-	/*display: inline;*/ /* à l'ancienne */
-}
 /*.header_right_col
 {}*/
-.social
+#header_social img
 {
-	/*align-self: end;*/
-	/*padding: 4px;*/
-}
-.social a img
-{
-	width: 25px;
-	background-color: #ffffffb3;
+	width: 28px;
+	background-color: rgba(255, 255, 255, 0.7);
 	border-radius: 50%;
 }
-
-.social img:hover
+#header_social img:hover
 {
 	background-color: yellow;
 }

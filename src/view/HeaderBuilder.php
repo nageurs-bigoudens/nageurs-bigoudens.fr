@@ -57,37 +57,42 @@ class HeaderBuilder extends AbstractBuilder
             if($_SESSION['admin']){
                 // assets dans classe editing_zone
                 $editing_zone_margin = '5px';
-                $buttons_favicon = '<button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_img" class="action_icon"> Favicon</button>
-                    <script>document.getElementById(\'head_favicon_img\').src = window.Config.favicon;</script>
+                $admin_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
+                    <button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_content" class="action_icon"> Favicon</button>
+                    <script>document.getElementById(\'head_favicon_content\').src = window.Config.favicon;</script>
                     <img id="head_favicon_submit" class="action_icon hidden" src="assets/save.svg" onclick="head_favicon.submit()">
                     <img id="head_favicon_cancel" class="action_icon hidden" src="assets/close.svg" onclick="head_favicon.cancel()">';
-                $buttons_background = '<button id="header_background_open" onclick="header_background.open()"><img id="header_background_img" class="background_button" src="' . $header_background . '"> Image de fond</button>
+                $admin_background = '<input type="file" id="header_background_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                    <button id="header_background_open" onclick="header_background.open()"><img id="header_background_content" class="background_button" src="' . $header_background . '"> Image de fond</button>
                     <img id="header_background_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_background.submit()">
                     <img id="header_background_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_background.cancel()">';
 
                 // asset dans classe header_content
-                $buttons_header_logo = '<img id="header_logo_open" class="action_icon" src="assets/edit.svg" onclick="header_logo.open()">
+                $admin_header_logo = '<input type="file" id="header_logo_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                    <img id="header_logo_open" class="action_icon" src="assets/edit.svg" onclick="header_logo.open()">
                     <img id="header_logo_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_logo.submit()">
                     <img id="header_logo_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_logo.cancel()">';
                 // texte dans classe header_content
-                $buttons_header_title = '<img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.open()">
+                $admin_header_title = '<input type="text" id="header_title_input" class="hidden" value="' . htmlspecialchars($title ?? '') . '" size="30">
+                    <img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.open()">
                     <img id="header_title_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_title.submit()">
                     <img id="header_title_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_title.cancel()">';
-                $buttons_header_description = '<img id="header_description_open" class="action_icon" src="assets/edit.svg" onclick="header_description.open()">
+                $admin_header_description = '<input type="text" id="header_description_input" class="hidden" value="' . htmlspecialchars($description ?? '') . '" size="30">
+                    <img id="header_description_open" class="action_icon" src="assets/edit.svg" onclick="header_description.open()">
                     <img id="header_description_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_description.submit()">
                     <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancel()">';
 
-                //$buttons_social_networks = '<img class="action_icon" src="assets/edit.svg" onclick="editSocialNetworks()">';
-                $buttons_social_networks = '';
+                // icônes réseaux sociaux
+                $admin_social_networks = '';
             }
             else{
                 $editing_zone_margin = '0';
-                $buttons_favicon = '';
-                $buttons_background = '';
-                $buttons_header_logo = '';
-                $buttons_header_title = '';
-                $buttons_header_description = '';
-                $buttons_social_networks = '';
+                $admin_favicon = '';
+                $admin_background = '';
+                $admin_header_logo = '';
+                $admin_header_title = '';
+                $admin_header_description = '';
+                $admin_social_networks = '';
             }
             
             ob_start();

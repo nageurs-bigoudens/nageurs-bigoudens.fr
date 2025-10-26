@@ -36,8 +36,7 @@ class HeadBuilder extends AbstractBuilder
 
             if($_SESSION['admin']){
                 // édition éléments sur toutes les pages (header, footer et favicon)
-                $js .= '<script src="' . self::versionedFileURL('js', 'InputText') . '"></script>' . "\n";
-                $js .= '<script src="' . self::versionedFileURL('js', 'InputFile') . '"></script>' . "\n";
+                $js .= '<script src="' . self::versionedFileURL('js', 'Input') . '"></script>' . "\n";
 
                 // tinymce, nécéssite un script de copie dans composer.json
                 $css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', 'tinymce') . '">' . "\n";

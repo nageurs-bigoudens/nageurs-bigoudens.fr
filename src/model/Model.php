@@ -1,5 +1,8 @@
 <?php
 // src/model/Model.php
+//
+// à l'occaz, faire des classes métiers: NodeModel = celle-ci
+// puis PageModel, puis éventuellement UserModel, EmailModel (le calendrier a déjà EventDTO)
 
 declare(strict_types=1);
 

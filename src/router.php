@@ -166,8 +166,8 @@ elseif($request->getMethod() === 'POST'){
                 elseif($_GET['menu_edit'] === 'display_in_menu' && isset($json['id']) && isset($json['checked'])){
                     MenuAndPathsController::displayInMenu($entityManager, $json);
                 }
-                elseif($_GET['menu_edit'] === 'edit_url_entry' && isset($json['id']) && isset($json['url_input'])){
-                    MenuAndPathsController::editUrlEntry($entityManager, $json);
+                elseif($_GET['menu_edit'] === 'url_edit' && isset($json['id']) && isset($json['field']) && isset($json['input_data'])){
+                    MenuAndPathsController::editUrl($entityManager, $json);
                 }
             }
 
