@@ -71,7 +71,7 @@ class HeadFootController
 			/* -- écriture du fichier sur le disque -- */
 			if(!ImageUploadController::imagickCleanImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $name, $extension)){ // recréer l’image pour la nettoyer
 				http_response_code(500);
-	            echo json_encode(['success' => false, 'message' => 'Erreur image non valide.']);
+	            echo json_encode(['success' => false, 'message' => 'Erreur image non valide.', 'format' => $extension]);
 			}
 			else{
 				$params_array = explode('_', $request_params); // head_favicon, header_logo, header_background, footer_logo

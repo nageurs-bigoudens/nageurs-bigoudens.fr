@@ -88,7 +88,7 @@ class ImageUploadController
 	        }
 	        else{
 	            http_response_code(500);
-	            echo json_encode(['message' => 'Erreur image non valide']);
+	            echo json_encode(['message' => 'Erreur image non valide', 'format' => $extension]);
 	        }
 	    }
 	    else{
@@ -131,7 +131,7 @@ class ImageUploadController
 	        }
 	        else{
 	            http_response_code(500);
-	            echo json_encode(['message' => 'Erreur image non valide']);
+	            echo json_encode(['message' => 'Erreur image non valide', 'format' => $extension]);
 	        }
 	    }
 	    else{
@@ -177,7 +177,7 @@ class ImageUploadController
 	    }
 	    else{
 	        http_response_code(500);
-	        echo json_encode(['message' => 'Erreur image non valide']);
+	        echo json_encode(['message' => 'Erreur image non valide', 'format' => $extension]);
 	    }
 	    die;
 	}

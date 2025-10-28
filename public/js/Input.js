@@ -98,7 +98,8 @@ class InputFile extends InputToggler{
 				this.close();
 	        }
 	        else{
-	            console.error("Erreur: le serveur n'a pas enregistré l'image'.");
+	        	this.onFailure(data);
+	            console.error(data.message);
 	        }
 	    })
 	    .catch(error => {
@@ -107,6 +108,11 @@ class InputFile extends InputToggler{
 	}
 	onSuccess(data){
 		this.content_elem.src = data.location;
+	}
+	onFailure(data){
+		if(data.format === 'ico'){
+    		toastNotify("Format ICO mal géré par le serveur, essayez avec un PNG.");
+    	}
 	}
 }
 
