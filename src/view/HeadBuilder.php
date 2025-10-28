@@ -49,7 +49,8 @@ class HeadBuilder extends AbstractBuilder
 
             // favicon
             // ?-> est l'opérateur de navigation sécurisée => LOVE!
-            $favicon = Asset::USER_PATH . ($favicon_object = $node->getNodeData()->getAssetByRole('head_favicon'))?->getFileName() ?? '';
+            $favicon_name = ($favicon_object = $node->getNodeData()->getAssetByRole('head_favicon'))?->getFileName();
+            $favicon = $favicon_name ? Asset::USER_PATH . $favicon_name : '';
             $favicon_type = $favicon_object?->getMimeType() ?? '';
 
             ob_start();

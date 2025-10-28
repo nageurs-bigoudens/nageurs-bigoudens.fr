@@ -45,7 +45,8 @@ class HeaderBuilder extends AbstractBuilder
             // réseaux sociaux + logo dans l'entête
             // ?-> est l'opérateur de chainage optionnel
             $header_logo = Asset::USER_PATH . $node_data->getAssetByRole('header_logo')?->getFileName() ?? '';
-            $header_background = Asset::USER_PATH . $node_data->getAssetByRole('header_background')?->getFileName() ?? '';
+            $header_background_name = $node_data->getAssetByRole('header_background')?->getFileName();
+            $header_background = $header_background_name ? Asset::USER_PATH . $header_background_name : '';
             
             $keys = array_keys($social);
             $social_networks = '';
@@ -59,7 +60,7 @@ class HeaderBuilder extends AbstractBuilder
                 // assets dans classe header_additional_inputs
                 $admin_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
                     <button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_content" class="action_icon"> Favicon</button>
-                    <script>document.getElementById(\'head_favicon_content\').src = window.Config.favicon;</script>
+                    <script>document.getElementById("head_favicon_content").src = window.Config.favicon;</script>
                     <img id="head_favicon_submit" class="action_icon hidden" src="assets/save.svg" onclick="head_favicon.submit()">
                     <img id="head_favicon_cancel" class="action_icon hidden" src="assets/close.svg" onclick="head_favicon.cancel()">';
                 $admin_background = '<input type="file" id="header_background_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
