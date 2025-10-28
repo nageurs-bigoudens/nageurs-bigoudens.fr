@@ -43,6 +43,7 @@ class HeaderBuilder extends AbstractBuilder
             }
 
             // réseaux sociaux + logo dans l'entête
+            // ?-> est l'opérateur de chainage optionnel
             $header_logo = Asset::USER_PATH . $node_data->getAssetByRole('header_logo')?->getFileName() ?? '';
             $header_background = Asset::USER_PATH . $node_data->getAssetByRole('header_background')?->getFileName() ?? '';
             
@@ -55,8 +56,7 @@ class HeaderBuilder extends AbstractBuilder
             
             // boutons mode admin
             if($_SESSION['admin']){
-                // assets dans classe editing_zone
-                $editing_zone_margin = '5px';
+                // assets dans classe header_additional_inputs
                 $admin_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
                     <button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_content" class="action_icon"> Favicon</button>
                     <script>document.getElementById(\'head_favicon_content\').src = window.Config.favicon;</script>
@@ -83,10 +83,21 @@ class HeaderBuilder extends AbstractBuilder
                     <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancel()">';
 
                 // icônes réseaux sociaux
+                $social_networks_inputs = '<div id="header_social_input" class="hidden">';
+                foreach($keys as $one_key){
+                    $social_networks_inputs .= '<div>
+                        <input type="text" placeholder="nom du réseau social">
+                        <input type="text" placeholder="lien https://...">
+                        <input type="file">
+                    </div>';
+                }
+                $social_networks_inputs .= '</div>';
+                /*$admin_social_networks = $social_networks_inputs . '<img id="header_social_open" class="action_icon" src="assets/edit.svg" onclick="header_social.open()">
+                    <div id="header_social_submit" class="hidden"></div>
+                    <img id="header_social_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_social.cancel()">';*/
                 $admin_social_networks = '';
             }
             else{
-                $editing_zone_margin = '0';
                 $admin_favicon = '';
                 $admin_background = '';
                 $admin_header_logo = '';

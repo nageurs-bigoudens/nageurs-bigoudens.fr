@@ -79,16 +79,16 @@ footer .data > div
 	margin: 0 3px;
 }*/
 
-#footer_logo_img
+#footer_logo_content
 {
 	max-width: 288px;
 	min-width: 150px;
 }
-@media screen and (max-width: 1000px)
+@media screen and (max-width: 800px)
 {
-	.footer .contact
+	footer .contact
 	{
-		width: 70px;
+		font-size: smaller;
 	}
 }
 
@@ -119,10 +119,6 @@ footer .data > div
 	color: black;
 	text-decoration: none;
 }
-.empty_admin_zone
-{
-	height: 70px;
-}
 .logged_in
 {
 	/*height: 70px;*/
@@ -148,6 +144,20 @@ footer .data > div
 	cursor: pointer; /* curseur qui touche du doigt */
 	background-color: yellow;
 	border-radius: 4px;
+}
+@media screen and (max-width: 550px){
+	.logged_in, .logged_in button
+	{
+		font-size: 96%;
+	}
+	.admin_buttons_zone
+	{
+		margin: 3px;
+	}
+}
+.empty_admin_zone
+{
+	height: 93px; /* 40 => 1 ligne, 70/64 => 2 lignes, 93/83 => 3 lignes */
 }
 .modif_mode
 {

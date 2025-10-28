@@ -5,8 +5,8 @@
             <div id="nav_zone">
                 <?= $nav ?>
             </div>
-            <div>
-                <div id="head_favicon" style="margin: <?= $editing_zone_margin ?>;">
+            <div class="header_additional_inputs">
+                <div id="head_favicon">
                     <?= $admin_favicon ?>
                 </div>
                 <div id="header_background">
@@ -16,7 +16,7 @@
             <div class="header_content">
                 <div class="header_left_col">
                     <div id="header_logo">
-                        <a id="header_logo_content" href="<?= new URL ?>"><img src="<?= $header_logo ?? '' ?>" alt="header_logo"></a>
+                        <a href="<?= new URL ?>"><img id="header_logo_content" src="<?= $header_logo ?? '' ?>" alt="header_logo"></a>
                         <?= $admin_header_logo ?>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                 </div>
                 <div class="header_center_col">
                     <h1 id="header_title">
-                        <a id="header_title_content" href="<?= new URL ?>"><?= htmlspecialchars($title ?? '') ?></a></span>
+                        <a id="header_title_content" href="<?= new URL ?>"><?= htmlspecialchars($title ?? '') ?></a>
                         <?= $admin_header_title ?>
                     </h1>
                     <h2 id="header_description">
@@ -35,7 +35,9 @@
                 </div>
                 <div class="header_right_col">
                     <div id="header_social">
-                        <?= $social_networks ?>
+                        <div id="header_social_content">
+                            <?= $social_networks ?>
+                        </div>
                         <?= $admin_social_networks ?>
                     </div>
                     <?= $breadcrumb ?? '' ?>
@@ -43,12 +45,12 @@
             </div>
 <?php if($_SESSION['admin']){ ?>
             <script>
-                let head_favicon = new InputFile('head_favicon');
-                let header_background = new InputFile('header_background');
+                let head_favicon = new InputFileFavicon('head_favicon');
+                let header_background = new InputFileHeaderBackground('header_background');
                 let header_logo = new InputFile('header_logo');
                 let header_title = new InputText('header_title');
                 let header_description = new InputText('header_description');
-                let header_social = new InputFile('header_social');
+                let header_social = new InputToggler('header_social');
             </script>
 <?php } ?>
         </header>

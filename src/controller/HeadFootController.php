@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 use App\Entity\NodeDataAsset;
 use App\Entity\Asset;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 
 class HeadFootController
@@ -38,7 +37,7 @@ class HeadFootController
 		}
 		else{
 			if(!is_dir(Asset::USER_PATH)){
-	            mkdir(Asset::USER_PATH, 0755, true);
+	            mkdir(Asset::USER_PATH, 0777, true);
 	        }
 
 	        /* -- téléchargement -- */

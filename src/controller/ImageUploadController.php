@@ -66,10 +66,10 @@ class ImageUploadController
 	        
 	        // Vérifier si les répertoires existent, sinon les créer
 	        if(!is_dir($dest)){
-	            mkdir($dest, 0700, true);
+	            mkdir($dest, 0777, true);
 	        }
 	        if(!is_dir($dest_mini)){
-	            mkdir($dest_mini, 0700, true);
+	            mkdir($dest_mini, 0777, true);
 	        }
 	        
 	        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif'];

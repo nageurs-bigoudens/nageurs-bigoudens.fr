@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div id="footer_logo">
-                        <a id="footer_logo_content" href="<?= new URL ?>"><img src="<?= $footer_logo ?? '' ?>" alt="logo_alt"></a>
+                        <a href="<?= new URL ?>"><img id="footer_logo_content" src="<?= $footer_logo ?? '' ?>" alt="logo_alt"></a>
                         <?= $admin_footer_logo ?>
                     </div>
 <?php if($_SESSION['admin']){ ?>
