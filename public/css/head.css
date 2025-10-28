@@ -4,6 +4,7 @@ header
 	/*padding-top: 5px;*/
 	/*padding-bottom: 10px;*/
 	background-size: cover; /* largeur du bloc_page  */
+	background-position: center;
 }
 #nav_zone
 {
@@ -44,6 +45,7 @@ header
 {
 	background-color: #ffffff7f;
 	border-radius: 10px;
+	padding: 1px; /* pour que les marges de h1 et h2 ne mordent pas le bloc parent */
 }
 header h1
 {
@@ -79,13 +81,27 @@ header a
 	display: flex;
 	justify-content: center;
 }
+#header_social_content
+{
+	display: flex;
+	gap: 4px;
+	flex-wrap: wrap;
+}
 #header_social_content img
+{
+	width: 28px;
+	
+}
+#header_social_content a img
 {
 	width: 28px;
 	background-color: #ffffffb3;
 	border-radius: 50%;
 }
-
+#header_social_content .action_icon
+{
+	width: 24px;
+}
 #header_social_content img:hover
 {
 	background-color: yellow;
@@ -98,7 +114,8 @@ header a
 }
 
 @media screen and (max-width: 1000px){
-	.header_content{
+	.header_content
+	{
 		padding: 15px 0;
 	}
 	header img
@@ -106,14 +123,20 @@ header a
 		max-width: 160px;
 	}
 }
-@media screen and (max-width: 500px){
+@media screen and (max-width: 800px){
+	.header_content
+	{
+		grid-template-columns: 2fr 1fr; /* on vire la colonne de gauche et on permet au deux autres de "se pousser" si besoin */
+		padding: 10px;
+	}
+	.header_left_col
+	{
+		display: none;
+	}
+}
+@media screen and (max-width: 600px){
 	.header_content
 	{
 		display: block;
-		padding: 10px;
-	}
-	#header_logo
-	{
-		display: none;
 	}
 }

@@ -54,7 +54,7 @@ class InputText extends InputToggler{
 	    .then(response => response.json())
 	    .then(data => {
 	        if(data.success){
-	        	this.content_elem.innerHTML = this.input_elem.value;
+	        	this.onSuccess(data);
 				this.close();
 	        }
 	        else{
@@ -65,9 +65,22 @@ class InputText extends InputToggler{
 	        console.error('Erreur:', error);
 	    });
 	}
+	onSuccess(data){
+		this.content_elem.innerHTML = this.input_elem.value;
+	}
 	cancel(){
 		this.input_elem.value = this.content_elem.innerHTML;
 		super.cancel();
+	}
+}
+
+class InputTextSocialNetwork extends InputText{
+	open(){
+		this.input_elem.value = this.content_elem.parentNode.href;
+		super.open();
+	}
+	onSuccess(data){
+		this.content_elem.parentNode.href = this.input_elem.value;
 	}
 }
 

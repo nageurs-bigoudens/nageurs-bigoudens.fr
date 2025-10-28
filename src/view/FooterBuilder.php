@@ -30,15 +30,15 @@ class FooterBuilder extends AbstractBuilder
             if($_SESSION['admin'])
             {
                 // données du footer
-                $admin_footer_name = '<input type="text" id="footer_name_input" class="hidden" value="' . htmlspecialchars($name ?? '') . '" size="30">
+                $admin_footer_name = '<input type="text" id="footer_name_input" class="hidden" value="' . htmlspecialchars($name ?? '') . '" placeholder="raison sociale" size="30">
                     <img id="footer_name_open" class="action_icon" src="assets/edit.svg" onclick="footer_name.open()">
                     <img id="footer_name_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_name.submit()">
                     <img id="footer_name_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_name.cancel()">';
-                $admin_footer_address = '<input type="text" id="footer_address_input" class="hidden" value="' . htmlspecialchars($address ?? '') . '" size="30">
+                $admin_footer_address = '<input type="text" id="footer_address_input" class="hidden" value="' . htmlspecialchars($address ?? '') . '" placeholder="adresse" size="30">
                     <img id="footer_address_open" class="action_icon" src="assets/edit.svg" onclick="footer_address.open()">
                     <img id="footer_address_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_address.submit()">
                     <img id="footer_address_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_address.cancel()">';
-                $admin_footer_email = '<input type="text" id="footer_email_input" class="hidden" value="' . htmlspecialchars($email ?? '') . '" size="30">
+                $admin_footer_email = '<input type="text" id="footer_email_input" class="hidden" value="' . htmlspecialchars($email ?? '') . '" placeholder="e-mail" size="30">
                     <img id="footer_email_open" class="action_icon" src="assets/edit.svg" onclick="footer_email.open()">
                     <img id="footer_email_submit" class="action_icon hidden" src="assets/save.svg" onclick="footer_email.submit()">
                     <img id="footer_email_cancel" class="action_icon hidden" src="assets/close.svg" onclick="footer_email.cancel()">';

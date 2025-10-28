@@ -67,7 +67,7 @@ class NodeData
     {
         $this->data = $data;
     }*/
-    public function updateData(string $key, string $value = ''): void
+    public function updateData(string $key, string|array $value = ''): void
     {
         if($value !== ''){
             $this->data[$key] = $value;

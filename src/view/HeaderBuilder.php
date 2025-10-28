@@ -48,13 +48,6 @@ class HeaderBuilder extends AbstractBuilder
             $header_background_name = $node_data->getAssetByRole('header_background')?->getFileName();
             $header_background = $header_background_name ? Asset::USER_PATH . $header_background_name : '';
             
-            $keys = array_keys($social);
-            $social_networks = '';
-            foreach($keys as $one_key){
-                $social_networks .= '<a href="' . $social[$one_key] . '" target="_blank" rel="noopener noreferrer">
-                    <img src="assets/' . $one_key . '.svg" alt="' . $one_key . '_alt"></a>';
-            }
-            
             // boutons mode admin
             if($_SESSION['admin']){
                 // assets dans classe header_additional_inputs
@@ -74,29 +67,40 @@ class HeaderBuilder extends AbstractBuilder
                     <img id="header_logo_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_logo.submit()">
                     <img id="header_logo_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_logo.cancel()">';
                 // texte dans classe header_content
-                $admin_header_title = '<input type="text" id="header_title_input" class="hidden" value="' . htmlspecialchars($title ?? '') . '" size="30">
+                $admin_header_title = '<input type="text" id="header_title_input" class="hidden" value="' . htmlspecialchars($title ?? '') . '" placeholder="nom du site web" size="30">
                     <img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.open()">
                     <img id="header_title_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_title.submit()">
                     <img id="header_title_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_title.cancel()">';
-                $admin_header_description = '<input type="text" id="header_description_input" class="hidden" value="' . htmlspecialchars($description ?? '') . '" size="30">
+                $admin_header_description = '<input type="text" id="header_description_input" class="hidden" value="' . htmlspecialchars($description ?? '') . '" placeholder="sous-titre ou description" size="30">
                     <img id="header_description_open" class="action_icon" src="assets/edit.svg" onclick="header_description.open()">
                     <img id="header_description_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_description.submit()">
                     <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancel()">';
 
                 // icônes réseaux sociaux
-                $social_networks_inputs = '<div id="header_social_input" class="hidden">';
-                foreach($keys as $one_key){
+                $header_social_flex_direction = 'column';
+                $admin_social_networks = [];
+                foreach(array_keys($social) as $one_key){
+                    //<input type="file" id="header_' . $one_key . '_input" class="hidden" accept="image/svg+xml, image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                    // sinon plutôt qu'on bouton nouveau réseau, utiliser le foreach avec HeadFootController::$social_networks pour tous les parcourir et placer des cases à cocher
+                    // les icones seront ajoutées par mes soins
+                    $admin_social_networks[$one_key] = '<input type="text" id="header_' . $one_key . '_input" class="hidden" value="' . $social[$one_key] . '" placeholder="nom du réseau social" size="30">
+                        <img id="header_' . $one_key . '_open" class="action_icon" src="assets/edit.svg" onclick="header_' . $one_key . '.open()">
+                        <img id="header_' . $one_key . '_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_' . $one_key . '.submit()">
+                        <img id="header_' . $one_key . '_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_' . $one_key . '.cancel()">
+                        <script>let header_' . $one_key . ' = new InputTextSocialNetwork(\'header_' . $one_key . '\');</script>';
+                }
+                //$admin_social_new_network = '<div>nouveau réseau</div>';
+                $admin_social_new_network = '';
+
+                /*$social_networks_inputs = '<div id="header_social_input" class="hidden">';
+                foreach(array_keys($social) as $one_key){
                     $social_networks_inputs .= '<div>
                         <input type="text" placeholder="nom du réseau social">
                         <input type="text" placeholder="lien https://...">
                         <input type="file">
                     </div>';
                 }
-                $social_networks_inputs .= '</div>';
-                /*$admin_social_networks = $social_networks_inputs . '<img id="header_social_open" class="action_icon" src="assets/edit.svg" onclick="header_social.open()">
-                    <div id="header_social_submit" class="hidden"></div>
-                    <img id="header_social_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_social.cancel()">';*/
-                $admin_social_networks = '';
+                $social_networks_inputs .= '</div>';*/
             }
             else{
                 $admin_favicon = '';
@@ -104,7 +108,12 @@ class HeaderBuilder extends AbstractBuilder
                 $admin_header_logo = '';
                 $admin_header_title = '';
                 $admin_header_description = '';
-                $admin_social_networks = '';
+                $header_social_flex_direction = 'row';
+                $admin_social_networks = [];
+                foreach(array_keys($social) as $one_key){
+                    $admin_social_networks[$one_key] = '';
+                }
+                $admin_social_new_network = '';
             }
             
             ob_start();
