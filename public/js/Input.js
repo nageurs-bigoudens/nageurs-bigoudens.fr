@@ -1,9 +1,10 @@
+// mère
 class InputToggler{
 	constructor(name, options = {}){
 		this.name = name;
 		this.parent = document.getElementById(name);
 
-		// ids alternatifs optionnels
+		// des ids alternatifs sont possibles
 		this.content_elem = this.parent.querySelector(options.content_selector || `#${name}_content`);
 		this.input_elem = this.parent.querySelector(options.input_selector || `#${name}_input`);
 		this.open_elem = this.parent.querySelector(options.open_selector || `#${name}_open`);
@@ -39,39 +40,84 @@ class InputToggler{
 	}
 }
 
+
+// enfants
 class InputText extends InputToggler{
 	constructor(name, options = {}){
 		super(name, options);
-		this.fetch_endpoint = options.endpoint || 'index.php';
-		this.fetch_key = options.fetch_key || 'head_foot_text';
+		this.fetcher = new Fetcher({
+			endpoint: (options.endpoint || 'index.php?') + (options.fetch_key || 'head_foot_text=') + this.name,
+			method: 'POST',
+			onSuccess: (data) => this.onSuccess(data)
+		});
 	}
 	submit(){
-		fetch(this.fetch_endpoint + '?' + this.fetch_key + '=' + this.name, {
-	        method: 'POST',
-	        headers: { 'Content-Type': 'application/json' },
-	        body: JSON.stringify({new_text: this.input_elem.value})
-	    })
-	    .then(response => response.json())
-	    .then(data => {
-	        if(data.success){
-	        	this.onSuccess(data);
-				this.close();
-	        }
-	        else{
-	            console.error("Erreur: le serveur n'a pas enregistré le nouveau texte.");
-	        }
-	    })
-	    .catch(error => {
-	        console.error('Erreur:', error);
-	    });
+		this.fetcher.send({new_text: this.input_elem.value})
+			.then(result => {
+				toastNotify(result.success ? 'texte modifié avec succès' : "erreur: la modification des données côté serveur a échoué");
+			});
 	}
 	onSuccess(data){
 		this.content_elem.innerHTML = this.input_elem.value;
+		this.close();
 	}
 	cancel(){
 		this.input_elem.value = this.content_elem.innerHTML;
 		super.cancel();
 	}
+}
+
+class InputFile extends InputToggler{
+	constructor(name, options = {}){
+		super(name, options);
+		this.fetcher = new Fetcher({
+			endpoint: (options.endpoint || 'index.php?') + (options.fetch_key || 'head_foot_image=') + this.name,
+			method: 'POST',
+			onSuccess: (data) => this.onSuccess(data),
+			onFailure: (data) => this.onFailure(data)
+		});
+	}
+	submit(){
+		const file = this.input_elem.files[0];
+		if(!file){
+			console.error("Erreur: aucun fichier sélectionné.");
+			toastNotify("Erreur: aucun fichier sélectionné.");
+			return;
+		}
+		const form_data = new FormData();
+		form_data.append('file', file);
+
+		this.fetcher.send(form_data)
+			.then(result => {
+				toastNotify(result.success ? 'fichier téléchargé avec succès' : "erreur: la modification des données côté serveur a échoué");
+			});
+	}
+	onSuccess(data){
+		this.content_elem.src = data.location;
+		this.close();
+	}
+	onFailure(data){
+		if(data.format === 'ico'){
+    		toastNotify("Format ICO mal géré par le serveur, essayez avec un PNG.");
+    	}
+	}
+}
+
+
+// petits enfants
+class InputFileFavicon extends InputFile{
+    onSuccess(data){
+        const link = document.querySelector('link[rel="icon"]');
+        link.type = data.mime_type;
+        link.href = data.location;
+        super.onSuccess(data);
+    }
+}
+class InputFileHeaderBackground extends InputFile{
+    onSuccess(data){
+        document.querySelector('header').style.backgroundImage = `url('${data.location}')`;
+        super.onSuccess(data);
+    }
 }
 
 class InputTextSocialNetwork extends InputText{
@@ -89,65 +135,6 @@ class InputTextSocialNetwork extends InputText{
 		else{
 			this.content_elem.parentNode.removeAttribute('href');
 		}
+		this.close(); // vu qu'on n'appelle pas super.onSuccess
 	}
-}
-
-class InputFile extends InputToggler{
-	constructor(name, options = {}){
-		super(name, options);
-		this.fetch_endpoint = options.endpoint || 'index.php';
-		this.fetch_key = options.fetch_key || 'head_foot_image';
-	}
-	submit(){
-		const file = this.input_elem.files[0];
-		if(!file){
-			console.error("Erreur: aucun fichier sélectionné.");
-			toastNotify("Erreur: aucun fichier sélectionné.");
-			return;
-		}
-		const form_data = new FormData();
-		form_data.append('file', file);
-
-		fetch(this.fetch_endpoint + '?' + this.fetch_key + '=' + this.name, {
-	        method: 'POST', // apparemment il faudrait utiliser PUT
-	        body: form_data
-	    })
-	    .then(response => response.json())
-	    .then(data => {
-	        if(data.success){
-				this.onSuccess(data);
-				this.close();
-	        }
-	        else{
-	        	this.onFailure(data);
-	            console.error(data.message);
-	        }
-	    })
-	    .catch(error => {
-	        console.error('Erreur:', error);
-	    });
-	}
-	onSuccess(data){
-		this.content_elem.src = data.location;
-	}
-	onFailure(data){
-		if(data.format === 'ico'){
-    		toastNotify("Format ICO mal géré par le serveur, essayez avec un PNG.");
-    	}
-	}
-}
-
-class InputFileFavicon extends InputFile{
-    onSuccess(data){
-        const link = document.querySelector('link[rel="icon"]');
-        link.type = data.mime_type;
-        link.href = data.location;
-        super.onSuccess(data);
-    }
-}
-class InputFileHeaderBackground extends InputFile{
-    onSuccess(data){
-        document.querySelector('header').style.backgroundImage = `url('${data.location}')`;
-        super.onSuccess(data);
-    }
 }

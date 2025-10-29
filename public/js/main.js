@@ -199,6 +199,27 @@ function findParentByTagName(element, tag_name){
     return null;
 }
 
+function checkSocialNetwork(id){
+	const checkbox = document.getElementById(id).querySelector('input[type="checkbox"]');
+
+	new Fetcher({
+        endpoint: 'index.php?head_foot_social_check=' + id,
+        method: 'POST',
+        onSuccess: (data) => {
+	        console.log(data);
+
+	        checkbox.checked = data.checked;
+
+	        /*const color = checkbox.checked ? "#ff1d04" : "grey";
+        	clicked_menu_entry.querySelector("button").style.color = color;*/
+	    },
+	    onFailure: (data) => {
+	        console.log(data);
+	    }
+    })
+    .send({checked: checkbox.checked});
+}
+
 
 /* -- fonctions spécifiques à la gestion des dates -- */
 

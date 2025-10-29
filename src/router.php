@@ -145,6 +145,9 @@ elseif($request->getMethod() === 'POST'){
             elseif($request->query->has('head_foot_text')){
                 HeadFootController::setTextData($entityManager, $request->query->get('head_foot_text'), $json);
             }
+            elseif($request->query->has('head_foot_social_check')){
+                HeadFootController::displaySocialNetwork($entityManager, $request->query->get('head_foot_social_check'), $json);
+            }
 
             /* -- page Menu et chemins -- */
             elseif(isset($_GET['menu_edit']))

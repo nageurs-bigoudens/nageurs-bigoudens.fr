@@ -87,7 +87,7 @@ header a
 	gap: 4px;
 	flex-wrap: wrap;
 }
-#header_social_content img
+#header_social_content a img
 {
 	width: 28px;
 	background-color: #ffffffb3;

@@ -22,15 +22,17 @@ class HeadFootController
 		if($model->findWhateverNode('name_node', $params_array[0])){
 			$node_data = $model->getNode()->getNodeData();
 
+			// liens réseaux sociaux
 			if(in_array($params_array[1], NodeData::$social_networks)){
-				$social = $node_data->getData()['social'];
+				$social = $node_data->getData()['social'] ?? [];
 				$social[$params_array[1]] = $json['new_text'];
 				$node_data->updateData('social', $social);
 			}
+			// autres textes
 			else{
 				$node_data->updateData($params_array[1], $json['new_text']); // $params_array[1] n'est pas contrôlé
 			}
-			
+
 			$entityManager->flush();
 			echo json_encode(['success' => true]);
 		}
@@ -116,6 +118,30 @@ class HeadFootController
 					echo json_encode(['success' => false, 'message' => "Erreur noeud non trouvé, c'est pas du tout normal!"]);
 				}
 			}
+		}
+		die;
+	}
+
+	static public function displaySocialNetwork(EntityManager $entityManager, string $request_params, array $json): void
+	{
+		$params_array = explode('_', $request_params);
+		if(count($params_array) !== 2){
+			echo json_encode(['success' => false]);
+			die;
+		}
+
+		$model = new Model($entityManager);
+		if(in_array($params_array[1], NodeData::$social_networks) && $model->findWhateverNode('name_node', $params_array[0])){
+			$node_data = $model->getNode()->getNodeData();
+			$social_show = $node_data->getData()['social_show'] ?? [];
+			$social_show[$params_array[1]] = $json['checked'];
+			$node_data->updateData('social_show', $social_show);
+
+			$entityManager->flush();
+			echo json_encode(['success' => true, 'checked' => $json['checked']]);
+		}
+		else{
+			echo json_encode(['success' => false]);
 		}
 		die;
 	}

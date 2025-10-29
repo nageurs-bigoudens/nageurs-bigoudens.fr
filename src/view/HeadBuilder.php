@@ -38,6 +38,9 @@ class HeadBuilder extends AbstractBuilder
                 // édition éléments sur toutes les pages (header, footer et favicon)
                 $js .= '<script src="' . self::versionedFileURL('js', 'Input') . '"></script>' . "\n";
 
+                // sert partout?
+                $js .= '<script src="' . self::versionedFileURL('js', 'Fetcher') . '"></script>' . "\n";
+
                 // tinymce, nécéssite un script de copie dans composer.json
                 $css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', 'tinymce') . '">' . "\n";
                 $js .= '<script src="' . self::versionedFileURL('js', 'tinymce/tinymce.min') . '"></script>' . "\n"; // pour js/tinymce/tinymce.min.js

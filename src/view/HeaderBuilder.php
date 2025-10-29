@@ -84,10 +84,10 @@ class HeaderBuilder extends AbstractBuilder
                 // boucle sur la liste complète de réseaux sociaux
                 foreach(NodeData::$social_networks as $network){
                     $checked = (isset($social_show[$network]) && $social_show[$network]) ? 'checked' : '';
-                    $href = isset($social[$network]) ? 'href="' . $social[$network] . '"' : '';
+                    $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . $social[$network] . '"' : '';
 
                     $social_networks .= '<div id="header_' . $network . '">
-                        <input type="checkbox" onclick="" ' . $checked . '>
+                        <input type="checkbox" onclick="checkSocialNetwork(\'header_' . $network . '\')" ' . $checked . '>
                         <a ' . $href . ' target="_blank" rel="noopener noreferrer">
                             <img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt">
                         </a>
@@ -110,9 +110,12 @@ class HeaderBuilder extends AbstractBuilder
                 if(isset($social_show)){
                     // boucle sur les réseaux sociaux "activés"
                     foreach(array_keys($social_show) as $network){
-                        $social_networks .= '<div id="header_' . $network . '">
-                                <a href="' . $social[$network] . '" target="_blank" rel="noopener noreferrer"><img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt"></a>
-                            </div>';
+                        if($social_show[$network]){
+                            $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . $social[$network] . '"' : '';
+                            $social_networks .= '<div id="header_' . $network . '">
+                                    <a ' . $href . ' target="_blank" rel="noopener noreferrer"><img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt"></a>
+                                </div>';
+                        }
                     }
                 }
             }
