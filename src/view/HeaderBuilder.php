@@ -89,7 +89,7 @@ class HeaderBuilder extends AbstractBuilder
                     $social_networks .= '<div id="header_' . $network . '">
                         <input type="checkbox" onclick="checkSocialNetwork(\'header_' . $network . '\')" ' . $checked . '>
                         <a ' . $href . ' target="_blank" rel="noopener noreferrer">
-                            <img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt">
+                            <img id="header_' . $network . '_content" src="assets/' . $network . ($checked ? '' : '-nb') . '.svg" alt="'. $network . '_alt">
                         </a>
                         <input type="text" id="header_' . $network . '_input" class="hidden" value="' . ($social[$network] ?? "") . '" placeholder="nom du réseau social" size="30">
                             <img id="header_' . $network . '_open" class="action_icon" src="assets/edit.svg" onclick="header_' . $network . '.open()">

@@ -44,7 +44,6 @@ class Fetcher{
 			if(this.onFailure){
 				this.onFailure(data);
 			}
-			console.error(data.message || "Erreur serveur");
 			return { success: false, data };
 		}
 	}

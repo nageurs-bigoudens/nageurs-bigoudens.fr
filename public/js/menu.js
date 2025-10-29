@@ -122,29 +122,20 @@ function checkMenuEntry(page_id){
 	const checkbox = clicked_menu_entry.querySelector("input");
 	let color;
 
-	fetch('index.php?menu_edit=display_in_menu', {
+    new Fetcher({
+        endpoint: 'index.php?menu_edit=display_in_menu',
         method: 'POST',
-        headers: {
-        'Content-Type': 'application/json'
+        onSuccess: (data) => {
+            color = checkbox.checked ? "#ff1d04" : "grey";
+            clicked_menu_entry.querySelector("button").style.color = color;
+            nav_zone.innerHTML = '';
+            nav_zone.insertAdjacentHTML('afterbegin', data.nav);
         },
-        body: JSON.stringify({ id: clicked_menu_entry.id, checked: checkbox.checked })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success){
-        	color = checkbox.checked ? "#ff1d04" : "grey";
-        	clicked_menu_entry.querySelector("button").style.color = color;
-
-        	nav_zone.innerHTML = '';
-        	nav_zone.insertAdjacentHTML('afterbegin', data.nav);
-        }
-        else{
+        onFailure: (data) => {
             console.error('Échec de l\'inversion');
         }
     })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
+    .send({id: clicked_menu_entry.id, checked: checkbox.checked});
 }
 
 function editUrl(page_id, selector){

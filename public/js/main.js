@@ -206,15 +206,12 @@ function checkSocialNetwork(id){
         endpoint: 'index.php?head_foot_social_check=' + id,
         method: 'POST',
         onSuccess: (data) => {
-	        console.log(data);
-
 	        checkbox.checked = data.checked;
-
-	        /*const color = checkbox.checked ? "#ff1d04" : "grey";
-        	clicked_menu_entry.querySelector("button").style.color = color;*/
+	        document.getElementById(id + '_content').src = 'assets/' + id.split('_')[1] + (data.checked ? '': '-nb') + '.svg'; // assets/facebook.svg ou assets/facebook-nb.svg
+        	toastNotify('Le logo "' + id.split('_')[1] + '" ' + (data.checked ? 'sera' : 'ne sera pas') + ' affiché aux visiteurs.');
 	    },
 	    onFailure: (data) => {
-	        console.log(data);
+	    	console.error(data.message || "Erreur serveur");
 	    }
     })
     .send({checked: checkbox.checked});
