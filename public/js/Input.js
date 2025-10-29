@@ -76,11 +76,19 @@ class InputText extends InputToggler{
 
 class InputTextSocialNetwork extends InputText{
 	open(){
-		this.input_elem.value = this.content_elem.parentNode.href;
+		const elem_parent = this.content_elem.parentNode;
+		if(elem_parent.tagName.toLowerCase() === 'a'){
+			this.input_elem.value = elem_parent.href;
+		}
 		super.open();
 	}
 	onSuccess(data){
-		this.content_elem.parentNode.href = this.input_elem.value;
+		if(this.input_elem.value){
+			this.content_elem.parentNode.href = this.input_elem.value;
+		}
+		else{
+			this.content_elem.parentNode.removeAttribute('href');
+		}
 	}
 }
 

@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="modify_one_block" id="bloc_edit_<?= $child_node->getId() ?>">
     <div class="block_options">
         <label for="bloc_rename_<?= $child_node->getId() ?>">Type <b><?= Blocks::$blocks[$child_node->getName()] ?? '<i>erreur base de données</i>' ?></b>

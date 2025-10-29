@@ -3,14 +3,13 @@
 
 declare(strict_types=1);
 
+use App\Entity\NodeData;
 use App\Entity\NodeDataAsset;
 use App\Entity\Asset;
 use Doctrine\ORM\EntityManager;
 
 class HeadFootController
 {
-	static array $social_networks = ['facebook', 'instagram', 'linkedin', 'github']; // à completer
-
 	static public function setTextData(EntityManager $entityManager, string $request_params, array $json): void
 	{
 		$params_array = explode('_', $request_params); // header_title, header_description, footer_name, footer_address, footer_email
@@ -22,7 +21,8 @@ class HeadFootController
 		$model = new Model($entityManager);
 		if($model->findWhateverNode('name_node', $params_array[0])){
 			$node_data = $model->getNode()->getNodeData();
-			if(in_array($params_array[1], self::$social_networks)){
+
+			if(in_array($params_array[1], NodeData::$social_networks)){
 				$social = $node_data->getData()['social'];
 				$social[$params_array[1]] = $json['new_text'];
 				$node_data->updateData('social', $social);
@@ -30,6 +30,7 @@ class HeadFootController
 			else{
 				$node_data->updateData($params_array[1], $json['new_text']); // $params_array[1] n'est pas contrôlé
 			}
+			
 			$entityManager->flush();
 			echo json_encode(['success' => true]);
 		}

@@ -36,13 +36,7 @@
                 <div class="header_right_col">
                     <div id="header_social">
                         <div id="header_social_content" style="flex-direction: <?= $header_social_flex_direction ?>;">
-<?php foreach(array_keys($social) as $one_key){ ?>
-                            <div id="header_<?= $one_key ?>">
-                                <a href="<?= $social[$one_key] ?>" target="_blank" rel="noopener noreferrer"><img id="header_<?= $one_key ?>_content" src="assets/<?= $one_key ?>.svg" alt="<?= $one_key ?>_alt"></a>
-                                <?= $admin_social_networks[$one_key] ?>
-                            </div>
-<?php } ?>
-                        <?= $admin_social_new_network ?>
+                            <?= $social_networks ?>
                         </div>
                     </div>
                     <?= $breadcrumb ?? '' ?>

@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use App\Entity\Node;
+use App\Entity\NodeData;
 use App\Entity\Asset;
 
 class HeaderBuilder extends AbstractBuilder
@@ -47,6 +48,7 @@ class HeaderBuilder extends AbstractBuilder
             $header_logo = Asset::USER_PATH . $node_data->getAssetByRole('header_logo')?->getFileName() ?? '';
             $header_background_name = $node_data->getAssetByRole('header_background')?->getFileName();
             $header_background = $header_background_name ? Asset::USER_PATH . $header_background_name : '';
+            $social_networks = '';
             
             // boutons mode admin
             if($_SESSION['admin']){
@@ -66,6 +68,7 @@ class HeaderBuilder extends AbstractBuilder
                     <img id="header_logo_open" class="action_icon" src="assets/edit.svg" onclick="header_logo.open()">
                     <img id="header_logo_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_logo.submit()">
                     <img id="header_logo_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_logo.cancel()">';
+
                 // texte dans classe header_content
                 $admin_header_title = '<input type="text" id="header_title_input" class="hidden" value="' . htmlspecialchars($title ?? '') . '" placeholder="nom du site web" size="30">
                     <img id="header_title_open" class="action_icon" src="assets/edit.svg" onclick="header_title.open()">
@@ -78,29 +81,23 @@ class HeaderBuilder extends AbstractBuilder
 
                 // icônes réseaux sociaux
                 $header_social_flex_direction = 'column';
-                $admin_social_networks = [];
-                foreach(array_keys($social) as $one_key){
-                    //<input type="file" id="header_' . $one_key . '_input" class="hidden" accept="image/svg+xml, image/png, image/jpeg, image/gif, image/webp, image/tiff">
-                    // sinon plutôt qu'on bouton nouveau réseau, utiliser le foreach avec HeadFootController::$social_networks pour tous les parcourir et placer des cases à cocher
-                    // les icones seront ajoutées par mes soins
-                    $admin_social_networks[$one_key] = '<input type="text" id="header_' . $one_key . '_input" class="hidden" value="' . $social[$one_key] . '" placeholder="nom du réseau social" size="30">
-                        <img id="header_' . $one_key . '_open" class="action_icon" src="assets/edit.svg" onclick="header_' . $one_key . '.open()">
-                        <img id="header_' . $one_key . '_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_' . $one_key . '.submit()">
-                        <img id="header_' . $one_key . '_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_' . $one_key . '.cancel()">
-                        <script>let header_' . $one_key . ' = new InputTextSocialNetwork(\'header_' . $one_key . '\');</script>';
-                }
-                //$admin_social_new_network = '<div>nouveau réseau</div>';
-                $admin_social_new_network = '';
+                // boucle sur la liste complète de réseaux sociaux
+                foreach(NodeData::$social_networks as $network){
+                    $checked = (isset($social_show[$network]) && $social_show[$network]) ? 'checked' : '';
+                    $href = isset($social[$network]) ? 'href="' . $social[$network] . '"' : '';
 
-                /*$social_networks_inputs = '<div id="header_social_input" class="hidden">';
-                foreach(array_keys($social) as $one_key){
-                    $social_networks_inputs .= '<div>
-                        <input type="text" placeholder="nom du réseau social">
-                        <input type="text" placeholder="lien https://...">
-                        <input type="file">
-                    </div>';
+                    $social_networks .= '<div id="header_' . $network . '">
+                        <input type="checkbox" onclick="" ' . $checked . '>
+                        <a ' . $href . ' target="_blank" rel="noopener noreferrer">
+                            <img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt">
+                        </a>
+                        <input type="text" id="header_' . $network . '_input" class="hidden" value="' . ($social[$network] ?? "") . '" placeholder="nom du réseau social" size="30">
+                            <img id="header_' . $network . '_open" class="action_icon" src="assets/edit.svg" onclick="header_' . $network . '.open()">
+                            <img id="header_' . $network . '_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_' . $network . '.submit()">
+                            <img id="header_' . $network . '_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_' . $network . '.cancel()">
+                            <script>let header_' . $network . ' = new InputTextSocialNetwork(\'header_' . $network . '\');</script>
+                        </div>';
                 }
-                $social_networks_inputs .= '</div>';*/
             }
             else{
                 $admin_favicon = '';
@@ -108,12 +105,16 @@ class HeaderBuilder extends AbstractBuilder
                 $admin_header_logo = '';
                 $admin_header_title = '';
                 $admin_header_description = '';
+
                 $header_social_flex_direction = 'row';
-                $admin_social_networks = [];
-                foreach(array_keys($social) as $one_key){
-                    $admin_social_networks[$one_key] = '';
+                if(isset($social_show)){
+                    // boucle sur les réseaux sociaux "activés"
+                    foreach(array_keys($social_show) as $network){
+                        $social_networks .= '<div id="header_' . $network . '">
+                                <a href="' . $social[$network] . '" target="_blank" rel="noopener noreferrer"><img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt"></a>
+                            </div>';
+                    }
                 }
-                $admin_social_new_network = '';
             }
             
             ob_start();
