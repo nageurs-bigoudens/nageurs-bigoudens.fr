@@ -107,8 +107,8 @@ class Editor
     init(){
         tinymce.init({
             selector: `[id="${this.id}"]`, // écrire [id="246"] au lieu de #246 parce que l'id commence par un chiffre
-            language: 'fr_FR', // téléchargement ici: https://www.tiny.cloud/get-tiny/language-packages/
-            language_url: 'js/tinymce-langs/fr_FR.js', // ou installer tweeb/tinymce-i18n avec composer
+            language: 'fr_FR',
+            language_url: 'js/tinymce-langs/fr_FR.js', // téléchargement ici: https://cdn.jsdelivr.net/npm/tinymce-lang/langs/fr_FR.min.js
             license_key: 'gpl',
             branding: false,
             plugins: 'lists link autolink table image media autoresize help',

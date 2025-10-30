@@ -1,8 +1,7 @@
 vendor/
-node_modules/
+config/config.ini
 public/js/tinymce/
 public/js/tinymce-langs/
-config/config.ini
 public/user_data/
 public/images/
 public/images-mini/

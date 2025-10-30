@@ -8,18 +8,18 @@
         "composer": "*",
         "htmlawed/htmlawed": "^1.2",
         "tinymce/tinymce": "^7.7",
-        "tweeb/tinymce-i18n": "^2.0",
         "phpmailer/phpmailer": "^6.10",
         "symfony/http-foundation": "^7.3"
     },
     "scripts": {
         "post-install-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR"
+
         ],
         "post-update-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tweeb/tinymce-i18n/langs public/js/tinymce-langs"
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR"
         ]
     },
     "authors": [
