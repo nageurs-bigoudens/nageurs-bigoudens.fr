@@ -1,19 +1,25 @@
-<?php declare(strict_types=1); ?>
-<section class="calendar" id="<?= $this->id_node ?>">
-	<script src='js/fullcalendar/packages/core/index.global.min.js'></script>
-    <script src='js/fullcalendar/packages/daygrid/index.global.min.js'></script>
-    <script src='js/fullcalendar/packages/timegrid/index.global.min.js'></script>
-    <script src='js/fullcalendar/packages/list/index.global.min.js'></script>
-    <script src='js/fullcalendar/packages/interaction/index.global.min.js'></script>
-    <script src='js/fullcalendar/packages/core/locales/fr.global.min.js'></script>
 <?php
+declare(strict_types=1);
+
+$calendar_js_files = [
+    'fullcalendar/packages/core/index.global.min',
+    'fullcalendar/packages/daygrid/index.global.min',
+    'fullcalendar/packages/timegrid/index.global.min',
+    'fullcalendar/packages/list/index.global.min',
+    'fullcalendar/packages/interaction/index.global.min',
+    'fullcalendar/packages/core/locales/fr.global.min'
+];
 if($_SESSION['admin'] === true){
-    echo '<script src="' . HeadBuilder::versionedFileURL('js', 'calendar_admin') . '"></script>' . "\n";
+    $calendar_js_files[] = 'calendar_admin';
 }
 else{
-    echo '<script src="' . HeadBuilder::versionedFileURL('js', 'calendar') . '"></script>' . "\n";
+    $calendar_js_files[] = 'calendar';
 }
 ?>
+<section class="calendar" id="<?= $this->id_node ?>">
+<?php foreach($calendar_js_files as $file){
+    echo HeadBuilder::insertJS($file);
+} ?>
 	<h3><?= $title ?></h3>
 	<div id="calendar_zone">
         <div id="calendar"></div>

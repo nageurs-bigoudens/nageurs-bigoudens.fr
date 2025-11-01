@@ -19,30 +19,30 @@ class HeadBuilder extends AbstractBuilder
 
             $css = '';
 	        foreach($page->getCSS() as $name){
-				$css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', $name) . '">' . "\n";
+                $css .= self::insertCSS($name);
 			}
 			
             $js = '';
 	        foreach($page->getJS() as $name){
-				$js .= '<script src="' . self::versionedFileURL('js', $name) . '"></script>' . "\n";
+                $js .= self::insertJS($name);
 			}
 
             if(MainBuilder::$modif_mode){
-                $css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', 'modif_page') . '">' . "\n";
-                $js .= '<script src="' . self::versionedFileURL('js', 'modif_page') . '"></script>' . "\n";
+                $css .= self::insertCSS('modif_page');
+                $js .= self::insertJS('modif_page');
             }
 
             if($_SESSION['admin']){
                 // édition éléments sur toutes les pages (header, footer et favicon)
-                $js .= '<script src="' . self::versionedFileURL('js', 'Input') . '"></script>' . "\n";
+                $js .= self::insertJS('Input');
 
                 // sert partout?
-                $js .= '<script src="' . self::versionedFileURL('js', 'Fetcher') . '"></script>' . "\n";
+                $js .= self::insertJS('Fetcher');
 
-                // tinymce, nécéssite un script de copie dans composer.json
-                $css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', 'tinymce') . '">' . "\n";
-                $js .= '<script src="' . self::versionedFileURL('js', 'tinymce/tinymce.min') . '"></script>' . "\n"; // pour js/tinymce/tinymce.min.js
-                $js .= '<script src="' . self::versionedFileURL('js', 'tinymce') . '"></script>' . "\n";
+                // tinymce, nécéssite un script post-install et post-update dans composer.json
+                $css .= self::insertCSS('tinymce');
+                $js .= self::insertJS('tinymce/tinymce.min');
+                $js .= self::insertJS('tinymce');
             }
 
             $title = Model::$page_path->getLast()->getPageName();
@@ -60,7 +60,16 @@ class HeadBuilder extends AbstractBuilder
         }
     }
 
-    static public function versionedFileURL(string $type, string $filename): string
+    static function insertCSS(string $name): string
+    {
+        return '<link rel="stylesheet" href="' . self::versionedFileURL('css', $name) . '">' . "\n";
+    }
+    static function insertJS(string $name): string
+    {
+        return '<script src="' . self::versionedFileURL('js', $name) . '"></script>' . "\n";
+    }
+
+    static function versionedFileURL(string $type, string $filename): string
     {
         $path = $type . '/' . $filename . '.' . $type;
 

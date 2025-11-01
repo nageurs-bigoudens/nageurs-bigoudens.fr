@@ -19,21 +19,6 @@ class CalendarBuilder extends AbstractBuilder
                 extract($node->getNodeData()->getData());
             }
 
-            
-            if($_SESSION['admin'])
-            {
-                
-
-                // squelette d'un nouvel article ()
-                /*ob_start();
-                require self::VIEWS_PATH . 'article.php';
-                $new_article = ob_get_clean();*/
-            }
-
-            // articles existants
-            /*$this->useChildrenBuilder($node);
-            $content = $this->html;*/
-
             ob_start();
             require $viewFile;
             $this->html = ob_get_clean(); // pas de concaténation ici, on écrase
