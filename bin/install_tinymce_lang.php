@@ -2,7 +2,8 @@
 // bin/install_tinymce_lang.php
 function installTinymceLang(string $lang = 'fr_FR'): void
 {
-	$dest = 'public/js/tinymce-langs/' . $lang . '.js';
+	$path = 'public/js/tinymce-langs';
+	$dest = $lang . '.js';
 	$link = "https://cdn.jsdelivr.net/npm/tinymce-lang/langs/" . $lang . ".min.js";
 	
 	$curl = curl_init($link);
@@ -10,8 +11,12 @@ function installTinymceLang(string $lang = 'fr_FR'): void
         echo "Erreur : Impossible d'initialiser cURL.\n";
         return;
     }
+
+    if(!is_dir($path)){
+        mkdir($path, 0755, true);
+    }
 	
-	$file = @fopen($dest, 'w+'); // @masque l'erreur pour la traiter soi-même
+	$file = @fopen($path . '/' . $dest, 'w+'); // @masque l'erreur pour la traiter soi-même
 	if(!$file){ // erreur écriture fichier
         echo "Erreur : Impossible d'ouvrir le fichier $dest pour l'écriture.\n";
         return;

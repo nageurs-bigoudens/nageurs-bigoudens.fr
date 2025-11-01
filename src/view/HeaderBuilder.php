@@ -11,6 +11,7 @@ class HeaderBuilder extends AbstractBuilder
 {
     private ?Node $nav = null;
     private ?Node $breadcrumb = null;
+    const ICON_PATH = 'icons/';
 
     public function __construct(Node $node)
     {
@@ -55,7 +56,6 @@ class HeaderBuilder extends AbstractBuilder
                 // assets dans classe header_additional_inputs
                 $admin_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
                     <button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_content" class="action_icon"> Favicon</button>
-                    <script>document.getElementById("head_favicon_content").src = window.Config.favicon;</script>
                     <img id="head_favicon_submit" class="action_icon hidden" src="assets/save.svg" onclick="head_favicon.submit()">
                     <img id="head_favicon_cancel" class="action_icon hidden" src="assets/close.svg" onclick="head_favicon.cancel()">';
                 $admin_background = '<input type="file" id="header_background_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
@@ -80,7 +80,6 @@ class HeaderBuilder extends AbstractBuilder
                     <img id="header_description_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_description.cancel()">';
 
                 // icônes réseaux sociaux
-                $header_social_flex_direction = 'column';
                 // boucle sur la liste complète de réseaux sociaux
                 foreach(NodeData::$social_networks as $network){
                     $checked = (isset($social_show[$network]) && $social_show[$network]) ? 'checked' : '';
@@ -88,15 +87,16 @@ class HeaderBuilder extends AbstractBuilder
 
                     $social_networks .= '<div id="header_' . $network . '">
                         <input type="checkbox" onclick="checkSocialNetwork(\'header_' . $network . '\')" ' . $checked . '>
-                        <a ' . $href . ' target="_blank" rel="noopener noreferrer">
-                            <img id="header_' . $network . '_content" src="assets/' . $network . ($checked ? '' : '-nb') . '.svg" alt="'. $network . '_alt">
-                        </a>
-                        <input type="text" id="header_' . $network . '_input" class="hidden" value="' . ($social[$network] ?? "") . '" placeholder="nom du réseau social" size="30">
+                        <a ' . $href . ' target="_blank" rel="noopener noreferrer">'
+                            . $this->insertSVG(self::ICON_PATH . $network . '.svg', ['id' => 'header_' . $network . '_content', 'class' => ($checked ? 'svg_fill_red' : '')])
+                        . '</a>
+                        <input type="text" id="header_' . $network . '_input" class="hidden" value="' . ($social[$network] ?? "") . '" placeholder="lien http://..." size="30">
                             <img id="header_' . $network . '_open" class="action_icon" src="assets/edit.svg" onclick="header_' . $network . '.open()">
                             <img id="header_' . $network . '_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_' . $network . '.submit()">
                             <img id="header_' . $network . '_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_' . $network . '.cancel()">
-                            <script>let header_' . $network . ' = new InputTextSocialNetwork(\'header_' . $network . '\');</script>
+                            <script>let header_' . $network . ' = new InputTextSocialNetwork(\'header_' . $network . '\', {\'has_content\': false});</script>
                         </div>';
+                        // {'has_content': false} => InputToggle ne gèrera pas cette balise
                 }
             }
             else{
@@ -106,14 +106,15 @@ class HeaderBuilder extends AbstractBuilder
                 $admin_header_title = '';
                 $admin_header_description = '';
 
-                $header_social_flex_direction = 'row';
                 if(isset($social_show)){
                     // boucle sur les réseaux sociaux "activés"
                     foreach(array_keys($social_show) as $network){
                         if($social_show[$network]){
                             $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . $social[$network] . '"' : '';
                             $social_networks .= '<div id="header_' . $network . '">
-                                    <a ' . $href . ' target="_blank" rel="noopener noreferrer"><img id="header_' . $network . '_content" src="assets/' . $network . '.svg" alt="'. $network . '_alt"></a>
+                                    <a ' . $href . ' target="_blank" rel="noopener noreferrer">'
+                                        . $this->insertSVG(self::ICON_PATH . $network . '.svg', ['id' => 'header_' . $network . '_content','class' => 'svg_fill_red'])
+                                    . '</a>
                                 </div>';
                         }
                     }

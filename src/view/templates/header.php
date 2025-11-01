@@ -35,7 +35,7 @@
                 </div>
                 <div class="header_right_col">
                     <div id="header_social">
-                        <div id="header_social_content" style="flex-direction: <?= $header_social_flex_direction ?>;">
+                        <div id="header_social_content">
                             <?= $social_networks ?>
                         </div>
                     </div>
@@ -44,6 +44,7 @@
             </div>
 <?php if($_SESSION['admin']){ ?>
             <script>
+                document.getElementById("head_favicon_content").src = window.Config.favicon;
                 let head_favicon = new InputFileFavicon('head_favicon');
                 let header_background = new InputFileHeaderBackground('header_background');
                 let header_logo = new InputFile('header_logo');

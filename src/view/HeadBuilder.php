@@ -18,14 +18,12 @@ class HeadBuilder extends AbstractBuilder
             $page = Model::$page_path->getLast();
 
             $css = '';
-	        foreach($page->getCSS() as $name)
-			{
+	        foreach($page->getCSS() as $name){
 				$css .= '<link rel="stylesheet" href="' . self::versionedFileURL('css', $name) . '">' . "\n";
 			}
 			
             $js = '';
-	        foreach($page->getJS() as $name)
-			{
+	        foreach($page->getJS() as $name){
 				$js .= '<script src="' . self::versionedFileURL('js', $name) . '"></script>' . "\n";
 			}
 

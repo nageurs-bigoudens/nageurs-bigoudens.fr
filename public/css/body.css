@@ -47,7 +47,7 @@ main
 }
 .hidden
 {
-    display: none;
+    display: none; /* attention, conflit si la même balise a déjà une règle display */
 }
 section
 {

@@ -2,24 +2,26 @@
     "name": "ordipolo/cms",
     "description": "CMS maison avec PHP, doctrine et tinMCE",
     "require": {
-        "doctrine/dbal": "^4.2",
-        "doctrine/orm": "^3.3",
-        "symfony/cache": "^7.2",
+        "doctrine/dbal": "^4.3",
+        "doctrine/orm": "^3.5",
+        "symfony/cache": "^7.3",
         "composer": "*",
         "htmlawed/htmlawed": "^1.2",
-        "tinymce/tinymce": "^7.7",
-        "phpmailer/phpmailer": "^6.10",
-        "symfony/http-foundation": "^7.3"
+        "tinymce/tinymce": "^8.2",
+        "phpmailer/phpmailer": "^7.0",
+        "symfony/http-foundation": "^7.3",
+        "twbs/bootstrap-icons": "^1.13"
     },
     "scripts": {
         "post-install-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR"
-
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/twbs/bootstrap-icons/icons public/icons"
         ],
         "post-update-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR"
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/twbs/bootstrap-icons/icons public/icons"
         ]
     },
     "authors": [

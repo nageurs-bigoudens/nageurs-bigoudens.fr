@@ -20,7 +20,7 @@
 			<input type="hidden" name="new_page_hidden">
 			<p>
 				<label class="label_textarea" for="page_description">Description qui apparaît sous le titre dans les moteurs de recherche</label>
-				<textarea id="page_description" name="page_description" cols="40" rows="3" placeholder="ex: nous faisons ceci et cela, etc"></textarea>
+				<textarea id="page_description" name="page_description" cols="35" rows="3" placeholder="ex: nous faisons ceci et cela, etc"></textarea>
 			</p>
 			<input type="submit" value="Créer la page">
 		</form>

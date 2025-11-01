@@ -57,4 +57,21 @@ abstract class AbstractBuilder
     {
         $this->html .= $html;
     }
+
+    protected function insertSVG(string $path, array $attributes = []): string
+    {
+        $svg = file_get_contents($path);
+
+        // modification des attributs
+        if(!empty($attributes)){
+            $dom = new DOMDocument();
+            $dom->loadXML($svg);
+            $svg_elem = $dom->documentElement;
+            foreach($attributes as $key => $value){
+                $svg_elem->setAttribute($key, $value);
+            }
+            $svg = $dom->saveXML($svg_elem);
+        }
+        return $svg;
+    }
 }

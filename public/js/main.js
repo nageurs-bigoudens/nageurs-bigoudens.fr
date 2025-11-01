@@ -207,8 +207,8 @@ function checkSocialNetwork(id){
         method: 'POST',
         onSuccess: (data) => {
 	        checkbox.checked = data.checked;
-	        document.getElementById(id + '_content').src = 'assets/' + id.split('_')[1] + (data.checked ? '': '-nb') + '.svg'; // assets/facebook.svg ou assets/facebook-nb.svg
-        	toastNotify('Le logo "' + id.split('_')[1] + '" ' + (data.checked ? 'sera' : 'ne sera pas') + ' affiché aux visiteurs.');
+	        document.getElementById(id + '_content').classList.toggle('svg_fill_red', data.checked);
+        	toastNotify('Le logo "' + id.split('_')[1] + '" ' + (data.checked ? 'sera' : 'ne sera pas') + ' affiché.');
 	    },
 	    onFailure: (data) => {
 	    	console.error(data.message || "Erreur serveur");

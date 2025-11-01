@@ -86,12 +86,34 @@ header a
 	display: flex;
 	gap: 4px;
 	flex-wrap: wrap;
+	margin: 4px;
 }
-#header_social_content a img
+#header_social_content > div{
+	margin: auto;
+	background-color: #ffffff7f;
+}
+#header_social_content a:hover
 {
-	width: 28px;
-	background-color: #ffffffb3;
-	border-radius: 50%;
+	background-color: yellow;
+}
+#header_social_content > div, #header_social_content a:hover
+{
+	border-radius: 10px;
+}
+#header_social_content a
+{
+	padding: 2px;
+	display: inline-flex; /* flex pour que la taille de élément dépende de ses enfants, inline pour que <a> este inline */
+	vertical-align: bottom;
+}
+#header_social_content a svg
+{
+	width: 24px;
+	height: 24px;
+}
+.svg_fill_red
+{
+	fill: #dd3333;
 }
 #header_social_content .action_icon
 {
