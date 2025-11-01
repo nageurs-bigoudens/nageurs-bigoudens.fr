@@ -25,7 +25,7 @@ class PageManagementController
 
 	static public function updatePageMenuPath(EntityManager $entityManager): void
 	{
-	    Model::$menu_data = new Menu($entityManager);
+	    Model::$menu = new Menu($entityManager);
 	    Model::$page_path = new Path();
 	    $page = Model::$page_path->getLast();
 	    $path = htmlspecialchars($_POST['page_menu_path']);
@@ -33,7 +33,7 @@ class PageManagementController
 	    // mise en snake_case: filtre caractères non-alphanumériques, minuscule, doublons d'underscore, trim des underscores
 	    $path = trim(preg_replace('/_+/', '_', strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $path))), '_');
 	    $page->setEndOfPath($path);
-	    foreach(Model::$menu_data->getChildren() as $child){
+	    foreach(Model::$menu->getChildren() as $child){
 	        if($child->getEndOfPath() === Model::$page_path->getArray()[0]->getEndOfPath()){
 	            $child->fillChildrenPagePath(); // MAJ de $page_path
 	        }
@@ -55,8 +55,8 @@ class PageManagementController
 	static public function newPage(EntityManager $entityManager, array $post): void
 	{
 	    // titre et chemin
-	    Model::$menu_data = new Menu($entityManager);
-	    $previous_page = Model::$menu_data->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
+	    Model::$menu = new Menu($entityManager);
+	    $previous_page = Model::$menu->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
 	    $parent = $previous_page->getParent();
 
 	    $page = new Page(
@@ -71,7 +71,7 @@ class PageManagementController
 	    // addChild l'ajoute à la fin du tableau "children" puis on trie
 	    // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
 	    if($parent == null){
-	        $parent = Model::$menu_data;
+	        $parent = Model::$menu;
 	    }
 	    $parent->addChild($page);
 	    $parent->reindexPositions();
@@ -109,7 +109,7 @@ class PageManagementController
 	static public function addBloc(EntityManager $entityManager): void
 	{
 	    $model = new Model($entityManager);
-	    $model->makeMenuAndPaths(); // on a besoin de page_path qui dépend de menu_data
+	    $model->makeMenuAndPaths(); // on a besoin de page_path qui dépend de menu
 	    $page = Model::$page_path->getLast();
 	    $model->findUniqueNodeByName('main');
 	    $model->findItsChildren();

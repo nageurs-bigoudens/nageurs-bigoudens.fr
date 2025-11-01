@@ -153,7 +153,7 @@ elseif($request->getMethod() === 'POST'){
             elseif(isset($_GET['menu_edit']))
             {
                 // ne suit pas la règle, faire ça dans un contrôleur?
-                Model::$menu_data = new Menu($entityManager); // récupération des données
+                Model::$menu = new Menu($entityManager); // récupération des données
 
                 // flèche gauche <=: position = position du parent + 1, parent = grand-parent, recalculer les positions
                 if($_GET['menu_edit'] === 'move_one_level_up' && isset($json['id'])){

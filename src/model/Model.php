@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 class Model
 {
 	private EntityManager $entityManager;
-    static public Menu $menu_data; // pour NavBuilder
+    static public Menu $menu; // pour NavBuilder
     static public ?Path $page_path = null; // pour $current dans NavBuilder et pour BreadcrumbBuilder
 	private Page $page;
 	private ?Node $node;
@@ -31,7 +31,7 @@ class Model
     // couper Model en deux classes NodeModel et PageModel?
     public function makeMenuAndPaths(): void // lit la table "page"
     {
-        self::$menu_data = new Menu($this->entityManager);
+        self::$menu = new Menu($this->entityManager);
         self::$page_path = new Path();
         $this->page = self::$page_path->getLast();
     }
