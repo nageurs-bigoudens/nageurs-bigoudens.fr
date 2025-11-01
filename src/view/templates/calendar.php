@@ -23,8 +23,6 @@ else{
 	<h3><?= $title ?></h3>
 	<div id="calendar_zone">
         <div id="calendar"></div>
-        
-        <!-- si admin -->
         <aside id="event_modal" class="modal"></aside>
     </div>
 </section>

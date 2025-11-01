@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Menu extends Page
 {
-	private EntityManager $entityManager;
     private array $other_pages = []; // pages n'apparaissant pas dans le menu
 
 	public function __construct(EntityManager $entityManager){

@@ -55,9 +55,7 @@ class PageManagementController
 	static public function newPage(EntityManager $entityManager, array $post): void
 	{
 	    // titre et chemin
-	    $model = new Model($entityManager);
-	    $model->makeMenuAndPaths();
-	    //Model::$menu_data = new Menu($entityManager);
+	    Model::$menu_data = new Menu($entityManager);
 	    $previous_page = Model::$menu_data->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
 	    $parent = $previous_page->getParent();
 
