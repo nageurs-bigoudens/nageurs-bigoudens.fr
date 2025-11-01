@@ -90,7 +90,7 @@ class HeaderBuilder extends AbstractBuilder
                         <a ' . $href . ' target="_blank" rel="noopener noreferrer">'
                             . $this->insertSVG(self::ICON_PATH . $network . '.svg', ['id' => 'header_' . $network . '_content', 'class' => ($checked ? 'svg_fill_red' : '')])
                         . '</a>
-                        <input type="text" id="header_' . $network . '_input" class="hidden" value="' . ($social[$network] ?? "") . '" placeholder="lien http://..." size="30">
+                        <input type="url" id="header_' . $network . '_input" class="hidden" value="' . ($social[$network] ?? "") . '" placeholder="https://..." size="30" onchange="controlURL(this)">
                             <img id="header_' . $network . '_open" class="action_icon" src="assets/edit.svg" onclick="header_' . $network . '.open()">
                             <img id="header_' . $network . '_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_' . $network . '.submit()">
                             <img id="header_' . $network . '_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_' . $network . '.cancel()">

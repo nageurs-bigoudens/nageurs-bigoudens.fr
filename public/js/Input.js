@@ -11,7 +11,7 @@ class InputToggler{
 		this.submit_elem = this.parent.querySelector(options.submit_selector || `#${name}_submit`);
 		this.cancel_elem = this.parent.querySelector(options.cancel_selector || `#${name}_cancel`);
 
-		// balises à ne pas gérer (fonctionne mais inutilisé pour l'instant)
+		// balises à ne pas gérer
 		this.ignored_tags = {
 			has_content: options.has_content !== false, // => true sauf si le paramètre vaut false
 			has_input: options.has_input !== false,
@@ -42,7 +42,7 @@ class InputToggler{
 
 
 // enfants
-class InputText extends InputToggler{
+class InputText extends InputToggler{ // pour input type text ou url
 	constructor(name, options = {}){
 		super(name, options);
 		this.fetcher = new Fetcher({

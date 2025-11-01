@@ -13,7 +13,7 @@
 			</p>
 			<p>
 				<label for="url_input">Adresse (collez votre lien):</label>
-				<input id="url_input" type="url" name="url_input" placeholder="http://">
+				<input id="url_input" type="url" name="url_input" placeholder="https://..." onchange="controlURL(this)">
 			</p>
 			<p>
 				<label>Placer le lien juste après cette entrée:</label>

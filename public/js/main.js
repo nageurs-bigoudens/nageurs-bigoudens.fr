@@ -36,6 +36,18 @@ function toastNotify(message){
     setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 5000);
 }
 
+function controlURL(input){
+	const url = input.value.trim();
+	if(!url){
+		return;
+	}
+	if(/^[a-z][a-z0-9+.-]*:/i.test(url) // un "protocole" (https://, ftp://, mailto:, etc)
+		|| url.startsWith('/') || url.startsWith('./') || url.startsWith('../')){ // Lien local (commence par /, ./ ou ../)
+		return;
+	}
+	input.value = 'https://' + url; // Cas par défaut
+}
+
 // exécuté à la fin du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
 

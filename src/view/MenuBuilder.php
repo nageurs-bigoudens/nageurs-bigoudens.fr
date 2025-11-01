@@ -64,11 +64,11 @@ class MenuBuilder extends AbstractBuilder
                         <input type="image" class="move_entry_icon" src="assets/delete-bin.svg" alt="delete link button" onclick="return confirm(\'Voulez-vous vraiment supprimer cette entrée?\');">
                     </form>
                     <span class="url_name">
-                        <button class="url_name"><input type="" value="' . htmlspecialchars($entry->getPageName()) . '"></button>
+                        <button class="url_name"><input type="text" value="' . htmlspecialchars($entry->getPageName()) . '"></button>
                         <img class="move_entry_icon" src="assets/save.svg" onclick="editUrl(' . $entry->getId() . ', \'url_name\')">
                     </span>
                     <span class="url_content">
-                        <input type="url" value="' . htmlspecialchars($entry->getEndOfPath()) . '">
+                        <input type="url" value="' . htmlspecialchars($entry->getEndOfPath()) . '" placeholder="https://..." onchange="controlURL(this)">
                         <img class="move_entry_icon" src="assets/save.svg" onclick="editUrl(' . $entry->getId() . ', \'url_content\')">
                     </span>';
             }

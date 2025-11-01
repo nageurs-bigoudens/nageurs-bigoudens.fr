@@ -14,7 +14,6 @@ class ArticleController
 	static public function fetch(EntityManager $entityManager, Request $request): void
 	{
 		if($request->query->has('id') && !empty($request->query->get('id')) && $request->query->has('last_article')){
-			//var_dump($request->query->get('last_article'));
 			$id = (int)$request->get('id'); // type et nettoie
 			$model = new Model($entityManager);
 			$model->findNodeById($id);
