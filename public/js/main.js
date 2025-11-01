@@ -26,12 +26,12 @@ function copyInClipBoard(link){
 	// nettoyage
 	element.parentNode.removeChild(element);
 
-	alert('Cette adresse a été copiée dans le presse-papier:\n\n' + link);
+	toastNotify('Cette adresse a été copiée dans le presse-papier:<br>' + link);
 }
 
 function toastNotify(message){
     var toast = document.getElementById('toast');
-    toast.textContent = message;
+    toast.innerHTML = message;
     toast.className = 'toast show';
     setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 5000);
 }

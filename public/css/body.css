@@ -239,6 +239,10 @@ article a:hover
 }
 @media screen and (max-width: 500px)
 {
+    main
+    {
+        padding: 10px;
+    }
     .empty_column
     {
         display: none;
