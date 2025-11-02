@@ -13,7 +13,7 @@ class NavBuilder extends AbstractBuilder
     public function __construct(Node $node = null)
     {
         $this->html .= '<nav class="nav_main"><ul>';
-        if(count(Model::$menu->getChildren()) > 1){
+        if(count(Model::$menu->getChildren()) > 1 || !Model::$menu->getChildren()[0]->getChildren()->isEmpty()){
             $this->html .= $this->navMainHTML(
                 Model::$menu, // Menu étend Page
                 Model::$page_path != null ? Model::$page_path->getArray() : []); // param nullable, ça retire une dépendance stricte entre NavBuilder et Model

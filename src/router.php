@@ -333,12 +333,12 @@ else{
 if(isset($response)){
     // cas gérés (d'autres sont à prévoir): mauvais id de la page article, accès page création d'article sans être admin
     if($request->isMethod('GET') && $response->getStatusCode() == 302){ // 302 redirection temporaire
-        header('Location: ' . new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']));
+        header('Location: ' . new URL(['page' => $_GET['from'] ?? '']));
     }
     // redirection après traitement de formulaires HTTP
     elseif($request->getMethod() === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
         $response_data = json_decode(($response)->getContent(), true);
-        $url = new URL(['page' => !empty($_GET['from']) ? $_GET['from'] : 'accueil']);
+        $url = new URL(['page' => $_GET['from'] ?? '']);
         $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
         header('Location: ' . $url);
     }
