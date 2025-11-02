@@ -97,7 +97,6 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$menu_paths = new Page("Menu et chemins", 'menu_chemins', "Menu et chemins", true, false, false, NULL, NULL);
 	$menu_paths->addCSS('menu');
 	$menu_paths->addJS('menu');
-	//$edit_page = new Page("Modification d'une page", 'modif_page', '', true, false, false, NULL, NULL); // hypothétique page "Modification de la page"
 	$new_page = new Page('Nouvelle page', 'nouvelle_page', "Nouvelle page", true, false, false, NULL, NULL);
 	$new_page->addCSS('new_page');
 	$new_page->addJS('new_page');
@@ -115,23 +114,11 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$bloc_edit_menu = new Node('menu', 1, $main, $menu_paths, NULL);
 	$bloc_new_page = new Node('new_page', 1, $main, $new_page, NULL);
 
-	/* -- table asset -- */
-	// paramètres: file_name, file_path, file_path_mini, mime_type, alt
-	$favicon = new Asset("favicon48x48.png", "assets/favicon48x48.png", "image/png", "favicon");
-	$background = new Asset("fond-piscine.jpg", "assets/fond-piscine.jpg", "image/jpeg", "background");
-	$logo = new Asset("logo-nb-et-ffn.png", "assets/logo-nb-et-ffn.png", "image/png", "logo");
-	$facebook = new Asset("facebook.svg", "assets/facebook.svg", "image/svg+xml", "facebook");
-	$instagram = new Asset("instagram.svg", "assets/instagram.svg", "image/svg+xml", "instagram");
-	$linkedin = new Asset("linkedin.svg", "assets/linkedin.svg", "image/svg+xml", "linkedin");
-	$github = new Asset("github.svg", "assets/github.svg", "image/svg+xml", "github");
-
 	/* -- table node_data -- */
 	// paramètres: data, node, images
-	$head_data = new NodeData([], $head, new ArrayCollection([$favicon]));
-	$header_data = new NodeData(["title" => "Titre", "description" => "Sous-titre", "header_logo" => "assets/logo-nb-et-ffn.png", "header_background" => "assets/fond-piscine.jpg",
-		"social" => ["facebook" => "https://www.facebook.com", "instagram" => "https://www.instagram.com", "linkedin" => "https://www.linkedin.com"]],
-	$header, new ArrayCollection([$facebook, $instagram, $linkedin, $github]));
-	$footer_data = new NodeData(["contact_nom" => "Nom", "adresse" => "adresse", "e_mail" => "e-mail", "footer_logo" => "assets/logo-nb-et-ffn.png"], $footer);
+	$head_data = new NodeData([], $head);
+	$header_data = new NodeData([], $header);
+	$footer_data = new NodeData([], $footer);
 
 	/* -- table page -- */
     $entityManager->persist($accueil);
@@ -139,7 +126,6 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$entityManager->persist($connection);
 	$entityManager->persist($my_account);
 	$entityManager->persist($menu_paths);
-	//$entityManager->persist($edit_page); // hypothétique page "Modification de la page"
 	$entityManager->persist($new_page);
 	
 	/* -- table node -- */
@@ -153,13 +139,6 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$entityManager->persist($user_edit);
 	$entityManager->persist($bloc_edit_menu);
 	$entityManager->persist($bloc_new_page);
-	
-	/* -- table image -- */
-	$entityManager->persist($favicon);
-	$entityManager->persist($facebook);
-	$entityManager->persist($instagram);
-	$entityManager->persist($linkedin);
-	$entityManager->persist($github);
 	
 	/* -- table node_data -- */
 	$entityManager->persist($head_data);
