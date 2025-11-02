@@ -58,8 +58,8 @@ class FooterBuilder extends AbstractBuilder
                     $mode = 'administrateur';
                     $div_admin = 'logged_in';
                 }
-                $link_new_page = new URL(['page' => 'nouvelle_page']);
-                $link_change_paths = new URL(['page' => 'menu_chemins']);
+                $link_new_page = new URL(['page' => 'new_page']);
+                $link_change_paths = new URL(['page' => 'menu_paths']);
                 
                 $link_change_password = new URL(['page' => 'user_edit', 'from' => CURRENT_PAGE]);
                 isset($_GET['id']) ? $link_change_password->addParams(['id' => $_GET['id']]) : '';
@@ -100,7 +100,7 @@ class FooterBuilder extends AbstractBuilder
     private function makePageModifModeButton(): string
     {
         $link_edit_page = new URL(['page' => CURRENT_PAGE]);
-        if(!in_array(CURRENT_PAGE, ['article', 'nouvelle_page', 'menu_chemins'])) // ajouter 'user_edit' et 'connection' le jour où ces pages auront un footer
+        if(!in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths'])) // ajouter 'user_edit' et 'connection' le jour où ces pages auront un footer
         {
             if(MainBuilder::$modif_mode){
                 $link_edit_label = 'Sortir du mode modification';

@@ -88,20 +88,37 @@ class PageManagementController
 
 	static public function deletePage(EntityManager $entityManager): void
 	{
-	    $page = $entityManager->find('App\Entity\Page', (int)$_POST['page_id']);
-	    $nodes = $entityManager->getRepository('App\Entity\Node')->findBy(['page' => $page]);
-	    $data = [];
-	    foreach($nodes as $node){
-	        $data[] = $entityManager->getRepository('App\Entity\NodeData')->findOneBy(['node' => $node]);
-	        $entityManager->remove($node);
-	    }
-	    foreach($data as $one_data){
-	        $entityManager->remove($one_data);
-	    }
-	    $entityManager->remove($page); // suppression en BDD
-	    
-	    $entityManager->flush();
-	    header("Location: " . new URL);
+		$menu = new Menu($entityManager);
+		$page = $menu->findPageById((int)$_POST['page_id']);
+		$url = new URL;
+
+		// test dernière page
+		// => $menu a un enfant et pas de petits enfants
+		// => $menu->getChildren()->isEmpty() n'est théoriquement pas possible
+		if($menu->getChildren()->isEmpty() || (count($menu->getChildren()) === 1 && $menu->getChildren()[0]->getChildren()->isEmpty())){
+			$url->addParams(['page' => $page->getEndOfPath(), 'error' => 'you_tried_to_remove_the_last_page']);
+		}
+		else{
+		    $nodes = $entityManager->getRepository('App\Entity\Node')->findBy(['page' => $page]);
+		    $data = [];
+		    foreach($nodes as $node){
+		        $data[] = $entityManager->getRepository('App\Entity\NodeData')->findOneBy(['node' => $node]);
+		        $entityManager->remove($node);
+		    }
+		    foreach($data as $one_data){
+		        $entityManager->remove($one_data);
+		    }
+		    $entityManager->remove($page); // suppression en BDD
+		    $entityManager->flush();
+
+		    // destination vers la première page dispo
+		    // traite les cas prévus dans le if plus haut
+		    $menu->removeChild($page);
+		    $next_page = $menu->getChildren()->isEmpty() ? $next_page = $page->getChildren()[0] : $menu->getChildren()[0];
+		    $url->addParams(['page' => $next_page->getEndOfPath()]);
+		}
+		
+	    header("Location: " . $url);
 	    die;
 	}
 

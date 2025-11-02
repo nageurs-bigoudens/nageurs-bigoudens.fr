@@ -62,5 +62,5 @@ if($_SESSION['admin'] === false || empty($_SESSION['user'])){ // OUT !!
 
 /* -- partie 2: routage et contrôleurs -- */
 
-define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? 'accueil'));
+define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? ''));
 require '../src/router.php';

@@ -25,27 +25,22 @@ class Path extends Page
 	// produit un tableau de Page en comparant le chemin demandé avec les données dans Menu
 	// succès => une exception est lancée pour sortir des fonctions imbriquées
 	// echec => redirection vers la page erreur 404
-	private function findPage(Page|Menu $menu, array $path_array)
+	private function findPage(Page|Menu $menu, array $path_array): void
 	{
 		// recherche dans les autres pages
 		if($menu instanceof Menu){
-			foreach($menu->getOtherPages() as $page)
-			{
-				if($path_array[0] === $page->getEndOfPath())
-				{
+			foreach($menu->getOtherPages() as $page){
+				if($path_array[0] === $page->getEndOfPath()){
 					$this->current_page[] = $page;
 					throw new Exception();
 				}
 			}
 		}
 		// recherche dans le menu
-		foreach($menu->getChildren() as $page)
-		{
-			if($path_array[0] === $page->getEndOfPath())
-			{
+		foreach($menu->getChildren() as $page){
+			if($path_array[0] === $page->getEndOfPath()){
 				$this->current_page[] = $page;
-				if(count($path_array) > 1)
-				{
+				if(count($path_array) > 1){
 					array_shift($path_array); // $this->path_array n'est pas modifié, un tableau PHP est passé à une fonction par copie
 					$this->findPage($page, $path_array);
 				}
@@ -54,9 +49,11 @@ class Path extends Page
 				}
 			}
 		}
+
 		// rien trouvé
-		URL::setPath('erreur404.html');
-    	header('Location: '. new URL);
+		// pas parfait, échoue si le premier enfant de "children" n'est pas au premier niveau
+		// est-ce que ça peut arriver?
+    	header('Location: '. new URL(['page' => Model::$menu->getChildren()[0]->getEndOfPath()]));
     	die;
 	}
 

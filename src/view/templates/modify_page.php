@@ -24,7 +24,7 @@
         </div>
     </div>
     <div class="delete_page_zone">
-        <form method="post" action="<?= new URL ?>">
+        <form method="post" action="<?= new URL(['page' => CURRENT_PAGE]) ?>">
             <label>Supprimer cette page</label>
             <input type="hidden" name="page_id" value="<?= Model::$page_path->getLast()->getId() ?>">
             <input type="hidden" name="submit_hidden">

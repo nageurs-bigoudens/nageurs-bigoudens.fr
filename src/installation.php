@@ -94,10 +94,10 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$article = new Page('Article', 'article', "", true, false, false, NULL, NULL);
 	$connection = new Page('Connexion', 'connection', "Connexion", true, false, false, NULL, NULL);
 	$my_account = new Page('Mon compte', 'user_edit', "Mon compte", true, false, false, NULL, NULL);
-	$menu_paths = new Page("Menu et chemins", 'menu_chemins', "Menu et chemins", true, false, false, NULL, NULL);
+	$menu_paths = new Page("Menu et chemins", 'menu_paths', "Menu et chemins", true, false, false, NULL, NULL);
 	$menu_paths->addCSS('menu');
 	$menu_paths->addJS('menu');
-	$new_page = new Page('Nouvelle page', 'nouvelle_page', "Nouvelle page", true, false, false, NULL, NULL);
+	$new_page = new Page('Nouvelle page', 'new_page', "Nouvelle page", true, false, false, NULL, NULL);
 	$new_page->addCSS('new_page');
 	$new_page->addJS('new_page');
 	
