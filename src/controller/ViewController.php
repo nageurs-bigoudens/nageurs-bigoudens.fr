@@ -23,7 +23,7 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         // mode modification d'une page
         if($_SESSION['admin']
             && $request->query->has('mode') && $request->query->get('mode') === 'page_modif'
-            && !in_array(CURRENT_PAGE, ['article', 'nouvelle_page', 'menu_chemins', 'user_edit', 'connection']))
+            && !in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths', 'user_edit', 'connection']))
         {
             MainBuilder::$modif_mode = true;
         }
