@@ -7,10 +7,10 @@
             </div>
             <div class="header_additional_inputs">
                 <div id="head_favicon">
-                    <?= $admin_favicon ?>
+                    <?= $admin_head_favicon ?>
                 </div>
                 <div id="header_background">
-                    <?= $admin_background ?>
+                    <?= $admin_header_background ?>
                 </div>
             </div>
             <div class="header_content">

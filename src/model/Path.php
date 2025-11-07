@@ -51,8 +51,6 @@ class Path extends Page
 		}
 
 		// rien trouvé
-		// pas parfait, échoue si le premier enfant de "children" n'est pas au premier niveau
-		// est-ce que ça peut arriver?
     	header('Location: '. new URL(['page' => Model::$menu->getChildren()[0]->getEndOfPath()]));
     	die;
 	}

@@ -54,11 +54,11 @@ class HeaderBuilder extends AbstractBuilder
             // boutons mode admin
             if($_SESSION['admin']){
                 // assets dans classe header_additional_inputs
-                $admin_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
+                $admin_head_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
                     <button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_content" class="action_icon"> Favicon</button>
                     <img id="head_favicon_submit" class="action_icon hidden" src="assets/save.svg" onclick="head_favicon.submit()">
                     <img id="head_favicon_cancel" class="action_icon hidden" src="assets/close.svg" onclick="head_favicon.cancel()">';
-                $admin_background = '<input type="file" id="header_background_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
+                $admin_header_background = '<input type="file" id="header_background_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff">
                     <button id="header_background_open" onclick="header_background.open()"><img id="header_background_content" class="background_button" src="' . $header_background . '"> Image de fond</button>
                     <img id="header_background_submit" class="action_icon hidden" src="assets/save.svg" onclick="header_background.submit()">
                     <img id="header_background_cancel" class="action_icon hidden" src="assets/close.svg" onclick="header_background.cancel()">';
@@ -100,8 +100,8 @@ class HeaderBuilder extends AbstractBuilder
                 }
             }
             else{
-                $admin_favicon = '';
-                $admin_background = '';
+                $admin_head_favicon = '';
+                $admin_header_background = '';
                 $admin_header_logo = '';
                 $admin_header_title = '';
                 $admin_header_description = '';
