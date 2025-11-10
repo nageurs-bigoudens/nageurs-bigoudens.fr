@@ -1,45 +1,145 @@
 /*-- menu principal --*/
-#nav_zone
-{
-	/*height: 33px;*/
-	/*width: 100%;*/
+
+/* version horizontale */
+@media screen and (min-width: 601px){
+	.nav_button{
+		display: none;
+	}
+	#nav_zone
+	{
+		/*margin: auto;*/
+		/*max-width: 1200px;*/
+		display: flex;
+		/*align-items: center;*/ /* conflit possible avec .social align-self */
+		justify-content: center;
+	}
+	.nav_main{
+		display: block;
+		background-color: #ffffffe1; /* b3 = 179 = 0.7 (x 256) */
+		text-align: center;
+		position: fixed;
+	}
+	.nav_main > ul{
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	.nav_main ul{
+		padding-left: 0;
+	}
+	.nav_main li{
+		padding: 5px;
+	}
+	.sub-menu{
+		border-top: 3px solid #13aff0;
+	}
+	/* élément du menu survolé, le positionnement relatif en fait la référence du positionnement suivant */
+	.drop-right .sub-menu
+	{
+		position: absolute; /* positionnement par rapport au précédent "position" en CSS */
+		left: 100%;
+		top: -3px; /* la bordure bleue fait 3px */
+	}
+	/* 1er sous-menu, poitionnement pour ne pas aggrandir l'élément parent */
+	nav > ul > li > ul
+	{
+		position: absolute; /* retire du flux, positionnement par rapport à la fenêtre */
+		margin-top: 5px;
+		margin-left: -5px;
+	}
+	
+	@media (pointer: fine){
+		.nav_main > ul > li:hover
+		{
+			background-color: white;
+		}
+		.drop-right > a > p:after{
+			content: " ▶";
+		}
+	}
 }
+
+@media screen and (min-width: 1000px){
+		nav > ul > li > ul{
+			margin-left: -7px; /* annuler le déplacement dû au padding: 7px; dans ".nav_main li" */
+			margin-top: 7px;
+		}
+		.nav_main li{
+			padding: 7px;
+		}
+}
+
+/* version petits écrans */
+@media screen and (max-width: 600px){
+	#nav_zone{
+		padding-top: 5px;
+	}
+	.nav_button{
+		display: block;
+	}
+	.nav_main{
+		display: none;
+		margin: 10px;
+		background-color: white;
+		text-align: left;
+	}
+	.nav_main.show{
+		display: block;
+	}
+	/*.nav_main > ul{}*/
+	.nav_main li{
+		padding: 5px;
+	}
+	.drop-down{
+		width: min-content;
+	}
+	.sub-menu{
+		margin-top: 5px;
+	}
+	.nav_main ul{
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	/*nav > ul > li > ul{
+		margin-left: 0;
+	}*/
+	@media (pointer: fine){
+		.nav_main li > a:hover{
+			background-color: yellow;
+		}
+		.drop-right > a > p:after{
+			content: ' ▼';
+		}
+	}
+}
+
+
 .nav_main
 {
-	position: fixed;
-	/*box-shadow: 3px 3px 5px #13aff0;*/
+	/*position: fixed;*/
 	border: 2px solid #13aff0;
 	top: -2px;
-}
-.nav_main
-{
 	/*font-size: 90%;*/
-	/*margin-top: 10px;*/
-	/*margin-bottom: 10px;*/
 	text-wrap: nowrap;
-	background-color: #ffffffe1; /* b3 = 179 = 0.7 (x 256) */
+	/*max-width: 90%;*/
 }
-.nav_main > ul
-{
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	flex-wrap: wrap;
+.sub-menu{
+	box-shadow: 1px 1px 3px black;
 }
-ul
-{
+ul{
 	margin: 0;
 }
 
 .nav_main ul
 {
-	list-style: none;
-	padding-left: 0;
+	/*list-style: none;*/
+	/*padding-left: 0;*/
 }
 .nav_main li
 {
 	list-style: none;
-	padding: 7px;
+	
 }
 .nav_main p
 {
@@ -59,14 +159,11 @@ li:not(.current){
 }
 
 
+
 /* sous-menus avec PC + souris
 mettre ici tous les blocs avec :hover, les navigateurs mobiles "simulent" les :hover, cassant le JS utilisé ici */
 @media (pointer: fine) /* fine => précision de la souris */
 {
-	.nav_main > ul > li:hover
-	{
-		background-color: white;
-	}
 	.drop-down:hover > .sub-menu,
 	.drop-right:hover > .sub-menu
 	{
@@ -84,7 +181,6 @@ mettre ici tous les blocs avec :hover, les navigateurs mobiles "simulent" les :h
 	}
 	.drop-right > a > p:after
 	{
-		content: " ▶";
 		font-size: x-small;
 	}
 }
@@ -113,35 +209,11 @@ mettre ici tous les blocs avec :hover, les navigateurs mobiles "simulent" les :h
 		display: block;
 	}
 }
-
-
 .sub-menu
 {
 	display: none;
 	background-color: white;
-	border-top: 3px solid #13aff0;
-	box-shadow: 1px 1px 3px black;
 	font-size: 95%;
-}
-
-
-/* 1er sous-menu, poitionnement pour ne pas aggrandir l'élément parent */
-nav > ul > li > ul
-{
-	position: absolute; /* retire du flux, positionnement par rapport à la fenêtre */
-	margin-left: -7px; /* annuler le déplacement dû au padding: 7px; dans ".nav_main li" */
-	margin-top: 7px;
-}
-/* élément du menu survolé, le positionnement relatif en fait la référence du positionnement suivant */
-.drop-right
-{
-	/*position: relative;*/
-}
-.drop-right .sub-menu
-{
-	position: absolute; /* positionnement par rapport au précédent "position" en CSS */
-	left: 100%;
-	top: -3px; /* la bordure bleue fait 3px */
 }
 
 @media screen and (max-width: 1000px){
@@ -149,10 +221,7 @@ nav > ul > li > ul
 	{
 		/*height: 29px;*/
 	}
-	.nav_main li
-	{
-		padding: 5px;
-	}
+	
 	.nav_main p
 	{
 		/*font-size: smaller;*/
@@ -160,8 +229,7 @@ nav > ul > li > ul
 	}
 	nav > ul > li > ul
 	{
-		margin-left: -5px;
-		margin-top: 5px;
+		/*margin-top: 5px;*/
 	}
 }
 @media screen and (max-width: 450px){

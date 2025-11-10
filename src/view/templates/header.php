@@ -3,9 +3,12 @@
     <div>
 	   <header style="background-image: url('<?= $header_background ?? '' ?>');">
             <div id="nav_zone">
+                <div class="nav_button">
+                    <button onclick="document.getElementById('nav_zone').querySelector('.nav_main').classList.toggle('show');">MENU</button>
+                </div>
                 <?= $nav ?>
             </div>
-            <div class="header_additional_inputs">
+            <div class="header_above">
                 <div id="head_favicon">
                     <?= $admin_head_favicon ?>
                 </div>
@@ -19,9 +22,6 @@
                         <a href="<?= new URL ?>"><img id="header_logo_content" src="<?= $header_logo ?? '' ?>" alt="header_logo"></a>
                         <?= $admin_header_logo ?>
                     </div>
-                </div>
-                <div class="nav_button">
-                    <button>MENU</button>
                 </div>
                 <div class="header_center_col">
                     <h1 id="header_title">

@@ -1,38 +1,28 @@
 header
 {
 	text-align: center;
-	/*padding-top: 5px;*/
-	/*padding-bottom: 10px;*/
 	background-size: cover; /* largeur du bloc_page  */
 	background-position: center;
-}
-#nav_zone
-{
-	/*margin: auto;*/
-	/*max-width: 1200px;*/
-	display: flex;
-	/*align-items: center;*/ /* conflit possible avec .social align-self */
-	justify-content: center;
-}
-.nav_button{
-	display: none;
 }
 
 .background_button
 {
 	max-height: 24px;
 }
-.header_additional_inputs
+.header_above
 {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
 	align-items: center;
-	margin-top: 10px;
+}
+.header_above > div > *
+{
+	margin: 10px 0;
 }
 .header_content
 {
-	margin-top: 10px;
+	/*margin-top: 10px;*/
 	padding-bottom: 20px;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;

@@ -50,7 +50,7 @@ function controlURL(input){
 
 // exécuté à la fin du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
-
+	navHeight(); // hauteur de <nav> en fonction de celle du menu en position fixe
 	insertLocalDates();
 
 	// ouvrir/fermer les sous-menus avec écran tactile
@@ -77,20 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
+});
 
-	// hauteur de <nav> en fonction de celle du menu en position fixe
-	const nav = document.querySelector('nav');
+function navHeight(){
+	const nav = document.querySelector('nav'); // détection
 	const nav_zone = document.getElementById('nav_zone');
-	const resize_observer = new ResizeObserver(entries => {
+	const resize_observer = new ResizeObserver(entries => { // param de type tableau
+	let nav_button_height = window.innerWidth <= 600 ? 26 : 0; // 26 = taille du bouton
+	nav_button_height += nav.classList.contains('show') ? 15 : 0;
 		for(const entry of entries){
-			nav_zone.style.height = entry.contentRect.height + 'px';
+			nav_zone.style.height = (entry.contentRect.height + nav_button_height) + 'px';
 		}
 	});
 	if(nav){
 		resize_observer.observe(nav);
 	}
-});
-
+}
 
 function fetchArticles(bloc_id){
 	const parent = document.getElementById(bloc_id);
