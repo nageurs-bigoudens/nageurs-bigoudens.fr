@@ -4,7 +4,7 @@
 	   <header style="background-image: url('<?= $header_background ?? '' ?>');">
             <div id="nav_zone">
                 <div class="nav_button">
-                    <button onclick="document.getElementById('nav_zone').querySelector('.nav_main').classList.toggle('show');">MENU</button>
+                    <button onclick="toggleTouchMenu()">MENU</button>
                 </div>
                 <?= $nav ?>
             </div>

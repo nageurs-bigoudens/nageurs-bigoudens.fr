@@ -28,9 +28,6 @@
 	.nav_main ul{
 		padding-left: 0;
 	}
-	.nav_main li{
-		padding: 5px;
-	}
 	.sub-menu{
 		border-top: 3px solid #13aff0;
 	}
@@ -91,19 +88,20 @@
 	.nav_button, .nav_main
 	{
 		position: fixed;
-		left: 50%; /* technique pour centrer un élément positionné */
-		transform: translateX(-50%);
+		/* technique pour centrer un élément positionné */
+		/*left: 50%;
+		transform: translateX(-50%);*/
 	}
 	.nav_button{
 		display: block;
-		margin-top: 5px;
+		margin: 5px;
 		position: fixed;
 	}
 	.nav_main{
 		display: none;
 		background-color: white;
 		text-align: left;
-		margin: 5px 0;
+		margin: 5px;
 		top: 31px; /* = taille bouton et de sa marge */
 		
 	}
@@ -111,9 +109,6 @@
 		display: block;
 	}
 	/*.nav_main > ul{}*/
-	.nav_main li{
-		padding: 5px;
-	}
 	.drop-down{
 		width: min-content;
 	}
@@ -121,15 +116,15 @@
 		margin-top: 5px;
 	}
 	.nav_main ul{
-		padding-left: 20px;
-		padding-right: 20px;
+		padding-left: 25px;
+		padding-right: 5px;
 	}
 
 	/*nav > ul > li > ul{
 		margin-left: 0;
 	}*/
 	@media (pointer: fine){
-		.nav_main li > a:hover{
+		.nav_main > ul > li:hover{
 			background-color: yellow;
 		}
 		.drop-right > a > p:after{
@@ -151,15 +146,15 @@ ul{
 	margin: 0;
 }
 
-.nav_main li
-{
-	list-style: none;
-}
 .nav_main p
 {
 	display: inline-block; /* à cause du bouton sub-menu-toggle */
 	margin: 0;
 	/*background-color: #ffffffe1;*/ /* b3 = 179 = 0.7 (x 256) */
+}
+.nav_main li{
+	padding: 5px;
+	list-style: none;
 }
 
 .current/* > a > p*/

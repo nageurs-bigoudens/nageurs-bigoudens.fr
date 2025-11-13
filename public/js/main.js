@@ -48,10 +48,19 @@ function controlURL(input){
 	input.value = 'https://' + url; // Cas par défaut
 }
 
+function toggleTouchMenu(){
+	const nav = document.getElementById('nav_zone').querySelector('.nav_main');
+	const open_state = nav.classList.toggle('show'); // interrupteur
+
+	if(!open_state){
+		nav.querySelectorAll('li').forEach(li => {
+			li.classList.remove('open'); // fermer les sous-menus à la fermeture
+		});
+	}
+}
+
 // exécuté à la fin du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
-	navHeight(); // hauteur de <nav> en fonction de celle du menu en position fixe
-	insertLocalDates();
 
 	// ouvrir/fermer les sous-menus avec écran tactile
 	document.querySelectorAll('.sub-menu-toggle').forEach(button => {
@@ -70,13 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			});
 
-			if(!li.classList.toggle('open')){ // fermer sous-menu
+			if(!li.classList.toggle('open')){ // ouvrir ou fermer ce sous-menu
 				li.querySelectorAll('.drop-right').forEach(desc => {
 					desc.classList.remove('open'); // fermer sous-menus enfants
 				});
 			}
 		});
 	});
+
+	navHeight(); // hauteur de <nav> en fonction de celle du menu en position fixe
+	insertLocalDates();
 });
 
 function navHeight(){
