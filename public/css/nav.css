@@ -18,6 +18,7 @@
 		background-color: #ffffffe1; /* b3 = 179 = 0.7 (x 256) */
 		text-align: center;
 		position: fixed;
+		top: -2px;
 	}
 	.nav_main > ul{
 		display: flex;
@@ -47,6 +48,14 @@
 		margin-top: 5px;
 		margin-left: -5px;
 	}
+
+	@media screen and (max-width: 1000px){ /* entre 601 et 1000 */
+		.nav_main p
+		{
+			/*font-size: smaller;*/
+			font-size: 90%;
+		}
+	}
 	
 	@media (pointer: fine){
 		.nav_main > ul > li:hover
@@ -58,30 +67,48 @@
 		}
 	}
 }
+@media screen and (max-width: 450px){
+	.sub-menu p{
+		font-size: 90%;
+	}
+}
 
 @media screen and (min-width: 1000px){
-		nav > ul > li > ul{
-			margin-left: -7px; /* annuler le déplacement dû au padding: 7px; dans ".nav_main li" */
-			margin-top: 7px;
-		}
-		.nav_main li{
-			padding: 7px;
-		}
+	nav > ul > li > ul{
+		margin-left: -7px; /* annuler le déplacement dû au padding: 7px; dans ".nav_main li" */
+		margin-top: 7px;
+	}
+	.nav_main li{
+		padding: 7px;
+	}
 }
 
 /* version petits écrans */
 @media screen and (max-width: 600px){
 	#nav_zone{
-		padding-top: 5px;
+		/*position: fixed;*/
+		display: flex;
+		flex-direction: column;
+		/*margin: 10px;*/
+	}
+	.nav_button, .nav_main
+	{
+		position: fixed;
+		left: 50%; /* technique pour centrer un élément positionné */
+		transform: translateX(-50%);
 	}
 	.nav_button{
 		display: block;
+		margin-top: 5px;
+		position: fixed;
 	}
 	.nav_main{
 		display: none;
-		margin: 10px;
 		background-color: white;
 		text-align: left;
+		margin: 5px 0;
+		top: 31px; /* = taille bouton et de sa marge */
+		
 	}
 	.nav_main.show{
 		display: block;
@@ -119,10 +146,9 @@
 {
 	/*position: fixed;*/
 	border: 2px solid #13aff0;
-	top: -2px;
+	/*top: -2px;*/
 	/*font-size: 90%;*/
 	text-wrap: nowrap;
-	/*max-width: 90%;*/
 }
 .sub-menu{
 	box-shadow: 1px 1px 3px black;
@@ -157,7 +183,6 @@ li:not(.current){
 	background-color: initial;
 	font-weight: initial;
 }
-
 
 
 /* sous-menus avec PC + souris
@@ -214,53 +239,4 @@ mettre ici tous les blocs avec :hover, les navigateurs mobiles "simulent" les :h
 	display: none;
 	background-color: white;
 	font-size: 95%;
-}
-
-@media screen and (max-width: 1000px){
-	#nav_zone
-	{
-		/*height: 29px;*/
-	}
-	
-	.nav_main p
-	{
-		/*font-size: smaller;*/
-		font-size: 90%;
-	}
-	nav > ul > li > ul
-	{
-		/*margin-top: 5px;*/
-	}
-}
-@media screen and (max-width: 450px){
-	.nav_button
-	{
-		/*display: block;*/
-	}
-	#nav_zone
-	{
-		/*position: fixed;
-		justify-content: left;*/
-	}
-	.nav_main
-	{
-		/*top: 0px;*/
-	}
-	.nav_main > ul
-	{
-		/*flex-direction: column;*/
-	}
-	.nav_main li
-	{
-		/**/
-	}
-	.sub-menu p
-	{
-		font-size: smaller;
-	}
-	.drop-down > .sub-menu
-	{
-		/*flex-direction: row;*/
-		/*position: static;*/
-	}
 }

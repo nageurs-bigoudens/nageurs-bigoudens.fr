@@ -83,8 +83,8 @@ function navHeight(){
 	const nav = document.querySelector('nav'); // détection
 	const nav_zone = document.getElementById('nav_zone');
 	const resize_observer = new ResizeObserver(entries => { // param de type tableau
-	let nav_button_height = window.innerWidth <= 600 ? 26 : 0; // 26 = taille du bouton
-	nav_button_height += nav.classList.contains('show') ? 15 : 0;
+		let nav_button_height = window.innerWidth <= 600 ? 26 : 0; // 26 = taille du bouton
+		nav_button_height += nav.classList.contains('show') ? 15 : 0;
 		for(const entry of entries){
 			nav_zone.style.height = (entry.contentRect.height + nav_button_height) + 'px';
 		}
