@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
 
-            const aside_content = `<div class="form_event">
+            const aside_content = `<div id="form_event">
                     <div class="event_title_box">
                         <h2>Nouvel évènement</h2>
                     </div>
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function(){
             const formated_start = formatDate(info.event.start);
             const formated_end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end, info.event.allDay);
             
-            const aside_content = `<div class="form_event">
+            const aside_content = `<div id="form_event" style="border-color: ` + info.event.backgroundColor +`;">
                     <div class="event_title_box">
                         <h2>Modifier un évènement</h2>
                     </div>

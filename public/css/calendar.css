@@ -1,11 +1,9 @@
 /* !important est nécessaire pour écraser le CSS inséré par le javascript de fullcalendar */
-
-.event{
+#event, #form_event{
+    padding: 5px;
     border: 2px double;
     border-radius: 5px;
-    width: max-content;
     max-width: 250px;
-    padding: 5px;
 }
 #calendar_zone{
     display: flex;
@@ -61,7 +59,7 @@ td .fc-timegrid-axis{
     #calendar_zone{
         padding: 0;
     }
-    #calendar_zone p, .event > button{
+    #calendar_zone p, #event > button{
         font-size: smaller;
     }
     .fc-toolbar-title{
@@ -82,7 +80,7 @@ td .fc-timegrid-axis{
         background-color: #e3f3ff;
         box-shadow: 1px 1px 3px black;
     }
-    .event{
+    #event, #form_event{
         width: 250px;
     }
 }

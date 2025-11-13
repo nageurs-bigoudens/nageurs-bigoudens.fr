@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function(){
             const end_hour = (info.event.allDay ? '' : '<br>à ' + end.split('T')[1]).replace(":", "h");
             const formated_end = end_date.split('-')[2] + '/' + end_date.split('-')[1] + '/' + end_date.split('-')[0] + end_hour;
 
-            let aside_content = `<div class="event" style="border-color: ` + info.event.backgroundColor +`;">
+            let aside_content = `<div id="event" style="border-color: ` + info.event.backgroundColor +`;">
                     <h3>` + info.event.title + `</h3>
                     <p><i>` + info.event.extendedProps.description + `</i></p>`;
             if(checked && (formated_start === formated_end)){ // affichage simplifié évènement d'un jour
