@@ -52,7 +52,6 @@
 	@media screen and (max-width: 1000px){ /* entre 601 et 1000 */
 		.nav_main p
 		{
-			/*font-size: smaller;*/
 			font-size: 90%;
 		}
 	}
@@ -86,10 +85,8 @@
 /* version petits écrans */
 @media screen and (max-width: 600px){
 	#nav_zone{
-		/*position: fixed;*/
 		display: flex;
 		flex-direction: column;
-		/*margin: 10px;*/
 	}
 	.nav_button, .nav_main
 	{
@@ -144,10 +141,7 @@
 
 .nav_main
 {
-	/*position: fixed;*/
 	border: 2px solid #13aff0;
-	/*top: -2px;*/
-	/*font-size: 90%;*/
 	text-wrap: nowrap;
 }
 .sub-menu{
@@ -157,15 +151,9 @@ ul{
 	margin: 0;
 }
 
-.nav_main ul
-{
-	/*list-style: none;*/
-	/*padding-left: 0;*/
-}
 .nav_main li
 {
 	list-style: none;
-	
 }
 .nav_main p
 {
@@ -224,18 +212,17 @@ mettre ici tous les blocs avec :hover, les navigateurs mobiles "simulent" les :h
 /* écran tactile */
 @media (pointer: coarse) /* coarse = grossier = précision écran tactile */
 {
-	.sub-menu-toggle
-	{
+	.sub-menu-toggle{
 		display: inline-block; /* visible sur écran tactile */
 	}
-	.drop-down.open > .sub-menu,
-	.drop-right.open > .sub-menu
-	{
+	.drop-down.open > .sub-menu, .drop-right.open > .sub-menu{
 		display: block;
 	}
+	.drop-down.open, .drop-right.open{
+		background-color: yellow;
+	}
 }
-.sub-menu
-{
+.sub-menu{
 	display: none;
 	background-color: white;
 	font-size: 95%;
