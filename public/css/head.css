@@ -47,7 +47,7 @@ header h2
 	font-size: medium; /* défaut = x-large */
 	margin: 10px;
 }
-@media screen and (max-width: 1000px){
+@media screen and (max-width: 1024px){
 	header h1, header h2
 	{
 		margin: 8px;
@@ -119,8 +119,12 @@ header a
 	border-radius: 10px;
 	padding: 5px;
 }
+.header_content
+{
+	padding: 20px 0;
+}
 
-@media screen and (max-width: 1000px){
+@media screen and (max-width: 1024px){
 	.header_content
 	{
 		padding: 15px 0;
@@ -130,20 +134,25 @@ header a
 		max-width: 160px;
 	}
 }
-@media screen and (max-width: 800px){
+@media screen and (max-width: 768px){
 	.header_content
 	{
-		grid-template-columns: 2fr 1fr; /* on vire la colonne de gauche et on permet au deux autres de "se pousser" si besoin */
-		padding: 10px;
+		/*grid-template-columns: 2fr 1fr;*/ /* on vire la colonne de gauche et on permet au deux autres de "se pousser" si besoin */
+		/*padding: 10px;*/
+		display: block;
+		max-width: 65%;
+		margin: auto;
 	}
 	.header_left_col
 	{
 		display: none;
 	}
 }
-@media screen and (max-width: 600px){
+@media screen and (max-width: 480px){
 	.header_content
 	{
-		display: block;
+		/*display: block;*/
+		max-width: 100%;
+		padding: 10px;
 	}
 }

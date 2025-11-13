@@ -59,6 +59,21 @@ function toggleTouchMenu(){
 	}
 }
 
+function makeDropLeftMenuEntries(){
+	// détection d'éléments de 1er niveau possédant un menu déroulant possédant un menu déroulant
+	document.getElementById('nav_zone').querySelector('.nav_main').querySelectorAll('.drop-down:has(.drop-right)').forEach(drop_down => {
+		const rect = drop_down.getBoundingClientRect(); // coordonnées spatiales
+
+		// il se situe dans la moitié droite
+		if((rect.width / 2 + rect.left) > (window.innerWidth / 2)){ // centre de l'élément > largeur de la fenêtre?
+			drop_down.querySelectorAll('.drop-right').forEach(drop_right => {
+				drop_right.classList.remove('drop-right');
+				drop_right.classList.add('drop-left');
+			});
+		}
+	});
+}
+
 // exécuté à la fin du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -70,17 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			// fermer les autres sous-menus de même niveau
 			// :scope pour pouvoir utiliser > pour restreindre aux frères directs
-			li.parentElement.querySelectorAll(':scope > .drop-down, :scope > .drop-right').forEach(sibling => {
+			li.parentElement.querySelectorAll(':scope > .drop-down, :scope > .drop-right, :scope > .drop-left').forEach(sibling => {
 				if(sibling !== li){
 					sibling.classList.remove('open'); // fermer sous-menus frères
-					sibling.querySelectorAll('.drop-right').forEach(desc => {
+					sibling.querySelectorAll('.drop-right, .drop-left').forEach(desc => {
 						desc.classList.remove('open'); // fermer sous-menus neveux
 					});
 				}
 			});
 
-			if(!li.classList.toggle('open')){ // ouvrir ou fermer ce sous-menu
-				li.querySelectorAll('.drop-right').forEach(desc => {
+			// ouvrir ou fermer un sous-menu
+			if(!li.classList.toggle('open')){
+				li.querySelectorAll('.drop-right, .drop-left').forEach(desc => {
 					desc.classList.remove('open'); // fermer sous-menus enfants
 				});
 			}
@@ -88,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 	navHeight(); // hauteur de <nav> en fonction de celle du menu en position fixe
+	makeDropLeftMenuEntries(); // changer en drop-left les drop-right des éléments du menu dans la moitié droite de la fenêtre
 	insertLocalDates();
 });
 
@@ -95,7 +112,7 @@ function navHeight(){
 	const nav = document.querySelector('nav'); // détection
 	const nav_zone = document.getElementById('nav_zone');
 	const resize_observer = new ResizeObserver(entries => { // param de type tableau
-		let nav_button_height = window.innerWidth <= 600 ? 26 : 0; // 26 = taille du bouton
+		let nav_button_height = window.innerWidth <= 768 ? 26 : 0; // 26 = taille du bouton
 		nav_button_height += nav.classList.contains('show') ? 15 : 0;
 		for(const entry of entries){
 			nav_zone.style.height = (entry.contentRect.height + nav_button_height) + 'px';
