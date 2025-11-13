@@ -15,7 +15,6 @@
 #calendar{
     width: 1165px; /* on enlève le "gap" */
 }
-#event_modal{}
 .event_title_box{
     display: flex;
     align-items: center;
@@ -58,7 +57,7 @@ td .fc-timegrid-axis{
     border-radius: 5px;
 }
 
-@media screen and (max-width: 900px){
+@media screen and (max-width: 1024px){
     #calendar_zone{
         padding: 0;
     }
@@ -71,8 +70,23 @@ td .fc-timegrid-axis{
     .fc-header-toolbar{
         font-size: smaller;
     }
+    #event_modal{
+        position: fixed;
+        /* technique pour centrer un élément positionné */
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 4;
+    }
+    #event_modal > div{
+        background-color: #e3f3ff;
+        box-shadow: 1px 1px 3px black;
+    }
+    .event{
+        width: 250px;
+    }
 }
-@media screen and (max-width: 650px){
+@media screen and (max-width: 768px){
     .fc-header-toolbar{
         font-size: small;
     }
@@ -80,5 +94,4 @@ td .fc-timegrid-axis{
         font-size: 1.5em !important; /* au lieu de 1.75em */
     }
 }
-@media screen and (max-width: 550px){
-}
+@media screen and (max-width: 480px){}

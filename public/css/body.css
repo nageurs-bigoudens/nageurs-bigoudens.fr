@@ -237,11 +237,10 @@ article a:hover
         display: block;
     }
 }
-@media screen and (max-width: 500px)
+@media screen and (max-width: 480px)
 {
-    main
-    {
-        padding: 10px;
+    main{
+        padding: 10px 0;
     }
     .empty_column
     {
