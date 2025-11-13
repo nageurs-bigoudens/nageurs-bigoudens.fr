@@ -83,19 +83,17 @@
 		padding: 7px;
 	}
 }
-
+.nav_button, .nav_main{
+	z-index: 2; /* être au dessus de fullcalendar, sauf de la barre des jours qui se fixe en haut */
+}
 /* version petits écrans */
 @media screen and (max-width: 768px){
 	#nav_zone{
 		display: flex;
 		flex-direction: column;
 	}
-	.nav_button, .nav_main
-	{
+	.nav_button, .nav_main{
 		position: fixed;
-		/* technique pour centrer un élément positionné */
-		/*left: 50%;
-		transform: translateX(-50%);*/
 	}
 	.nav_button{
 		display: block;
