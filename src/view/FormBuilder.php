@@ -33,7 +33,7 @@ class FormBuilder extends AbstractBuilder
         if($_SESSION['admin'])
         {
             ob_start();
-            require self::VIEWS_PATH . 'form_params.php';
+            require self::VIEWS_PATH . 'form_admin.php';
             $admin_content = ob_get_clean();
         }
 

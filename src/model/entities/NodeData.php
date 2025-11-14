@@ -13,7 +13,7 @@ use Doctrine\Common\Collections\Collection; // interface
 #[ORM\Table(name: TABLE_PREFIX . "node_data")]
 class NodeData
 {
-    static array $social_networks = ['facebook', 'instagram', 'whatsapp', 'snapchat', 'tiktok', 'linkedin', 'github']; // à completer
+    static array $social_networks = ['globe', 'facebook', 'instagram', 'whatsapp', 'snapchat', 'tiktok', 'linkedin', 'github']; // à completer
     
     #[ORM\Id]
     #[ORM\GeneratedValue]

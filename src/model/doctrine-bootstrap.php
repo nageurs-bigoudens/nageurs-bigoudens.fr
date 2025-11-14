@@ -1,6 +1,8 @@
 <?php
 // src/model/doctrine-bootstrap.php
 
+declare(strict_types=1);
+
 use Doctrine\ORM\ORMSetup;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
