@@ -45,6 +45,7 @@ class NodeData
     private Collection $nda_collection;
 
     private int $nb_pages = 1;
+    private array $emails = []; // noeud show_emails uniquement
 
     public function __construct(array $data, Node $node, Collection $nda_collection = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
@@ -179,4 +180,13 @@ class NodeData
         $this->new_nda = new NodeDataAsset($this, $asset, $role);
         $this->addNodeDataAsset($this->new_nda);
     }*/
+
+    public function getEmails(): array
+    {
+        return $this->emails;
+    }
+    public function setEmails(array $emails): void
+    {
+        $this->emails = $emails;
+    }
 }

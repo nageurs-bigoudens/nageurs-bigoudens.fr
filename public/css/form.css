@@ -35,6 +35,9 @@
 .form .admin_form i{
 	font-size: smaller;
 }
+.form_gdpr{
+	font-size: smaller;
+}
 
 @media screen and (max-width: 600px){
 	.form_inputs{

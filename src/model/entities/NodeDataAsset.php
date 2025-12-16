@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 class NodeDataAsset
 {
     // clé primaire double
-    // inconvénient: impossible d'utiliser deux fois la même paire node_data/asset, même pour des rôles différents
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: NodeData::class, inversedBy: 'nda_collection')]
     #[ORM\JoinColumn(name: 'node_data_id', referencedColumnName: 'id_node_data', onDelete: 'CASCADE')]

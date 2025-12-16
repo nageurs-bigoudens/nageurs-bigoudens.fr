@@ -38,6 +38,12 @@ if($request->getMethod() === 'GET'){
         CalendarController::getData($entityManager);
     }
 
+    // pages interdites
+    if(!$_SESSION['admin'] && in_array(CURRENT_PAGE, ['menu_paths', 'new_page', 'user_edit', 'emails'])){
+        header('Location: ' . new URL);
+        die;
+    }
+
     if($_SESSION['admin'] === true){
         // ...
     }
@@ -113,6 +119,13 @@ elseif($request->getMethod() === 'POST'){
                     ContactFormController::sendTestEmail($entityManager, $json);
                 }
 
+                /* -- page emails -- */
+                elseif($_GET['action'] === 'delete_email'){
+                    ContactFormController::deleteEmail($entityManager, $json);
+                }
+                elseif($_GET['action'] === 'toggle_sensitive_email'){
+                    ContactFormController::toggleSensitiveEmail($entityManager, $json);
+                }
 
                 /* -- upload d'image dans tinymce par copier-coller -- */
                 // collage de HTML contenant une ou plusieurs balises <img>

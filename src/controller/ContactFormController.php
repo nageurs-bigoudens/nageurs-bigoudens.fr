@@ -80,4 +80,20 @@ class ContactFormController
 		}
 		die;
 	}
+	static public function deleteEmail(EntityManager $entityManager, array $json): void
+	{
+		$email = $entityManager->find('App\Entity\Email', $json['id']);
+		$entityManager->remove($email);
+		$entityManager->flush();
+		echo json_encode(['success' => true]);
+		die;
+	}
+	static public function toggleSensitiveEmail(EntityManager $entityManager, array $json): void
+	{
+		$email = $entityManager->find('App\Entity\Email', $json['id']);
+		$email->makeSensitive($json['checked']);
+		$entityManager->flush();
+		echo json_encode(['success' => true, 'checked' => $json['checked'], 'deletion_date' => $email->getDeletionDate()->format('d/m/Y')]);
+		die;
+	}
 }

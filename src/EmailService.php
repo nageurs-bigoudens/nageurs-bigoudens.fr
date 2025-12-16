@@ -65,16 +65,36 @@ class EmailService
 
 	        // copie en BDD
 	        if(!$test_email){
-	        	$db_email = new Email($email, Config::$email_dest, $message);
+	        	$db_email = new Email($name, $email, Config::$email_dest, $message);
 		        $entityManager->persist($db_email);
+		        self::updateLastContactDate($entityManager, $email);
 		        $entityManager->flush();
 	        }
 
 	        return true;
 	    }
 	    catch(Exception $e){
-	    	return false;
-	        //echo "Le message n'a pas pu être envoyé. Erreur : {$mail->ErrorInfo}";
+	        echo "Le message n'a pas pu être envoyé. Erreur : {$e} <br> {$mail->ErrorInfo}";
+	        return false;
 	    }
+	}
+
+	static public function updateLastContactDate(EntityManager $entityManager, string $sender): void
+	{
+		foreach($entityManager->getRepository('App\Entity\Email')->findAll() as $email){
+			$email->getSenderAddress() === $sender ? $email->updateLastContactDate() : null;
+		}
+	}
+
+	// peut être appelée par bin/clean_emails_cron.php
+	static public function cleanEmails(EntityManager $entityManager): void
+	{
+		$emails = $entityManager->getRepository('App\Entity\Email')->findAll();
+		foreach($emails as $email){
+		    if($email->getDeletionDate() < new \DateTime()){
+		        $entityManager->remove($email);
+		    }
+		}
+		$entityManager->flush();
 	}
 }

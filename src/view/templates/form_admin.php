@@ -4,6 +4,9 @@ declare(strict_types=1);
 // note: l'id ici n'est pas celui du noeud bloc mais celui de l'entrée dans node_data correspondante
 ?>
 <div class="admin_form">
+	<a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter tous les e-mails</button></a>
+</div>
+<div class="admin_form">
 	<h3>Paramètres d'envoi</h3>
 	<p>
 	    <label for="smtp_host_<?= $node->getNodeData()->getId() ?>">Adresse serveur SMTP</label>

@@ -72,42 +72,7 @@ class Node
     {
         $this->name_node = $name;
     }*/
-
-    /*public function getAttributes(): array
-    {
-        return $this->attributes;
-    }
-    public function setDefaultAttributes(array $attributes): void
-    {
-        $this->attributes = $attributes;
-    }
-    public function useDefaultAttributes(): void
-    {
-        $this->attributes = self::$default_attributes;
-    }
-    public function addAttribute(string $key, string $value): void
-    {
-        if(!isset($this->attributes[$key])) { // sécurité $key inexistante
-            $this->attributes[$key] = [];
-        }
-        if(!in_array($value, $this->attributes[$key])){
-            $this->attributes[$key][] = $value;
-        }
-    }*/
-    /*public function removeAttribute(string $key, string $value): void
-    {
-        if(isset($this->attributes[$key]))  // sécurité $key inexistante
-        {
-            // supprime et réindex avec un nouveau tableau
-            $tmp_array = $this->attributes[$key];
-            $this->attributes[$key] = [];
-            foreach($tmp_array as $entry){
-                if($entry !== $value){
-                    $this->attributes[$key][] = $entry;
-                }
-            }
-        }
-    }*/
+    
     public function getParent(): ?self
     {
         return $this->parent;

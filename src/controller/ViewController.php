@@ -55,7 +55,7 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         self::$root_node = $model->getNode();
 
 
-        /* 3/ 2ème contrôle utilisant les données récupérées */
+        /* 3/ 2ème contrôle des paramètres avec les données récupérées */
 
         // article non trouvé en BDD
         if(CURRENT_PAGE === 'article' && !$_SESSION['admin'] && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){

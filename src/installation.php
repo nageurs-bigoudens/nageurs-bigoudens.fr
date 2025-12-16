@@ -100,6 +100,9 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$new_page = new Page('Nouvelle page', 'new_page', "Nouvelle page", true, false, false, NULL, NULL);
 	$new_page->addCSS('new_page');
 	$new_page->addJS('new_page');
+	$emails = new Page("Courriels", 'emails', "Consulter les courriels en base de données", true, false, false, NULL, NULL);
+	$emails->addCSS('show_emails');
+	$emails->addJS('form');
 	
 	/* -- table node -- */
 	// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
@@ -113,12 +116,14 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$user_edit = new Node('user_edit', 1, $main, $my_account, NULL);
 	$bloc_edit_menu = new Node('menu', 1, $main, $menu_paths, NULL);
 	$bloc_new_page = new Node('new_page', 1, $main, $new_page, NULL);
+	$bloc_emails = new Node('show_emails', 1, $main, $emails, NULL);
 
 	/* -- table node_data -- */
 	// paramètres: data, node, images
 	$head_data = new NodeData([], $head);
 	$header_data = new NodeData([], $header);
 	$footer_data = new NodeData([], $footer);
+	$emails_data = new NodeData([], $bloc_emails);
 
 	/* -- table page -- */
     $entityManager->persist($accueil);
@@ -127,6 +132,7 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$entityManager->persist($my_account);
 	$entityManager->persist($menu_paths);
 	$entityManager->persist($new_page);
+	$entityManager->persist($emails);
 	
 	/* -- table node -- */
 	$entityManager->persist($head);
@@ -139,11 +145,13 @@ function fillStartingDatabase(EntityManager $entityManager){
 	$entityManager->persist($user_edit);
 	$entityManager->persist($bloc_edit_menu);
 	$entityManager->persist($bloc_new_page);
+	$entityManager->persist($bloc_emails);
 	
 	/* -- table node_data -- */
 	$entityManager->persist($head_data);
 	$entityManager->persist($header_data);
 	$entityManager->persist($footer_data);
+	$entityManager->persist($emails_data);
 
     $entityManager->flush();
 	header('Location: ' . new URL);

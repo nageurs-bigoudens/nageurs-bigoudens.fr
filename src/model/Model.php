@@ -58,10 +58,15 @@ class Model
                 ->setParameter('page', $this->page)
                 ->getResult();
 
-            // groupes d'articles triés par bloc, permet de paginer par bloc
             foreach($bulk_data as $parent_block){
+                // groupes d'articles triés par bloc, permet de paginer par bloc                
                 if(Blocks::hasPresentation($parent_block->getName())){ // = post_block ou news_block
                     $bulk_data = array_merge($bulk_data, $this->getNextArticles($parent_block, $request)[0]);
+                }
+
+                // emails
+                if($parent_block->getName() === 'show_emails'){
+                    $parent_block->getNodeData()->setEmails($this->getAllEmails());
                 }
             }
         }
@@ -283,4 +288,14 @@ class Model
             $this->node->addChild($child);
         }
     }
+
+    private function getAllEmails(): array
+    {
+        $dql = 'SELECT e FROM App\Entity\Email e';
+        return $this->entityManager
+            ->createQuery($dql)
+            //->setParameter('page', $this->page)
+            ->getResult();
+    }
+    //private function getEmails(string $sender): array
 }

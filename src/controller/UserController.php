@@ -90,6 +90,8 @@ class UserController
 				$_SESSION['user'] = $_POST['login'];
 				$_SESSION['admin'] = true;
 
+				EmailService::cleanEmails($entityManager);
+
 				$url = new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
 				isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
 			}

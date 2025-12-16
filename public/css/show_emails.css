@@ -1,0 +1,24 @@
+.show_emails p{
+	font-size: smaller;
+}
+.show_emails table{
+	
+	padding: 10px;
+	border-collapse: collapse;
+	font-size: smaller;
+}
+.show_emails table th, .show_emails table td{
+	background-color: white;
+	border: 1px black solid;
+}
+.show_emails table td{
+	vertical-align: top;
+	text-align: center;
+}
+.show_emails table .email_delete_button{
+	/*background-color: initial;*/
+	/*border: none;*/
+}
+.show_emails .action_icon{
+	width: 20px;
+}

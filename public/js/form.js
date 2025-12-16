@@ -1,5 +1,3 @@
-//function sendMessage(){}
-
 // modif des paramètres d'e-mail: e-mail source/dest, mot de passe, serveur smtp & chiffrement tls/ssl
 function setEmailParam(what_param, id){
 	const value = document.getElementById(what_param + '_' + id).value;
@@ -28,8 +26,8 @@ function setEmailParam(what_param, id){
     });
 }
 
-function checkCase(){
-    if(document.getElementById('email_address').value.match('[A-Z]')){
+function checkCase(id){
+    if(document.getElementById('email_address_' + id).value.match('[A-Z]')){
         toastNotify("Votre e-mail comporte une lettre majuscule, il s'agit probablement d'une erreur.");
     }
 }
@@ -114,6 +112,62 @@ function sendVisitorEmail(id){
         send_email_success.innerHTML = message;
         send_email_success.style.backgroundColor = color;
         toastNotify(message);
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
+function deleteEmail(id){
+    const table_row = document.getElementById(id);
+    if(!table_row){
+        return;
+    }
+
+    if(confirm('Voulez-vous supprimer cet e-mail ?')){
+        fetch('index.php?action=delete_email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            table_row.remove();
+            toastNotify("E-mail supprimé");
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+    }
+}
+
+function toggleSensitiveEmail(id){
+    const table_row = document.getElementById(id);
+    const checkbox = table_row.querySelector("input[class='make_checkbox_sensitive']");
+    const deletion_date = table_row.querySelector(".deletion_date");
+    if(!table_row || !checkbox || !deletion_date){
+        return;
+    }
+
+    fetch('index.php?action=toggle_sensitive_email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: id,
+            checked: checkbox.checked
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        checkbox.checked = data.checked;
+        deletion_date.innerHTML = data.deletion_date;
+        console.log(data.checked ? "Cet e-mail est maintenant considéré comme sensible." : "Cet e-mail n'est plus sensible.");
     })
     .catch(error => {
         console.error('Erreur:', error);
