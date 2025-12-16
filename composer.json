@@ -10,7 +10,8 @@
         "tinymce/tinymce": "^8.2",
         "phpmailer/phpmailer": "^7.0",
         "symfony/http-foundation": "^7.3",
-        "twbs/bootstrap-icons": "^1.13"
+        "twbs/bootstrap-icons": "^1.13",
+        "symfony/var-exporter": "^7.0"
     },
     "scripts": {
         "post-install-cmd": [
