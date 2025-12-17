@@ -11,6 +11,8 @@ use App\Entity\NodeData;
 
 class EmailService
 {
+	const KEEP_EMAILS_DEFAULT = false;
+
 	static public function send(EntityManager $entityManager, NodeData $form_data, bool $test_email, string $name = '', string $email = '', string $message = ''): bool
 	{
 		$mail = new PHPMailer(true); // true => exceptions
@@ -64,7 +66,7 @@ class EmailService
 	        $mail->send();
 
 	        // copie en BDD
-	        if(!$test_email){
+	        if(!$test_email && ($form_data->getData()['keep_emails'] ?? self::KEEP_EMAILS_DEFAULT)){
 	        	$db_email = new Email($name, $email, Config::$email_dest, $message);
 		        $entityManager->persist($db_email);
 		        self::updateLastContactDate($entityManager, $email);

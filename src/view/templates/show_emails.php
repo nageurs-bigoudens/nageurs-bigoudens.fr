@@ -2,17 +2,19 @@
 <section class="show_emails">
 	<h3>Table "<?= TABLE_PREFIX ?>email" de la base de données</h3>
 	<p><i>
-		Les e-mails ci-dessous sont des copies de ceux arrivés dans votre boite de messagerie. Ils sont conservés dans un but pratique et éventuellement dans un but de prospection, ou dans tout autre but permettant de justifier leur conservation.<br>
-		Ils sont "effacés" automatiquement au bout d'un certain temps comme le requièrt le RGPD. Un nettoyeur est exécuté à chaque connexion au mode admin ou éventuellement à l'aide d'une tâche CRON (le serveur doit pour ça être configuré pour exécuter periodiquement la commande "php /chemin/du/site/bin/cron.php").
+		Les e-mails ci-dessous sont des copies de ceux arrivés dans votre boite de messagerie (qui en théorie sont également concernés par le RGPD) depuis tous les formulaires existant sur le site. Ils sont conservés dans un but pratique et éventuellement dans un but de prospection, ou dans tout autre but justifiant leur conservation.
 	</i></p>
 	<h4>Durées de conservation</h4>
 	<p><i>
-		Ce sont des durées maximales, les données peuvent être supprimées plus tôt ou même immédiatement. Le faire est d'ailleurs une obligation dans le cas où leur expéditeur le demande.<br>
-		Théoriquement, ce même nettoyage des vieux messages devrait être également réalisé par vous-même dans votre boite de messagerie.
+		Ce sont des durées maximales, les données peuvent être supprimées plus tôt ou même immédiatement. Le faire est d'ailleurs une obligation dans le cas où les personnes concernées le demandent.<br>
 	</i></p>
 	<p><i>
 		Les e-mails ordinaires d'un même expéditeur (même adresse e-mail) sont tous supprimés simultanément lorsque le plus récent d'entre eux atteint les 3 ans (utilisateur "inactif").<br>
 		Les e-mails sensibles quand à eux sont supprimés 5 ans après être devenus sensibles (durée juridique d'une preuve).
+	</i></p>
+	<p><i>
+		Un nettoyeur supprimant les messages dépassant ces durées est exécuté au moment de votre connexion au mode administrateur.<br>
+		Si vos connexions sont rares, il est possible d'automatiser ce nettoyage à l'aide d'une tâche CRON. Pour cela, vous devez configurer le serveur pour qu'il exécute periodiquement la commande "php /chemin/du/site/bin/cron.php".
 	</i></p>
 	<h4>Données sensibles</h4>
 	<p><i>

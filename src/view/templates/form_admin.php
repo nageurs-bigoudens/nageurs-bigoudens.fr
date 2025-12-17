@@ -4,7 +4,12 @@ declare(strict_types=1);
 // note: l'id ici n'est pas celui du noeud bloc mais celui de l'entrée dans node_data correspondante
 ?>
 <div class="admin_form">
-	<a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter tous les e-mails</button></a>
+	<p>
+		<label for="keep_emails_<?= $node->getNodeData()->getId() ?>">Conserver les e-mails en base de données</label>
+		<input type="checkbox" id="keep_emails_<?= $node->getNodeData()->getId() ?>" <?= ($keep_emails ?? false) ? 'checked' : '' ?> onclick="keepEmails(<?= $node->getNodeData()->getId() ?>)">
+	</p>
+	<p><i>Notez que ces enregistrements sont des données personnelles et sont concernés par le RGPD.</i></p>
+	<p><a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les e-mails enregistrés</button></a></p>
 </div>
 <div class="admin_form">
 	<h3>Paramètres d'envoi</h3>

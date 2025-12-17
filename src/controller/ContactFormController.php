@@ -7,6 +7,15 @@ use Doctrine\ORM\EntityManager;
 
 class ContactFormController
 {
+	static public function keepEmails(EntityManager $entityManager, array $json): void
+	{
+		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+		$form_data->updateData('keep_emails', $json['checked'] ? true : false);
+		$entityManager->persist($form_data);
+		$entityManager->flush();
+		echo json_encode(['success' => true, 'checked' => $json['checked']]);
+		die;
+	}
 	static public function setEmailParam(EntityManager $entityManager, array $json): void
 	{
 		$form = new FormValidation($json, 'email_params');

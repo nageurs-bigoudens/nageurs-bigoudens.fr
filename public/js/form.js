@@ -26,6 +26,39 @@ function setEmailParam(what_param, id){
     });
 }
 
+function keepEmails(block_id){
+    const form = document.getElementById('keep_emails_' + block_id);
+    const warning = document.getElementById('form_warning_' + block_id);
+    if(!form || !warning){
+        return;
+    }
+
+    fetch('index.php?action=keep_emails', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: block_id,
+            checked: form.checked
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            form.checked = data.checked;
+            data.checked ? warning.classList.remove('hidden') : warning.classList.add('hidden');
+            toastNotify(data.checked ? "Les e-mails seront conservés. Pensez au RGPD." : "Les nouveaux e-mails ne seront pas conservés.");
+        }
+        else{
+            toastNotify("Erreur, le réglage n'a pas été enregistré par le serveur.");
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+
 function checkCase(id){
     if(document.getElementById('email_address_' + id).value.match('[A-Z]')){
         toastNotify("Votre e-mail comporte une lettre majuscule, il s'agit probablement d'une erreur.");
@@ -136,8 +169,11 @@ function deleteEmail(id){
         })
         .then(response => response.json())
         .then(data => {
-            table_row.remove();
-            toastNotify("E-mail supprimé");
+            if(data.success){
+                table_row.remove();
+                toastNotify("E-mail supprimé");
+            }
+            else{}
         })
         .catch(error => {
             console.error('Erreur:', error);
@@ -165,9 +201,12 @@ function toggleSensitiveEmail(id){
     })
     .then(response => response.json())
     .then(data => {
-        checkbox.checked = data.checked;
-        deletion_date.innerHTML = data.deletion_date;
-        console.log(data.checked ? "Cet e-mail est maintenant considéré comme sensible." : "Cet e-mail n'est plus sensible.");
+        if(data.success){
+            checkbox.checked = data.checked;
+            deletion_date.innerHTML = data.deletion_date;
+            console.log(data.checked ? "Cet e-mail est maintenant considéré comme sensible." : "Cet e-mail n'est plus sensible.");
+        }
+        else{}
     })
     .catch(error => {
         console.error('Erreur:', error);

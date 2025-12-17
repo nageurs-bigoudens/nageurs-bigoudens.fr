@@ -112,6 +112,9 @@ elseif($request->getMethod() === 'POST'){
                 }
 
                 /* -- bloc Formulaire -- */
+                elseif($_GET['action'] === 'keep_emails'){
+                    ContactFormController::keepEmails($entityManager, $json);
+                }
                 elseif($_GET['action'] === 'set_email_param'){
                     ContactFormController::setEmailParam($entityManager, $json);
                 }
