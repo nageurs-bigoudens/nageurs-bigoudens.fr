@@ -9,11 +9,16 @@ declare(strict_types=1);
 		<input type="checkbox" id="keep_emails_<?= $node->getNodeData()->getId() ?>" <?= $keep_emails ? 'checked' : '' ?> onclick="keepEmails(<?= $node->getNodeData()->getId() ?>)">
 	</p>
 	<p><i>Notez que ces enregistrements sont des données personnelles et sont concernés par le RGPD.</i></p>
+	<p><a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les e-mails enregistrés</button></a></p>
 	<p>
 		<label for="retention_period_<?= $node->getNodeData()->getId() ?>">Durée de conservation (en mois)</label>
-		<input type="number" id="retention_period_<?= $node->getNodeData()->getId() ?>" min="0" value="<?= $retention_period ?>" size="2" onchange="setEmailsRetentionPeriod(<?= $node->getNodeData()->getId() ?>)">
+		<input type="number" id="retention_period_<?= $node->getNodeData()->getId() ?>" min="0" value="<?= $retention_period ?>" size="2" onchange="setEmailsRetentionPeriod(<?= $node->getNodeData()->getId() ?>, 'retention_period')">
 	</p>
-	<p><a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les e-mails enregistrés</button></a></p>
+	<p>
+		<label for="retention_period_sensible_<?= $node->getNodeData()->getId() ?>">Durée de conservation des emails sensibles(en mois)</label>
+		<input type="number" id="retention_period_sensible_<?= $node->getNodeData()->getId() ?>" min="0" value="<?= $retention_period_sensible ?>" size="2" onchange="setEmailsRetentionPeriod(<?= $node->getNodeData()->getId() ?>, 'retention_period_sensible')">
+	</p>
+	
 </div>
 <div class="admin_form">
 	<h3>Paramètres d'envoi</h3>

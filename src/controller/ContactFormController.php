@@ -19,7 +19,7 @@ class ContactFormController
 	static public function setEmailsRetentionPeriod(EntityManager $entityManager, array $json): void
 	{
 		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
-		$form_data->updateData('retention_period', (int)$json['months']);
+		$form_data->updateData($json['field'], (int)$json['months']);
 		$entityManager->persist($form_data);
 		$entityManager->flush();
 		echo json_encode(['success' => true, 'months' => $json['months']]);

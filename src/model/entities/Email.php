@@ -113,23 +113,19 @@ class Email
         $this->last_contact_date = new \DateTime;
     }
 
-    // la durée de conservation $period est propre au bloc formulaire (NodeData)
-    // la date de dernier contact
-    public function getDeletionDate(): \DateTime
+    public function getDeletionDate(): \DateTime // utilise une durée de conservation $period qui est propre au bloc formulaire (à son NodeData)
     {
-        // deux tests:
+        // tests appliqués:
         // => e-mail associé à un formulaire?
         // => ce formulaire dispose d'une durée de stockage spécifique?
-        $period = $this->node_data === null ? null : ($this->node_data->getData()['retention_period'] ?? null);
+        // => cette donnée est un entier > 0
+        $key = $this->is_sensitive ? 'retention_period_sensible' : 'retention_period';
+        $period = $this->node_data ? (int)($this->node_data->getData()[$key] ?? null) : null;
 
-        $period = (int)$period;
-        if($period === null || $period <= 0){
-            $period = $this->is_sensitive ? self::DEFAULT_RETENTION_PERIOD_SENSITIVE : self::DEFAULT_RETENTION_PERIOD;
-        }
+        $default = $this->is_sensitive ? self::DEFAULT_RETENTION_PERIOD_SENSITIVE : self::DEFAULT_RETENTION_PERIOD;
+        $period = ($period === null || $period <= 0) ? $default : $period;
 
-        $date = $this->is_sensitive ? (clone $this->is_sensitive_since) : (clone $this->last_contact_date); // oui durée 5 ans, non durée 3 ans "glissante"
-        // erreur si "sensible" mais sans date disponible (pas censé arriver)
-
+        $date = clone ($this->is_sensitive ? $this->is_sensitive_since : $this->last_contact_date); // erreur si "sensible" mais sans date disponible (pas censé arriver)
         return $date->modify('+ ' . (string)$period . ' month');
     }
 }

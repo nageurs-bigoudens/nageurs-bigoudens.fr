@@ -30,7 +30,8 @@ class FormBuilder extends AbstractBuilder
         $smtp_username = $smtp_username ?? Config::$smtp_username;
         $email_dest = $email_dest ?? Config::$email_dest;
         $keep_emails = (bool)$keep_emails ?? false; // (bool) est inutile mais plus clair
-        $retention_period = (int)($retention_period ?? App\Entity\Email::DEFAULT_RETENTION_PERIOD); // (int) est nécessaire à cause du stockage JSON
+        $retention_period = $this->getRetentionPeriod($retention_period ?? null, App\Entity\Email::DEFAULT_RETENTION_PERIOD);
+        $retention_period_sensible = $this->getRetentionPeriod($retention_period_sensible ?? null, App\Entity\Email::DEFAULT_RETENTION_PERIOD_SENSITIVE);
 
         $admin_content = '';
         if($_SESSION['admin'])
@@ -43,5 +44,10 @@ class FormBuilder extends AbstractBuilder
         ob_start();
         require self::VIEWS_PATH . $node->getName() . '.php';
         $this->html = ob_get_clean(); // pas de concaténation ici, on écrase
+    }
+
+    private function getRetentionPeriod(mixed $period, int $default_period): int
+    {
+        return ($period === null || (int)$period <= 0) ? $default_period : (int)$period; // (int) est nécessaire à cause du stockage JSON
     }
 }

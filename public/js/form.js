@@ -58,8 +58,8 @@ function keepEmails(block_id){
         console.error('Erreur:', error);
     });
 }
-function setEmailsRetentionPeriod(block_id){
-    const form = document.getElementById('retention_period_' + block_id);
+function setEmailsRetentionPeriod(block_id, field_name){
+    const form = document.getElementById(field_name + '_' + block_id);
     if(!form){
         return;
     }
@@ -71,6 +71,7 @@ function setEmailsRetentionPeriod(block_id){
         },
         body: JSON.stringify({
             id: block_id,
+            field: field_name,
             months: form.value
         })
     })
