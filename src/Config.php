@@ -41,7 +41,7 @@ class Config
         }
         else
         {
-            echo "le fichier config.ini n'existe pas ou n'est pas lisible";
+            echo "<p>Le fichier config/config.ini n'existe pas ou n'est pas lisible.</p>";
         }
         define('TABLE_PREFIX', self::$table_prefix);
     }

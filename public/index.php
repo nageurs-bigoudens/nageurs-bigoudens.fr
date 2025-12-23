@@ -38,7 +38,7 @@ URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 // les messages d'erreur de déploiement qu'on aime
 require('../src/installation.php');
 phpDependancies();
-//installation(); // des mkdir et chmod, chiant en dev
+installation(); // droits des dossiers et fichier config.ini
 
 // $entityManager
 require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter

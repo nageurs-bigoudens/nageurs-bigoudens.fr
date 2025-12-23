@@ -10,7 +10,7 @@ use App\Entity\Asset;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 
-function phpDependancies()
+function phpDependancies(): void
 {
 	$flag = false;
 	//$extensions = ['pdo_mysql', 'mbstring', 'ctype', 'json', 'tokenizer', 'zip', 'dom']; // les 5 premières sont pour doctrine
@@ -33,31 +33,33 @@ function phpDependancies()
     }
 }
 
-// inutilisée pour l'instant
 function installation(): void
 {
-    /* -- droits des fichiers et dossiers -- */
+	// -- droits des fichiers et dossiers --
     $droits_dossiers = 0700;
     $droits_fichiers = 0600;
 
-    // accès interdit en HTTP
-	if(!file_exists('../config/.htaccess')){
-		$contenu = <<< HTACCESS
-<Files "config.ini">
-	Order Allow,Deny
-	Deny from all
-</Files>
-HTACCESS;
+    if(!file_exists('user_data')){
+    	// créer le dossier user_data
+    	mkdir('user_data/');
+        chmod('user_data/', $droits_dossiers);
+    	echo '<p style="color: red;">Le dossier public/user_data introuvable et le serveur n\'a pas la permission de le créer.<br>
+    	Pour faire ça bien:<br>sudo -u "serveur web" mkdir /chemin/du/site/public/user_data</p>
+    	<p>Aide: "serveur web" se nomme "www-data" sur debian et ubuntu, il s\'appelera "http" sur d\'autres distributions.</p>';
+    	die;
+    }
 
-		$fichier = fopen('../config/.htaccess', 'w');
-        fputs($fichier, $contenu);
-        fclose($fichier);
-        chmod('../config/.htaccess', $droits_fichiers);
-        //echo("danger<br>pas de .htaccess dans config<br>prévenez le responsable du site");
-	    //die;
-	}
+    if(!file_exists('../config/config.ini')){
+    	// aide à la création du config.ini
+    	echo '<p>Ce fichier contient les codes de la base de données et quelques paramètres utilisés pour créer les liens internes.<br>
+    		Un modèle est disponible, il s\'agit du fichier config/config-template.ini</p>
+    		<p>Quand vous aurez terminé votre config.ini, donnez-lui si possible des droits 600.</p>';
+    	die;
+    }
+}
 
-	// accès limité en local (600) pour config.ini
+/*
+    // droits du config.ini
 	if(substr(sprintf('%o', fileperms('../config/config.ini')), -4) != 600){
 		chmod('../config/config.ini', $droits_fichiers);
 	}
@@ -82,7 +84,7 @@ HTACCESS;
 	    	die;
 	    }
     }
-}
+*/
 
 // création d'un site minimal avec une page d'accueil à la toute 1ère visite du site
 // fonctiona appelée après la première requête envoyée en BDD,
