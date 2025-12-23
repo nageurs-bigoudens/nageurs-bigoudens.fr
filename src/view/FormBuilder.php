@@ -29,7 +29,7 @@ class FormBuilder extends AbstractBuilder
         $smtp_secure = $smtp_secure ?? Config::$smtp_secure;
         $smtp_username = $smtp_username ?? Config::$smtp_username;
         $email_dest = $email_dest ?? Config::$email_dest;
-        $keep_emails = (bool)$keep_emails ?? false; // (bool) est inutile mais plus clair
+        $keep_emails = (bool)($keep_emails ?? false); // (bool) est inutile mais plus clair
         $retention_period = $this->getRetentionPeriod($retention_period ?? null, App\Entity\Email::DEFAULT_RETENTION_PERIOD);
         $retention_period_sensible = $this->getRetentionPeriod($retention_period_sensible ?? null, App\Entity\Email::DEFAULT_RETENTION_PERIOD_SENSITIVE);
 
