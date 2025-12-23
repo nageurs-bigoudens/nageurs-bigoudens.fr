@@ -31,7 +31,7 @@
 		<p class="send_email_success_<?= $node->getNodeData()->getId() ?> full_width_column"></p>
 	</div>
 	<p id="form_warning_<?= $node->getNodeData()->getId() ?>" class="form_warning <?= ($keep_emails ?? false) ? '' : 'hidden' ?>"><i>
-		Une copie de votre e-mail (nom, adresse et message) sera conservée dans notre base de données dans le but de pouvoir répondre à votre demande et éventuellement dans un but de prospection. Ces données seront traitées automatiquement par notre serveur et conservées pendant au maximum 3 ans à compter de votre dernier message.<br>
+		Une copie de votre e-mail (nom, adresse et message) sera conservée dans notre base de données dans le but de pouvoir répondre à votre demande et éventuellement dans un but de prospection. Ces données seront traitées automatiquement par notre serveur et conservées pendant au maximum <?= $retention_period ?> mois à compter de votre dernier message.<br>
 		Ce traitement repose sur votre consentement. Vous pouvez consulter, modifier ou supprimer vos données en base de données sur simple demande.
 	</i></p>
 </section>
