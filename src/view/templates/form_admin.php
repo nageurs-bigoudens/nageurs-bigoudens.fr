@@ -6,9 +6,13 @@ declare(strict_types=1);
 <div class="admin_form">
 	<p>
 		<label for="keep_emails_<?= $node->getNodeData()->getId() ?>">Conserver les e-mails en base de données</label>
-		<input type="checkbox" id="keep_emails_<?= $node->getNodeData()->getId() ?>" <?= ($keep_emails ?? false) ? 'checked' : '' ?> onclick="keepEmails(<?= $node->getNodeData()->getId() ?>)">
+		<input type="checkbox" id="keep_emails_<?= $node->getNodeData()->getId() ?>" <?= $keep_emails ? 'checked' : '' ?> onclick="keepEmails(<?= $node->getNodeData()->getId() ?>)">
 	</p>
 	<p><i>Notez que ces enregistrements sont des données personnelles et sont concernés par le RGPD.</i></p>
+	<p>
+		<label for="retention_period_<?= $node->getNodeData()->getId() ?>">Durée de conservation (en mois)</label>
+		<input type="number" id="retention_period_<?= $node->getNodeData()->getId() ?>" min="0" value="<?= $retention_period ?>" size="2" onchange="setEmailsRetentionPeriod(<?= $node->getNodeData()->getId() ?>)">
+	</p>
 	<p><a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les e-mails enregistrés</button></a></p>
 </div>
 <div class="admin_form">
@@ -23,8 +27,8 @@ declare(strict_types=1);
 		<label for="smtp_secure_<?= $node->getNodeData()->getId() ?>">Chiffrement</label>
 		<select id="smtp_secure_<?= $node->getNodeData()->getId() ?>" name="smtp_secure" onchange="setEmailParam('smtp_secure', <?= $node->getNodeData()->getId() ?>)">
 			<option value="plain_text" >Aucun (port 25)</option>
-			<option value="tls" <?php echo htmlspecialchars($smtp_secure) === 'tls' ? 'selected' : '' ?>>StartTLS (port 587)</option>
-			<option value="ssl" <?php echo htmlspecialchars($smtp_secure) === 'ssl' ? 'selected' : '' ?>>SSL (port 465)</option>
+			<option value="tls" <?= htmlspecialchars($smtp_secure) === 'tls' ? 'selected' : '' ?>>StartTLS (port 587)</option>
+			<option value="ssl" <?= htmlspecialchars($smtp_secure) === 'ssl' ? 'selected' : '' ?>>SSL (port 465)</option>
 		</select>
 		<input type="hidden" id="smtp_secure_hidden_<?= $node->getNodeData()->getId() ?>" value="">
 	</p>

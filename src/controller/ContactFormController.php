@@ -16,6 +16,15 @@ class ContactFormController
 		echo json_encode(['success' => true, 'checked' => $json['checked']]);
 		die;
 	}
+	static public function setEmailsRetentionPeriod(EntityManager $entityManager, array $json): void
+	{
+		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+		$form_data->updateData('retention_period', (int)$json['months']);
+		$entityManager->persist($form_data);
+		$entityManager->flush();
+		echo json_encode(['success' => true, 'months' => $json['months']]);
+		die;
+	}
 	static public function setEmailParam(EntityManager $entityManager, array $json): void
 	{
 		$form = new FormValidation($json, 'email_params');

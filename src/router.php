@@ -115,6 +115,9 @@ elseif($request->getMethod() === 'POST'){
                 elseif($_GET['action'] === 'keep_emails'){
                     ContactFormController::keepEmails($entityManager, $json);
                 }
+                elseif($_GET['action'] === 'set_retention_period'){
+                    ContactFormController::setEmailsRetentionPeriod($entityManager, $json);
+                }
                 elseif($_GET['action'] === 'set_email_param'){
                     ContactFormController::setEmailParam($entityManager, $json);
                 }

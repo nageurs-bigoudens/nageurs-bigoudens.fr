@@ -44,8 +44,11 @@ class NodeData
     #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: NodeDataAsset::class, cascade: ['persist', 'remove'])]
     private Collection $nda_collection;
 
+    /*#[ORM\OneToMany(mappedBy: 'node_data', targetEntity: Email::class, cascade: ['persist', 'remove'])] // => noeud "form", inutilisé et conflit avec le tableau $emails
+    private Collection $emails;*/
+
     private int $nb_pages = 1;
-    private array $emails = []; // noeud show_emails uniquement
+    private array $emails = []; // => noeud "show_emails"
 
     public function __construct(array $data, Node $node, Collection $nda_collection = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
@@ -70,7 +73,7 @@ class NodeData
     {
         $this->data = $data;
     }*/
-    public function updateData(string $key, string|bool|array $value = ''): void
+    public function updateData(string $key, string|int|bool|array $value = ''): void
     {
         if($value !== ''){
             $this->data[$key] = $value;
@@ -153,39 +156,12 @@ class NodeData
         }
         return $nda->getAsset() ?? null;
     }
-    /*public function addNodeDataAsset(NodeDataAsset $nda): self
-    {
-        if(!$this->nda_collection->contains($nda)){ // sécurité contrainte UNIQUE
-            $this->nda_collection->add($nda);
-        }
-        return $this;
-    }*/
-    /*public function removeNodeDataAsset(NodeDataAsset $nda): self // inutile on peut faire: $node_data->getNodeDataAssets()->removeElement($nda);
-    {
-        $this->nda_collection->removeElement($nda);
-        // pas de synchro dans NodeDataAsset, les champs de cette table ne sont pas nullables
-        return $this;
-    }*/
 
-    // LE setter, sélectionne l'asset à utiliser en remplaçant l'entrée dans NodeDataAsset en fonction du rôle
-    // à mettre théoriquement dans une classe metier dans "service"
-    /*public function replaceAssetForRole(string $role, Asset $asset): void
-    {
-        foreach($this->nda_collection as $nda){
-            if($nda->getRole() === $role){
-                $this->removeNodeDataAsset($nda);
-                break;
-            }
-        }
-        $this->new_nda = new NodeDataAsset($this, $asset, $role);
-        $this->addNodeDataAsset($this->new_nda);
-    }*/
-
-    public function getEmails(): array
+    public function getEmails(): array // appelée dans ShowEmailsBuilder
     {
         return $this->emails;
     }
-    public function setEmails(array $emails): void
+    public function setEmails(array $emails): void // appelée dans Model
     {
         $this->emails = $emails;
     }

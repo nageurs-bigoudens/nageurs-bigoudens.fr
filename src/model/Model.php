@@ -65,8 +65,11 @@ class Model
                 }
 
                 // emails
-                if($parent_block->getName() === 'show_emails'){
+                if($parent_block->getName() === 'show_emails'){ // show_emails = l'afficheur
                     $parent_block->getNodeData()->setEmails($this->getAllEmails());
+
+                    // aller chercher les formulaires à la place (future MAJ?)
+                    //$this->getFormsNodeData();
                 }
             }
         }
@@ -294,8 +297,15 @@ class Model
         $dql = 'SELECT e FROM App\Entity\Email e';
         return $this->entityManager
             ->createQuery($dql)
-            //->setParameter('page', $this->page)
             ->getResult();
     }
-    //private function getEmails(string $sender): array
+    /*private function getFormsNodeData(): array
+    {
+        $dql = 'SELECT fd FROM App\Entity\NodeData fd WHERE node.name_node = form';
+        return $this->entityManager
+            ->createQuery($dql)
+            //->setParameter('page', $this->page)
+            ->getResult();
+    }*/
+    //private function getEmailsBySender(string $sender): array
 }

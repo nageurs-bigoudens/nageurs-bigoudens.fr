@@ -58,6 +58,36 @@ function keepEmails(block_id){
         console.error('Erreur:', error);
     });
 }
+function setEmailsRetentionPeriod(block_id){
+    const form = document.getElementById('retention_period_' + block_id);
+    if(!form){
+        return;
+    }
+
+    fetch('index.php?action=set_retention_period', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: block_id,
+            months: form.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            form.value = data.months;
+            console.log(data.months + " mois");
+        }
+        else{
+            toastNotify("Erreur, le réglage n'a pas été enregistré par le serveur.");
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
 
 function checkCase(id){
     if(document.getElementById('email_address_' + id).value.match('[A-Z]')){

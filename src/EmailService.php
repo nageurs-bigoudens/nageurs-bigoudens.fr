@@ -67,7 +67,7 @@ class EmailService
 
 	        // copie en BDD
 	        if(!$test_email && ($form_data->getData()['keep_emails'] ?? self::KEEP_EMAILS_DEFAULT)){
-	        	$db_email = new Email($name, $email, Config::$email_dest, $message);
+	        	$db_email = new Email($name, $email, Config::$email_dest, $message, $form_data);
 		        $entityManager->persist($db_email);
 		        self::updateLastContactDate($entityManager, $email);
 		        $entityManager->flush();

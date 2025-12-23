@@ -24,10 +24,13 @@ class FormBuilder extends AbstractBuilder
             $_SESSION['captcha'] = self::$captcha->getSolution();
         }
 
+        // données stockées en vrac dans du JSON et récupérées avec extract => changer ça un jour
         $smtp_host = $smtp_host ?? Config::$smtp_host;
         $smtp_secure = $smtp_secure ?? Config::$smtp_secure;
         $smtp_username = $smtp_username ?? Config::$smtp_username;
         $email_dest = $email_dest ?? Config::$email_dest;
+        $keep_emails = (bool)$keep_emails ?? false; // (bool) est inutile mais plus clair
+        $retention_period = (int)($retention_period ?? App\Entity\Email::DEFAULT_RETENTION_PERIOD); // (int) est nécessaire à cause du stockage JSON
 
         $admin_content = '';
         if($_SESSION['admin'])
