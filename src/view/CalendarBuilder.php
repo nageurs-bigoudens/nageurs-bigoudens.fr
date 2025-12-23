@@ -11,6 +11,8 @@ class CalendarBuilder extends AbstractBuilder
     {
         parent::__construct($node);
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
+
+        $calendar_js_file = $_SESSION['admin'] ? 'calendar_admin' : 'calendar';
         
         if(file_exists($viewFile))
         {

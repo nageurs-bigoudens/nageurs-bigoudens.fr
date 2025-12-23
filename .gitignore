@@ -2,6 +2,7 @@ vendor/
 config/config.ini
 public/js/tinymce
 public/js/tinymce-langs
+public/js/fullcalendar
 public/icons
 public/user_data
 public/images

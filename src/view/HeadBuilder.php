@@ -64,9 +64,9 @@ class HeadBuilder extends AbstractBuilder
     {
         return '<link rel="stylesheet" href="' . self::versionedFileURL('css', $name) . '">' . "\n";
     }
-    static function insertJS(string $name): string
+    static function insertJS(string $name, bool $module = false): string
     {
-        return '<script src="' . self::versionedFileURL('js', $name) . '"></script>' . "\n";
+        return '<script ' . ($module ? 'type="module"' : '') . ' src="' . self::versionedFileURL('js', $name) . '"></script>' . "\n";
     }
 
     static function versionedFileURL(string $type, string $filename): string

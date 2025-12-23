@@ -17,11 +17,13 @@
         "post-install-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_fullcalendar.php",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/twbs/bootstrap-icons/icons public/icons"
         ],
         "post-update-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_fullcalendar.php",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/twbs/bootstrap-icons/icons public/icons"
         ]
     },
