@@ -11,8 +11,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: TABLE_PREFIX . 'nodedata_asset')]
-class NodeDataAsset
+#[ORM\Table(name: TABLE_PREFIX . 'asset_employment')]
+class AssetEmployment
 {
     // clé primaire double
     #[ORM\Id]

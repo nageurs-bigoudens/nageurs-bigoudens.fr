@@ -30,8 +30,8 @@ class Asset
     #[ORM\Column(type: "string", length: 64, unique: true)] // doctrine n'a pas d'équivalent au type CHAR des BDD (on voulait CHAR(64)), c'est pas grave!
     private string $hash; // pour détecter deux fichiers identiques, même si leurs noms et les métadonnées changent
 
-    #[ORM\OneToMany(mappedBy: 'asset', targetEntity: NodeDataAsset::class)]
-    private Collection $nda_collection;
+    #[ORM\OneToMany(mappedBy: 'asset', targetEntity: AssetEmployment::class)]
+    private Collection $asset_employment;
 
     public function __construct(string $name, string $mime_type, string $hash)
     {
@@ -61,8 +61,8 @@ class Asset
         return $this->hash;
     }
 
-    public function getNodeDataAssets(): Collection
+    public function getAssetEmployments(): Collection
     {
-        return $this->nda_collection;
+        return $this->asset_employment;
     }
 }

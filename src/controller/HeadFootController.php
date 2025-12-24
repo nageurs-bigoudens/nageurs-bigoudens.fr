@@ -6,6 +6,7 @@ declare(strict_types=1);
 use App\Entity\NodeData;
 use App\Entity\NodeDataAsset;
 use App\Entity\Asset;
+use App\Entity\AssetEmployment;
 use Doctrine\ORM\EntityManager;
 
 class HeadFootController
@@ -103,7 +104,7 @@ class HeadFootController
 					}
 					// entrée pas trouvée
 					if($old_nda === null){
-						$new_nda = new NodeDataAsset($node_data, $asset, $request_params); // $request_params sera le rôle de l'asset
+						$new_nda = new AssetEmployment($node_data, $asset, $request_params); // $request_params sera le rôle de l'asset
 						$entityManager->persist($new_nda);
 					}
 					

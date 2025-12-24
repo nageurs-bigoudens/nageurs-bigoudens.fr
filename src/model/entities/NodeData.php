@@ -41,8 +41,8 @@ class NodeData
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $pagination_limit = null; // pour les post_block et news_block
 
-    #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: NodeDataAsset::class, cascade: ['persist', 'remove'])]
-    private Collection $nda_collection;
+    #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: AssetEmployment::class, cascade: ['persist', 'remove'])]
+    private Collection $asset_employment;
 
     /*#[ORM\OneToMany(mappedBy: 'node_data', targetEntity: Email::class, cascade: ['persist', 'remove'])] // => noeud "form", inutilisé et conflit avec le tableau $emails
     private Collection $emails;*/
@@ -50,11 +50,11 @@ class NodeData
     private int $nb_pages = 1;
     private array $emails = []; // => noeud "show_emails"
 
-    public function __construct(array $data, Node $node, Collection $nda_collection = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
+    public function __construct(array $data, Node $node, Collection $asset_employment = new ArrayCollection, ?string $presentation = null, ?bool $chrono_order = null)
     {
         $this->data = $data;
         $this->node = $node;
-        $this->nda_collection = $nda_collection;
+        $this->asset_employment = $asset_employment;
         if(!empty($presentation) && $presentation === 'grid'){
             $this->grid_cols_min_width = 250;
         }
@@ -137,11 +137,11 @@ class NodeData
 
     public function getNodeDataAssets(): Collection
     {
-        return $this->nda_collection;
+        return $this->asset_employment;
     }
-    public function getNodeDataAssetByRole(string $role): ?NodeDataAsset
+    public function getAssetEmploymentByRole(string $role): ?AssetEmployment
     {
-        foreach($this->nda_collection as $nda){
+        foreach($this->asset_employment as $nda){
             if($nda->getRole() === $role){
                 return $nda;
             }
@@ -150,7 +150,7 @@ class NodeData
     }
     public function getAssetByRole(string $role): ?Asset
     {
-        $nda = $this->getNodeDataAssetByRole($role);
+        $nda = $this->getAssetEmploymentByRole($role);
         if($nda === null){
             return null;
         }
