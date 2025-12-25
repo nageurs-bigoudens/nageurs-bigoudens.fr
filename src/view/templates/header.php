@@ -19,7 +19,7 @@
             <div class="header_content">
                 <div class="header_left_col">
                     <div id="header_logo">
-                        <a href="<?= new URL ?>"><img id="header_logo_content" src="<?= $header_logo ?? '' ?>" alt="header_logo"></a>
+                        <a href="<?= new URL ?>"><img id="header_logo_content" src="<?= $header_logo ?? '' ?>" alt=""></a>
                         <?= $admin_header_logo ?>
                     </div>
                 </div>

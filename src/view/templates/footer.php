@@ -12,12 +12,12 @@
                             <?= $admin_footer_address ?>
                         </div>
                         <div id="footer_email">
-                            <a id="footer_email_content" href="mailto:<?= $email ?>"><?= htmlspecialchars($email ?? '') ?></a>
+                            <a id="footer_email_content" href="mailto:<?= htmlspecialchars($email ?? '') ?>"><?= htmlspecialchars($email ?? '') ?></a>
                             <?= $admin_footer_email ?>
                         </div>
                     </div>
                     <div id="footer_logo">
-                        <a href="<?= new URL ?>"><img id="footer_logo_content" src="<?= $footer_logo ?? '' ?>" alt="logo_alt"></a>
+                        <a href="<?= new URL ?>"><img id="footer_logo_content" src="<?= $footer_logo ?? '' ?>" alt=""></a>
                         <?= $admin_footer_logo ?>
                     </div>
 <?php if($_SESSION['admin']){ ?>
