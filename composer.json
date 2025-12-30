@@ -11,18 +11,19 @@
         "phpmailer/phpmailer": "^7.0",
         "symfony/http-foundation": "^7.3",
         "twbs/bootstrap-icons": "^1.13",
-        "symfony/var-exporter": "^7.0"
+        "symfony/var-exporter": "^7.0",
+        "mklkj/tinymce-i18n": "^25.11"
     },
     "scripts": {
         "post-install-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/mklkj/tinymce-i18n/langs public/js/tinymce-langs",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_fullcalendar.php",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/twbs/bootstrap-icons/icons public/icons"
         ],
         "post-update-cmd": [
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/tinymce/tinymce public/js/tinymce",
-            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_tinymce_lang.php fr_FR",
+            "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/mklkj/tinymce-i18n/langs public/js/tinymce-langs",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/install_fullcalendar.php",
             "PHP_PATH=${PHP_PATH:-php} && $PHP_PATH bin/copy_directory.php vendor/twbs/bootstrap-icons/icons public/icons"
         ]
