@@ -9,18 +9,16 @@ Options -ExecCGI
 # exploration des dossiers
 Options -Indexes
 
+# protection par whitelist
+Require all denied
+<FilesMatch "\.(jpe?g|png|gif|webp|tiff?)$">
+    Require all granted
+</FilesMatch>
+
 
 ## moins utile
 
 # interdire l'accès direct aux fichiers .htaccess et .htpasswd (déjà bloqués normallement)
 <FilesMatch "^\.(htaccess|htpasswd)$">
-    Require all denied
-</FilesMatch>
-
-# supprime des associations extension/handler
-RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar
-
-# fichiers php non accessibles (en plus d'être non exécutables)
-<FilesMatch "\.(php|phtml|php[0-9]|phar)$">
     Require all denied
 </FilesMatch>
