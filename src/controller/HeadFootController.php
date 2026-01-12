@@ -4,7 +4,6 @@
 declare(strict_types=1);
 
 use App\Entity\NodeData;
-use App\Entity\NodeDataAsset;
 use App\Entity\Asset;
 use App\Entity\AssetEmployment;
 use Doctrine\ORM\EntityManager;
@@ -82,7 +81,7 @@ class HeadFootController
 			}
 
 			/* -- écriture du fichier sur le disque -- */
-			if(!ImageUploadController::imagickCleanImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $name, $extension)){ // recréer l’image pour la nettoyer
+			if(!ImageUploadController::imagickCleanAndWriteImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $name, $extension)){ // recréer l’image pour la nettoyer
 				http_response_code(500);
 	            echo json_encode(['success' => false, 'message' => 'Erreur image non valide.', 'format' => $extension]);
 			}
@@ -146,6 +145,4 @@ class HeadFootController
 		}
 		die;
 	}
-
-	//static public function uploadImage(EntityManager $entityManager, array $request_params): void
 }

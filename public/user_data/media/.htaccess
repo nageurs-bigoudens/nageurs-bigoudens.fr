@@ -1,0 +1,10 @@
+# désactiver l'interpréteur PHP
+php_flag engine off
+
+# exploration des dossiers
+Options -Indexes
+
+# interdire l'accès directaux fichiers .htaccess et .htpasswd
+<FilesMatch "^\.(htaccess|htpasswd)$">
+    Require all denied
+</FilesMatch>

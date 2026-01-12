@@ -231,11 +231,16 @@ elseif($request->getMethod() === 'POST'){
             }
         }
 
-        // upload d'image dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur)
+        // upload avec FormData
         elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false)
         {
+            // dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur ou glisser-déposer)
             if($request->query->has('action') && $request->query->get('action') === 'upload_image_tinymce'){
                 ImageUploadController::imageUploadTinyMce();
+            }
+            // dans tinymce, des quatre méthodes: bouton "link", drag & drop, html, base64
+            elseif($request->query->has('action') && $request->query->get('action') === 'upload_file_tinymce'){
+                FileUploadController::fileUploadTinyMce();
             }
             elseif($request->query->has('head_foot_image')){
                 HeadFootController::uploadAsset($entityManager, $request->query->get('head_foot_image'));

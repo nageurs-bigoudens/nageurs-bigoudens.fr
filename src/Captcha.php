@@ -10,12 +10,10 @@ class Captcha
 {
 	private int $a;
 	private int $b;
-	private int $solution;
 
 	public function __construct(){
 		$this->a = rand(2, 9);
 		$this->b = rand(2, 9);
-		$this->solution = $this->a * $this->b;
 	}
 
 	public function getA(): string
@@ -28,7 +26,7 @@ class Captcha
 	}
 	public function getSolution(): int
 	{
-		return $this->solution;
+		return ($this->a * $this->b);
 	}
 
 	private function toLettersFrench(int $number): string
@@ -45,6 +43,8 @@ class Captcha
 			default => '', // erreur
 		};
 	}
+	
+	// (à déplacer dans FormValidation?)
 	static public function controlInput(string $input = '0'): int
 	{
 	    // un POST est une chaîne qu'on doit convertir en nombre dans deux conditions:

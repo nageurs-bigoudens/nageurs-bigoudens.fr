@@ -72,6 +72,9 @@ function deleteArticle(id){
 
 class Editor
 {
+    extensions_white_list = ['pdf', 'rtf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp'];
+    // = $extensions_white_list côté PHP
+
     constructor(id){
         this.id = id;
         this.article = document.getElementById(this.id);
@@ -108,7 +111,7 @@ class Editor
         tinymce.init({
             selector: `[id="${this.id}"]`, // écrire [id="246"] au lieu de #246 parce que l'id commence par un chiffre
             language: 'fr_FR',
-            language_url: 'js/tinymce-langs/fr_FR.js', // téléchargement ici: https://cdn.jsdelivr.net/npm/tinymce-lang/langs/fr_FR.min.js
+            language_url: 'js/tinymce-langs/fr_FR.js',
             license_key: 'gpl',
             branding: false,
             plugins: 'lists link autolink table image media autoresize help',
@@ -116,6 +119,13 @@ class Editor
             menubar: false,
             toolbar_mode: 'wrap',
             statusbar: false,
+            link_title: false, // supprime le champ compliqué "titre" (apparaît au survol du lien) dans la fenêtre "link"
+            /*link_attributes_postprocess: (attrs) => { // modifier les attributs des liens créés
+                console.log(attrs);
+                if (attrs.rel) {
+                    attrs.rel += 'noreferrer'; // cacher la page d'où on vient
+                }
+            },*/
             // les fonctions fléchées permettent de garder le contexte (= this)
             setup: (editor) => {
                 editor.on('init', () => {
@@ -141,55 +151,61 @@ class Editor
                     }
                 });
                 let skipPastePreProcess = false;
-                editor.on('Paste', function (e){ // déclenchement AVANT PastePreProcess et quelque que soit le contenu collé
-                    const clipboardData = (e.clipboardData || e.originalEvent.clipboardData);
-                    if(!clipboardData){
+                editor.on('Paste', (e) => { // déclenchement AVANT PastePreProcess et quelque que soit le contenu collé
+                    if(!e.clipboardData){ // e.clipboardData: DataTransfer
                         return;
                     }
-                    const items = clipboardData.items;
-                    let foundImage = false;
+                    const items = e.clipboardData.items; // base64
+                    const files = e.clipboardData.files; // explorateur de fichiers
+                    let found_file = false;
 
-                    for(let i = 0; i < items.length; i++){
-                        let item = items[i];
+                    // données dans files
+                    if(files && files.length > 0){ // noter que files peut être vide, alors que items non
+                        for(let i = 0; i < files.length; i++){
+                            let file = files[i];
+                            
+                            if(this.extensions_white_list.includes(file.name.split('.').pop()?.toLowerCase() || '')){
+                                found_file = true;
+                                this.uploadDocument(file, editor);
+                            }
+                            else if(file.type.indexOf('image') !== -1){ 
+                                found_file = true;
+                                this.uploadImageBase64(file, editor);
+                            }
+                        }
+                    }
+                    // données dans items
+                    else{ // les images collées depuis l'explorateur sont aussi dans items, or elles sont déjà gérées plus haut
+                        for(let i = 0; i < items.length; i++){
+                            let item = items[i];
 
-                        if(item.type.indexOf('image') !== -1){ // test type MIME contenant image
-                            foundImage = true;
-
-                            const file = item.getAsFile(); // presse-papier => fichier lisible
-                            const reader = new FileReader();
-
-                            reader.onload = function (event){ // fonction exécutée lorsque reader.readAsDataURL(file) est terminée
-                                const base64Data = event.target.result; // données de l'image
-
-                                fetch('index.php?action=upload_image_base64', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ image_base64: base64Data })
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if(data.location){
-                                        editor.insertContent('<img src="' + data.location + '">');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Erreur lors de l’upload de l’image base64 :', error);
-                                });
-                            };
-                            reader.readAsDataURL(file); // lecture asynchrone du fichier
+                            if(item.type.indexOf('image') !== -1){ // test type MIME contenant image
+                                found_file = true;
+                                const file = item.getAsFile(); // presse-papier => fichier lisible
+                                if(file){
+                                    this.uploadImageBase64(file, editor);
+                                }
+                                else{
+                                    console.error('fichier invalide');
+                                }
+                            }
                         }
                     }
 
-                    if(foundImage){
+                    if(found_file){
                         e.preventDefault(); // supprime le collage automatiue
                         skipPastePreProcess = true; // désactiver le PastePreProcess pour ce collage
                     }
                 });
                 editor.on('PastePreProcess', function (e){ // déclenchement au collage AVANT insertion dans l'éditeur
+                    if(skipPastePreProcess){
+                        skipPastePreProcess = false; // réinitialiser pour la prochaine fois
+                        return; // ignorer ce traitement
+                    }
+
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(e.content, 'text/html');
                     const images = doc.querySelectorAll('img');
-                    
                     let downloads_in_progress = [];
                     
                     images.forEach(img => {
@@ -221,7 +237,6 @@ class Editor
                     // une image web ou plus: différer l'insertion dans l'éditeur le temps que le serveur télécharge les images
                     if(downloads_in_progress.length > 0){
                         e.preventDefault();
-
                         Promise.all(downloads_in_progress).then(() => {
                             e.content = doc.body.innerHTML; // remplacement du HTML dans l'éditeur par la copie modifiée (doc)
                             editor.insertContent(e.content);
@@ -230,30 +245,58 @@ class Editor
                     else{
                         e.content = doc.body.innerHTML; // remplacement du HTML dans l'éditeur par la copie modifiée (doc)
                     }
-                }); // fin editor.on('PastePreProcess'...
-            },
-            // upload d'image natif de tinymce avec le bouton "Insérer une image"
-            images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
-                const formData = new FormData();
-                formData.append("file", blobInfo.blob());
-
-                fetch("index.php?action=upload_image_tinymce", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.location) {
-                        resolve(data.location);
-                    }
-                    else {
-                        reject("Erreur: Chemin d'image invalide");
-                    }
-                })
-                .catch(error => {
-                    reject("Erreur lors de l'upload");
                 });
-            }),
+                // glisser-déposer de fichiers (sauf images qui sont déjà gérées nativement)
+                editor.on('drop', (e) => {
+                    const data = e.dataTransfer;
+                    if(!data || !data.files || data.files.length === 0){
+                        return; // Laisser TinyMCE gérer (texte, images déjà supportées, etc.)
+                    }
+                    const files = data.files;
+
+                    let has_documents = false;
+                    for(let i = 0; i < files.length; i++){
+                        if(this.extensions_white_list.includes(files[i].name.split('.').pop()?.toLowerCase() || '')){
+                            has_documents = true;
+                            break;
+                        }
+                    }
+                    
+                    if(has_documents){
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        for(let i = 0; i < files.length; i++){
+                            let file = files[i];
+                            
+                            if(this.extensions_white_list.includes(file.name.split('.').pop()?.toLowerCase() || '')){
+                                this.uploadDocument(file, editor);
+                            }
+                            else if(file.type.indexOf('image') !== -1){
+                                this.uploadImageBase64(file, editor);
+                            }
+                        }
+                    }
+                    // autres cas: tinymce gère tout seul
+                });
+            },
+            // upload d'image avec le bouton "Insérer une image"
+            images_upload_handler: this.images_upload_handler, // = fonction fléchée
+            // upload de documents avec le bouton "insérer un lien"
+            files_upload_handler: this.files_upload_handler, // = fonction fléchée
+            documents_file_types: [ // files_upload_handler a besoin qu'on lui donne tous les types mime
+                { mimeType: 'application/pdf', extensions: [ 'pdf' ] },
+                { mimeType: 'application/rtf', extensions: [ 'rtf' ] },
+                { mimeType: 'application/msword', extensions: [ 'doc' ] },
+                { mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', extensions: [ 'docx' ] },
+                { mimeType: 'application/vnd.ms-excel', extensions: [ 'xls' ] },
+                { mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', extensions: [ 'xlsx' ] },
+                { mimeType: 'application/vnd.ms-powerpoint', extensions: [ 'ppt' ] },
+                { mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', extensions: [ 'pptx' ] },
+                { mimeType: 'application/vnd.oasis.opendocument.text', extensions: [ 'odt' ] },
+                { mimeType: 'application/vnd.oasis.opendocument.spreadsheet', extensions: [ 'ods' ] },
+                { mimeType: 'application/vnd.oasis.opendocument.presentation', extensions: [ 'odp' ] }
+            ],
             image_caption: true
         });
     }
@@ -385,9 +428,107 @@ class Editor
         delete editors[this.id];
         console.log(`Editor ${this.id} détruit.`);
     }*/
+
+    images_upload_handler = (blobInfo, progress) => new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", blobInfo.blob());
+
+        fetch('index.php?action=upload_image_tinymce', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.location){
+                resolve(data.location);
+            }
+            else{
+                reject("Erreur: Chemin d'image invalide");
+            }
+        })
+        .catch(error => {
+            reject("Erreur lors de l'upload");
+        });
+    });
+    files_upload_handler = (blobInfo, progress) => new Promise((resolve, reject) => { // utilisation = bouton "link" (OU drag & drop, et oui)
+        const formData = new FormData();
+        formData.append("file", blobInfo.blob());
+
+        fetch('index.php?action=upload_file_tinymce', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.location){
+                // resolve et reject fonctionne avec Promise => type de retour standardisé et évite l'utilistion de callbacks
+                resolve({
+                    url: data.location,
+                    fileName: blobInfo.filename(),
+                });
+            }
+            else{
+                reject("Erreur: Chemin du fichier invalide");
+            }
+        })
+        .catch(error => {
+            reject("Erreur lors de l'upload");
+        });
+    });
+
+    uploadImageBase64(file, editor){
+        const reader = new FileReader();
+
+        reader.onload = function (event){ // fonction exécutée lorsque reader.readAsDataURL(file) est terminée
+            const base64_target = event.target;
+            if(!base64_target || !base64_target.result){
+                console.error("erreur de lecture du fichier");
+                return;
+            }
+
+            fetch('index.php?action=upload_image_base64', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image_base64: base64_target.result })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.location){
+                    editor.insertContent('<img src="' + data.location + '">');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de l’upload de l’image base64 :', error);
+            });
+        };
+        reader.readAsDataURL(file); // lecture asynchrone du fichier
+    }
+    uploadDocument(file, editor){ // utilisation = copier-coller de l'explorateur de fichiers
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        fetch('index.php?action=upload_file_tinymce', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.location){
+                // créer le lien <a>
+                const file_name = file.name;
+                const extension = file_name.split('.').pop()?.toLowerCase() || '';
+                const target = extension === 'pdf' ? 'target="_blank"' : ''; // PDF = page
+                editor.insertContent(`<a href="${data.location}" ${target} title="${file_name}">[${extension}] ${file_name}</a>`);
+            }
+            else {
+                console.error("Erreur: Chemin du fichier invalide");
+            }
+        })
+        .catch(error => {
+            console.error("Erreur lors de l'upload du document :", error);
+        });
+    }
 }
-
-
 
 
 
