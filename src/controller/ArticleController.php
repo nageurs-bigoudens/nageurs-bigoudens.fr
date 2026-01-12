@@ -73,38 +73,39 @@ class ArticleController
 	        }
 
 	        // nouvel article
-	        if($json['id'][0] === 'n') // ici $id est un bloc
-	        {
+	        if($json['id'][0] === 'n'){ // ici $id est un bloc
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
 	        	if(!$model->findNodeById($section_id)){ // erreur mauvais id
 	        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad id']);
 	        		die;
 	        	}
 	        	$model->makeSectionNode();
-	        	$node = $model->getNode(); // = <section>
+	        	$section = $model->getNode();
 	        	
-	        	if(is_array($content)){ // cas d'une nouvelle "news"
-		        	if($node->getPage()->getEndOfPath() !== $json['from']){ // erreur mauvais from
+	        	// ajout d'une news
+	        	if(is_array($content)){
+		        	if($section->getPage()->getEndOfPath() !== $json['from']){ // erreur mauvais from
 		        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad from']);
 		        		die;
 		        	}
 
 	                $date = new \DateTime($content['d'] . ':' . (new \DateTime)->format('s')); // l'input type="datetime-local" ne donne pas les secondes, on les ajoute: 'hh:mm' . ':ss'
 	                $article = new Article($content['i'], $date, $content['t'], $content['p']);
-	                $article_node = new Node('new', count($node->getChildren()) + 1, $node, $node->getPage(), $article);
+	                $article_node = new Node('new', count($section->getChildren()) + 1, $section, $section->getPage(), $article);
 	        	}
-	        	else{ // autres cas
+	        	// ajout d'un post
+	        	else{
 	        		$timestamp = time();
 		        	$date = new \DateTime;
 		        	$date->setTimestamp($timestamp);
 
-		        	$article = new Article($content, $date); // le "current" timestamp est obtenu par la BDD
-		        	$placement = $json['placement'] === 'first' ? 0 : count($node->getChildren()) + 1; // 
-		        	$article_node = new Node('post', $placement, $node, $node->getPage(), $article);
+		        	$article = new Article($content, $date);
+		        	$placement = $json['placement'] === 'first' ? 0 : count($section->getChildren()) + 1; // 
+		        	$article_node = new Node('post', $placement, $section, $section->getPage(), $article);
 
 		        	if($json['placement'] === 'first'){
-		        		$node->addChild($article_node);
-		        		$node->reindexPositions(); // régénère les positions (0 devient 1, 1 devient 2...)
+		        		$section->addChild($article_node);
+		        		$section->sortChildren(true); // mettre $article_node au début du tableau puis régénérer les positions (0 devient 1, 1 devient 2...)
 		        	}
 	        	}
 
@@ -119,7 +120,7 @@ class ArticleController
 
 	        if($model->makeArticleNode($id)) // une entrée est trouvée
 	        {
-	        	$node = $model->getArticleNode(); // article
+	        	$node = $model->getArticleNode();
 	        	switch($json['id'][0]){
 					case 'i':
 						$node->getArticle()->setContent($content);
