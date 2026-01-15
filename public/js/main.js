@@ -36,6 +36,23 @@ function toastNotify(message){
     setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 5000);
 }
 
+
+// réussite de getElementById
+function getElementOrThrow(id) {
+    const elem = document.getElementById(id);
+    if (!elem) {
+        throw new Error("l'élément d'id: " + id + " non trouvé");
+    }
+    return elem;
+}
+// l'erreur attribut "value" non trouvé devient l'élement attrapé n'a pas le bon type (c'est un peu plus clair)
+function assertElementType(elem, ctor) {
+    if (!(elem instanceof ctor)) {
+        throw new Error(`l'élement attrapé n'a pas le bon type. type attendu: ${ctor.name}, type obtenu: ${elem.tagName}`);
+    }
+}
+
+
 function controlURL(input){
 	const url = input.value.trim();
 	if(!url){

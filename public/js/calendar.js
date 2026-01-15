@@ -1,7 +1,7 @@
 // js/calendar.js
 
 document.addEventListener('DOMContentLoaded', function(){
-    const calendarEl = document.getElementById('calendar');
+    const calendarEl = getElementOrThrow('calendar');
     let selected_start_string = null;
 
     const calendar = new FullCalendar.Calendar(calendarEl,{
@@ -58,7 +58,10 @@ document.addEventListener('DOMContentLoaded', function(){
         //unselect: function(event, view){},
 
         eventClick: function(info){
-            const aside = document.querySelector('aside');
+            const modal = getElementOrThrow('event_modal');
+            if(!info.event.start || !info.event.end){
+                throw new Error('modale non conforme');
+            }
             const checked = info.event.allDay ? 'checked' : '';
 
             // change des objets Date en chaînes compatibles avec les input
@@ -75,25 +78,25 @@ document.addEventListener('DOMContentLoaded', function(){
             const start_date = start.split('T')[0];
             const start_hour = (info.event.allDay ? '' : '<br>à ' + start.split('T')[1]).replace(":", "h");
             const formated_start = start_date.split('-')[2] + '/' + start_date.split('-')[1] + '/' + start_date.split('-')[0] + start_hour;
-            const end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end, info.event.allDay);
+            const end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end);
             const end_date = end.split('T')[0];
             const end_hour = (info.event.allDay ? '' : '<br>à ' + end.split('T')[1]).replace(":", "h");
             const formated_end = end_date.split('-')[2] + '/' + end_date.split('-')[1] + '/' + end_date.split('-')[0] + end_hour;
 
-            let aside_content = `<div id="event" style="border-color: ` + info.event.backgroundColor +`;">
+            let modal_content = `<div id="event" style="border-color: ` + info.event.backgroundColor +`;">
                     <h3>` + info.event.title + `</h3>
                     <p><i>` + info.event.extendedProps.description + `</i></p>`;
             if(checked && (formated_start === formated_end)){ // affichage simplifié évènement d'un jour
-                aside_content = aside_content + `<p>le ` + formated_start + `</p>`;
+                modal_content = modal_content + `<p>le ` + formated_start + `</p>`;
             }
             else{
-                aside_content = aside_content + `<p>du ` + formated_start + `</p>
+                modal_content = modal_content + `<p>du ` + formated_start + `</p>
                         <p>au ` + formated_end + `</p>`;
             }
-            aside_content += `<button class="event_close_button">Fermer</button>
+            modal_content += `<button class="event_close_button">Fermer</button>
                 </div>`;
             
-            aside.innerHTML = aside_content;
+            modal.innerHTML = modal_content;
             calendar.updateSize();
         },
         viewDidMount: function(info){ // déclenché lorsque qu'une nouvelle vue est chargée (mois, semaine...)
@@ -105,8 +108,8 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     
     function hideModal(){
-        const aside = document.querySelector('aside');
-        aside.innerHTML = '';
+        const modal = getElementOrThrow('event_modal');
+        modal.innerHTML = '';
         calendar.updateSize();
     }
 
@@ -118,6 +121,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // technique de la délégation d'événements pour utiliser un bouton ajouté dynamiquement
     document.addEventListener('click', function(event){
+    	if(!event.target){
+            throw new Error('évènement click non conforme');
+        }
+        assertElementType(event.target, HTMLElement);
         if(event.target.classList.contains('event_close_button')){
             hideModal();
         }

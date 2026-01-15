@@ -1,7 +1,7 @@
 // js/calendar_admin.js
 
 document.addEventListener('DOMContentLoaded', function(){
-    const calendarEl = document.getElementById('calendar');
+    const calendarEl = getElementOrThrow('calendar');
     let selected_start_string = null;
     let event_selected = false; // pour event.remove()
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function(){
         select: function(info){
             selected_start_string = info.startStr; // variable "globale"
             event_selected = false;
-            const aside = document.querySelector('aside');
+            const modal = getElementOrThrow('event_modal');
             let checked = '';
             let input = 'datetime-local';
 
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
 
-            const aside_content = `<div id="form_event">
+            const modal_content = `<div id="form_event">
                     <div class="event_title_box">
                         <h2>Nouvel évènement</h2>
                     </div>
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     <button class="submit_new_event">Enregistrer</button>
                     <button class="event_close_button">Annuler</button>
                 </div>`;
-            aside.innerHTML = aside_content;
+            modal.innerHTML = modal_content;
             calendar.updateSize();
         },
         // sélection d'une date simple sur mobile, évite des problèmes de conflit avec eventClick
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function(){
         //unselect: function(event, view){},
         eventClick: function(info){
             event_selected = true; // variable "globale"
-            const aside = document.querySelector('aside');
+            const modal = getElementOrThrow('event_modal');
             const checked = info.event.allDay ? 'checked' : '';
             const input = info.event.allDay ? 'date' : 'datetime-local';
 
@@ -153,9 +153,9 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             const formated_start = formatDate(info.event.start);
-            const formated_end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end, info.event.allDay);
+            const formated_end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end);
             
-            const aside_content = `<div id="form_event" style="border-color: ` + info.event.backgroundColor +`;">
+            const modal_content = `<div id="form_event" style="border-color: ` + info.event.backgroundColor +`;">
                     <div class="event_title_box">
                         <h2>Modifier un évènement</h2>
                     </div>
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     <button class="event_close_button">Annuler</button>
                     <button class="delete_event">Supprimer</button>
                 </div>`;
-            aside.innerHTML = aside_content;
+            modal.innerHTML = modal_content;
             calendar.updateSize();
         },
         viewDidMount: function(info){ // déclenché lorsque qu'une nouvelle vue est chargée (mois, semaine...)
@@ -200,21 +200,41 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     
     function hideModal(){
-        const aside = document.querySelector('aside');
+        const modal = getElementOrThrow('event_modal');
         event_selected = false;
-        aside.innerHTML = '';
+        modal.innerHTML = '';
         calendar.updateSize();
     }
 
     function submitEvent(new_event){
-        const event_title = document.getElementById('event_title').value;
-        const event_description = document.getElementById('event_description').value;
-        const event_all_day = document.getElementById('event_all_day').checked;
-        let event_start = document.getElementById('event_start').value;
-        let event_end = document.getElementById('event_end').value;
-        const event_color = document.getElementById('event_color').value; // #3788d8 par défaut
-        const event_id = new_event ? '' : document.getElementById('event_id').value;
+        const event_title_input = getElementOrThrow('event_title');
+        const event_description_input = getElementOrThrow('event_description');
+        const event_all_day_input = getElementOrThrow('event_all_day');
+        const event_start_input = getElementOrThrow('event_start');
+        const event_end_input = getElementOrThrow('event_end');
+        const event_color_input = getElementOrThrow('event_color');
+        assertElementType(event_title_input, HTMLInputElement);
+        assertElementType(event_description_input, HTMLTextAreaElement);
+        assertElementType(event_all_day_input, HTMLInputElement);
+        assertElementType(event_start_input, HTMLInputElement);
+        assertElementType(event_end_input, HTMLInputElement);
+        assertElementType(event_color_input, HTMLInputElement);
 
+        const event_title = event_title_input.value;
+        const event_description = event_description_input.value;
+        const event_all_day = event_all_day_input.checked;
+        let event_start = event_start_input.value;
+        let event_end = event_end_input.value;
+        const event_color = event_color_input.value; // #3788d8 par défaut
+        
+        let event_id = '';
+        if(!new_event){
+            const event_id_input = getElementOrThrow('event_id');
+            assertElementType(event_id_input, HTMLInputElement);
+            event_id = event_id_input.value;
+        }
+
+        // contrôle de saisie
         if(event_title.length !== 0 && event_start.length !== 0 && event_end.length !== 0 && event_color.length !== 0
             && (new_event || event_id.length !== 0))
         {
@@ -238,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function(){
             // création
             if(new_event){
                 const event = {
+                    id: '',
                     title: event_title,
                     description: event_description,
                     allDay: event_all_day,
@@ -269,7 +290,9 @@ document.addEventListener('DOMContentLoaded', function(){
             // modification
             else{
                 const event = calendar.getEventById(event_id);
-
+                if(!event){
+                    throw new Error("Événement non trouvé !");
+                }
                 if(event){
                     const event_copy = {
                         id: parseInt(event.id),
@@ -316,13 +339,17 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     function checkAllDay(){
-        const event_start_input = document.getElementById('event_start');
-        const event_end_input = document.getElementById('event_end');
+        const event_start_input = getElementOrThrow('event_start');
+        const event_end_input = getElementOrThrow('event_end');
+        const event_all_day = getElementOrThrow('event_all_day');
+        assertElementType(event_start_input, HTMLInputElement);
+        assertElementType(event_end_input, HTMLInputElement);
+        assertElementType(event_all_day, HTMLInputElement);
 
         const start = event_start_input.value;
         const end = event_end_input.value;
 
-        if(document.getElementById('event_all_day').checked){
+        if(event_all_day.checked){
             event_start_input.type = 'date';
             event_end_input.type = 'date';
 
@@ -341,8 +368,15 @@ document.addEventListener('DOMContentLoaded', function(){
         if(!confirm("Voulez-vous vraiment supprimer cet évènement du calendrier?")){
             return;
         }
-        const event_id = document.getElementById('event_id').value;
+        const event_tag = document.getElementById('event_id'); // cible input hidden
+        if(!event_tag || !(event_tag instanceof HTMLInputElement)){
+            return;
+        }
+        const event_id = event_tag.value;
         const event = calendar.getEventById(event_id);
+        if(!event){
+            throw new Error("Événement non trouvé !");
+        }
         
         fetch('index.php?action=remove_event', {
             method: 'POST',
@@ -377,6 +411,10 @@ document.addEventListener('DOMContentLoaded', function(){
     // boutons dans la "modale"
     // technique de la délégation d'événements pour utiliser un bouton ajouté dynamiquement
     document.addEventListener('click', function(event){
+    	if(!event.target){
+            throw new Error('évènement click non conforme');
+        }
+        assertElementType(event.target, HTMLElement);
         if(event.target.classList.contains('event_close_button')){
             hideModal();
         }
