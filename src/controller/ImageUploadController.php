@@ -38,7 +38,7 @@ class ImageUploadController
 
 	        // enregistrement
 	        // writeImage utilise l'extension du fichier et ignore le format détecté
-	        // imagemagick est à l'origine une appli console, elle considère que l'extension montre l'intention de 
+	        // imagemagick est à l'origine une appli console, elle considère que l'extension montre l'intention de l'utilisateur
 	        $imagick->writeImage($local_path); // enregistrement
 	        $imagick->clear();
 	        $imagick->destroy();
