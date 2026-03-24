@@ -1,5 +1,5 @@
 <?php
-// src/Captcha.php
+// src/service/Captcha.php
 //
 // la solution est stockée dans une unique variable $_SESSION['captcha']
 // => on pourrait appliquer le pattern "singleton" (justification = le captcha devient une sorte de ressource partagée)

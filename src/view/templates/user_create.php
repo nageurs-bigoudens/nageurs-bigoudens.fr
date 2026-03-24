@@ -27,7 +27,7 @@ $_SESSION['captcha'] = $captcha->getSolution(); // enregistrement de la réponse
         <main>
             <section>
                 <h3>Bienvenue.</h3>
-                <p style="text-align: center;">Veuillez choisir les codes que vous utiliserez pour gérer le site.</p>
+                <p style="text-align: center;">Pour commencer, veuillez créer un compte administrateur.</p>
                 <div class="basic_div">
                     <p style="color: red; font-style: italic;"><?= $error ?></p>
                     <form method="post" action="index.php?action=create_user" >

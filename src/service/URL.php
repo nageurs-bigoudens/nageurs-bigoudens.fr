@@ -1,5 +1,5 @@
 <?php
-// src/URL.php
+// src/service/URL.php
 
 declare(strict_types=1);
 

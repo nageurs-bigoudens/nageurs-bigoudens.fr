@@ -1,5 +1,5 @@
 <?php
-// src/router.php
+// src/service/router.php
 //
 /* fonctionnement:
 => 1er test, méthode http: GET, POST ou autre chose
@@ -8,7 +8,7 @@
 "application/json" = requête AJAX avec fetch()
 "multipart/form-data" = upload d'image par tinymce
 $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' requête AJAX xhs, non utilisée
-=> 3ème test, comme le 2ème test mais uniquement si $_SESSION['admin'] est vrai
+=> 3ème test, comme le 2ème test mais uniquement si IS_ADMIN est vrai
 */
 
 declare(strict_types=1);
@@ -39,12 +39,12 @@ if($request->getMethod() === 'GET'){
     }
 
     // pages interdites
-    if(!$_SESSION['admin'] && in_array(CURRENT_PAGE, ['menu_paths', 'new_page', 'user_edit', 'emails'])){
+    if(!IS_ADMIN && in_array(CURRENT_PAGE, ['menu_paths', 'new_page', 'user_edit', 'emails'])){
         header('Location: ' . new URL);
         die;
     }
 
-    if($_SESSION['admin'] === true){
+    if(IS_ADMIN === true){
         // ...
     }
 
@@ -59,7 +59,7 @@ elseif($request->getMethod() === 'POST'){
 
     // table "user" vide
     if(!UserController::existUsers($entityManager)){
-        UserController::createUser($entityManager);
+        UserController::createAdminUser($entityManager);
     }
     
     // requêtes JSON avec fetch()
@@ -86,7 +86,7 @@ elseif($request->getMethod() === 'POST'){
     }
 
 
-    if($_SESSION['admin'] === true)
+    if(IS_ADMIN === true)
     {
         /* -- requêtes AJAX -- */
 

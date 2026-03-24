@@ -75,7 +75,7 @@ class NewBuilder extends AbstractBuilder
             $article_buttons = '';
             $date_buttons = '';
             $admin_buttons = '';
-            if($_SESSION['admin']){
+            if(IS_ADMIN){
                 if(CURRENT_PAGE === 'article'){
                     $title_js = 'onclick="openEditor(\'' . $id_title . '\')"';
                     $modify_title = '<p id="edit-' . $id_title . '"><button ' . $title_js . '><img class="action_icon" src="assets/edit.svg">Titre</button></p>' . "\n";

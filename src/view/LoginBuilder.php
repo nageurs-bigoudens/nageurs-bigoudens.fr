@@ -10,7 +10,7 @@ class LoginBuilder extends AbstractBuilder
     public function __construct(Node $node)
     {
         // déjà connecté?
-        if($_SESSION['admin'])
+        if(IS_ADMIN)
         {
             header('Location: ' . new URL);
             die;

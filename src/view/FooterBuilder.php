@@ -27,7 +27,7 @@ class FooterBuilder extends AbstractBuilder
             $breadcrumb = $this->html;
 
             $empty_admin_zone = '';
-            if($_SESSION['admin'])
+            if(IS_ADMIN)
             {
                 // données du footer
                 $admin_footer_name = '<input type="text" id="footer_name_input" class="hidden" value="' . htmlspecialchars($name ?? '') . '" placeholder="raison sociale" size="30">

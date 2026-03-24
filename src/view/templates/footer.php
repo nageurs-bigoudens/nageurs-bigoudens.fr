@@ -20,7 +20,7 @@
                         <a href="<?= new URL ?>"><img id="footer_logo_content" src="<?= $footer_logo ?? '' ?>" alt=""></a>
                         <?= $admin_footer_logo ?>
                     </div>
-<?php if($_SESSION['admin']){ ?>
+<?php if(IS_ADMIN){ ?>
                     <script>
                         let footer_name = new InputText('footer_name');
                         let footer_address = new InputText('footer_address');

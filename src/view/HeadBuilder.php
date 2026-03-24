@@ -32,7 +32,7 @@ class HeadBuilder extends AbstractBuilder
                 $js .= self::insertJS('modif_page');
             }
 
-            if($_SESSION['admin']){
+            if(IS_ADMIN){
                 // édition éléments sur toutes les pages (header, footer et favicon)
                 $js .= self::insertJS('Input');
 

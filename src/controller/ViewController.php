@@ -21,7 +21,7 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         /* 1/ 1er contrôle des paramètres */
 
         // mode modification d'une page
-        if($_SESSION['admin']
+        if(IS_ADMIN
             && $request->query->has('mode') && $request->query->get('mode') === 'page_modif'
             && !in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths', 'user_edit', 'connection']))
         {
@@ -29,7 +29,7 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         }
         // page article: mode création et erreurs d'id
         if(CURRENT_PAGE === 'article'){
-            if($_SESSION['admin']){
+            if(IS_ADMIN){
                 if(!$request->query->has('id')){
                     return new Response($this->html, 302);
                 }
@@ -58,7 +58,7 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         /* 3/ 2ème contrôle des paramètres avec les données récupérées */
 
         // article non trouvé en BDD
-        if(CURRENT_PAGE === 'article' && !$_SESSION['admin'] && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
+        if(CURRENT_PAGE === 'article' && !IS_ADMIN && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
             return new Response($this->html, 302);
         }
 

@@ -20,7 +20,7 @@ class MenuBuilder extends AbstractBuilder
         
         if(file_exists($viewFile))
         {
-            if($_SESSION['admin']){
+            if(IS_ADMIN){
                 $this->unfoldMenu(Model::$menu);
                 
                 if($template){

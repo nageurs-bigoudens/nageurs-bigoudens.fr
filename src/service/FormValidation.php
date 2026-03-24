@@ -1,5 +1,5 @@
 <?php
-// src/FormValidation.php
+// src/service/FormValidation.php
 
 declare(strict_types=1);
 
@@ -181,7 +181,7 @@ class FormValidation
 			$this->errors[] = 'forbidden_characters';
 		}
 
-		if($this->data['login'] !== $_SESSION['user']){
+		if($this->data['login'] !== $_SESSION['user']['username']){
 			$this->errors[] = 'bad_login_or_password';
 		}
 		if($this->data['login'] === $new_login){
@@ -205,7 +205,7 @@ class FormValidation
 			$this->errors[] = 'forbidden_characters';
 		}
 
-		if($this->data['login'] !== $_SESSION['user']){
+		if($this->data['login'] !== $_SESSION['user']['username']){
 			$this->errors[] = 'bad_login_or_password';
 		}
 		if($this->data['password'] === $new_password){

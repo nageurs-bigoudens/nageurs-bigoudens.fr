@@ -12,7 +12,7 @@ class UserEditBuilder extends AbstractBuilder
 	public function __construct(Node $node)
 	{
 		// pour éviter les arnaques
-		if(!$_SESSION['admin'])
+		if(!IS_ADMIN)
         {
             header('Location: ' . new URL);
             die;

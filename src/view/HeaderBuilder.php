@@ -52,7 +52,7 @@ class HeaderBuilder extends AbstractBuilder
             $social_networks = '';
             
             // boutons mode admin
-            if($_SESSION['admin']){
+            if(IS_ADMIN){
                 // assets dans classe header_additional_inputs
                 $admin_head_favicon = '<input type="file" id="head_favicon_input" class="hidden" accept="image/png, image/jpeg, image/gif, image/webp, image/tiff, image/x-icon, image/bmp">
                     <button id="head_favicon_open" onclick="head_favicon.open()"><img id="head_favicon_content" class="action_icon"> Favicon</button>

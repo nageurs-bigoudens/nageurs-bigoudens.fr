@@ -5,9 +5,9 @@
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 
-chdir('bin'); // pour être au même niveau que l'appli dans /public
+chdir(dirname(__FILE__)); // pour être au même niveau que l'appli dans /public
 
-require('../src/Config.php');
+require('../src/service/Config.php');
 Config::load('../config/config.ini');
 
 require '../src/model/doctrine-bootstrap.php';  // relatif

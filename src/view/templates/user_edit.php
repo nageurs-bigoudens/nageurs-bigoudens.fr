@@ -5,7 +5,7 @@
 				<h3>Mon compte</h3>
 				<div>
 					<img class="user_icon" src="assets/user_hollow.svg">
-					<div><?= $_SESSION['user'] ?></div>
+					<div><?= $_SESSION['user']['username'] ?></div>
 				</div>
 			</div>
 			<div class="user_edit_flex">

@@ -1,5 +1,5 @@
 <?php
-// src/Config.php
+// src/service/Config.php
 
 declare(strict_types=1);
 

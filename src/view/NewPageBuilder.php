@@ -18,7 +18,7 @@ class NewPageBuilder extends AbstractBuilder
         //parent::__construct($node);
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
         
-        if(isset($_SESSION['admin']) && $_SESSION['admin'] && file_exists($viewFile))
+        if(IS_ADMIN && file_exists($viewFile))
         {
             /*if(!empty($node->getNodeData()->getData()))
             {

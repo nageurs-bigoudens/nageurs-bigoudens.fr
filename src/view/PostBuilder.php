@@ -26,7 +26,7 @@ class PostBuilder extends AbstractBuilder
             // modifier un article
             // => fait un peu double emploi avec PostBlockBuilder
             $admin_buttons = '';
-            if($_SESSION['admin'])
+            if(IS_ADMIN)
             {
                 $modify_js = 'onclick="openEditor(\'' . $id . '\')"';
                 $modify_article = '<p id="edit-' . $id . '"><img class="action_icon" src="assets/edit.svg" ' . $modify_js . '></p>' . "\n";

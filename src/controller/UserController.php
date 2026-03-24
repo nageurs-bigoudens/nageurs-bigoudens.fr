@@ -22,14 +22,12 @@ class UserController
 	// account
 	static public function existUsers(EntityManager $entityManager): bool
 	{
-		$nb_users = $entityManager
-			->createQuery('SELECT COUNT(u.id_user) FROM App\Entity\User u')
-			->getSingleScalarResult();
-
-		if($nb_users === 0) // table vide
+	    if(!$entityManager // table vide
+	        ->createQuery("SELECT u FROM App\Entity\User u")
+	        ->setMaxResults(1)
+	        ->getOneOrNullResult())
 		{
-			$_SESSION['user'] = '';
-			$_SESSION['admin'] = false;
+			unset($_SESSION['user']);
 			return false;
 		}
 		else{
@@ -38,7 +36,7 @@ class UserController
 	}
 
 	// account
-	static public function createUser(EntityManager $entityManager)
+	static public function createAdminUser(EntityManager $entityManager)
 	{
 		unset($_SESSION['user']);
 
@@ -48,7 +46,7 @@ class UserController
 		$error = '';
 		if($form->validate()){
 			$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-			$user = new App\Entity\User($_POST['login'], $password);
+			$user = new User($_POST['login'], 'admin', $password);
 			$entityManager->persist($user);
 			$entityManager->flush();
 		}
@@ -64,31 +62,34 @@ class UserController
 		die;
 	}
 
+	// account
+	//static public function createUser(EntityManager $entityManager){}
+
 	// auth
 	static public function connect(EntityManager $entityManager): void
 	{
-		if($_SESSION['admin']) // déjà connecté?
+		if(IS_ADMIN) // déjà connecté?
 		{
 			header('Location: ' . new URL);
 			die;
 		}
-		$_SESSION['user'] = '';
-		$_SESSION['admin'] = false;
+		unset($_SESSION['user']);
 
 		$form = new FormValidation($_POST, 'connection');
 
 		$error = '';
 		if($form->validate()){
 			// à mettre dans une classe métier UserService, Authentication, AuthService?
-			$user = self::getUser($_POST['login'], $entityManager);
+			$user = self::getUserByName($_POST['login'], $entityManager);
 			if(!empty($user) && $_POST['login'] === $user->getLogin() && password_verify($_POST['password'], $user->getPassword()))
 			{
 				$log = new Log(true);
 				
 				// protection fixation de session, si l'attaquant crée un cookie de session, il est remplacé
 				session_regenerate_id(true);
-				$_SESSION['user'] = $_POST['login'];
-				$_SESSION['admin'] = true;
+				$_SESSION['user']['id'] = $user->getId();
+				$_SESSION['user']['username'] = $user->getLogin();
+				$_SESSION['user']['role'] = $user->getRole();
 
 				EmailService::cleanEmails($entityManager);
 
@@ -123,7 +124,7 @@ class UserController
 	static public function disconnect(): void
 	{
 		// nettoyage complet
-		$_SESSION = []; // mémoire vive
+		unset($_SESSION['user']); // mémoire vive
 		session_destroy(); // fichier côté serveur
 		setcookie('PHPSESSID', '', time() - 86400, '/'); // cookie de session
 
@@ -138,7 +139,7 @@ class UserController
 	// user
 	static public function updateUsername(EntityManager $entityManager): void
 	{
-		if(!$_SESSION['admin']){ // superflux, fait dans le routeur
+		if(!IS_ADMIN){ // superflux, fait dans le routeur
 			self::disconnect();
 		}
 
@@ -150,11 +151,11 @@ class UserController
 		$error = '';
 		if($form->validate()){
 			// à mettre dans une classe métier UserService?
-			$user = self::getUser($_POST['login'], $entityManager);
+			$user = self::getUserByName($_POST['login'], $entityManager);
 			if(password_verify($_POST['password'], $user->getPassword())){
 				$user->setLogin($_POST['new_login']);
 				$entityManager->flush();
-				$_SESSION['user'] = $_POST['new_login'];
+				$_SESSION['user']['username'] = $_POST['new_login'];
 
 				$url->addParams(['success_username' => 'new_login']);
 				$error = '';
@@ -178,7 +179,7 @@ class UserController
 	// user
 	static public function updatePassword(EntityManager $entityManager): void
 	{
-		if(!$_SESSION['admin']){ // superflux, fait dans le routeur
+		if(!IS_ADMIN){ // superflux, fait dans le routeur
 			self::disconnect();
 		}
 
@@ -190,7 +191,7 @@ class UserController
 		$error = '';
 		if($form->validate()){
 			// à mettre dans une classe métier UserService?
-			$user = self::getUser($_POST['login'], $entityManager);
+			$user = self::getUserByName($_POST['login'], $entityManager);
 			if(password_verify($_POST['password'], $user->getPassword())){
 				$new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
 				$user->setPassword($new_password);
@@ -216,24 +217,20 @@ class UserController
 	}
 
 	// dans une classe mère ou un trait après découpage de UserController?
-	static private function getUser(string $login, EntityManager $entityManager): ?User
+	static private function getUserByName(string $login, EntityManager $entityManager): ?User
 	{
-		$users = $entityManager->getRepository('App\Entity\User')->findBy(['login' => $login]);
-		
-		if(count($users) === 0)
-		{
-			$_SESSION['user'] = '';
-			$_SESSION['admin'] = false;
-		}
-
-		foreach($users as $user)
-		{
-			if($user->getLogin() === $login)
-			{
+		$users = $entityManager->getRepository(User::class)->findBy(['login' => $login]);
+		foreach($users as $user){
+			if($user->getLogin() === $login){
 				return $user;
 			}
 		}
 		return null;
+	}
+
+	static public function getUserById(int $id, EntityManager $entityManager): ?User
+	{
+		return $entityManager->find(User::class, $id);
 	}
 
 	// dans une classe Form?

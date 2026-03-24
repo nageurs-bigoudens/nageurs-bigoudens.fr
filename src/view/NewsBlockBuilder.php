@@ -32,7 +32,7 @@ class NewsBlockBuilder extends AbstractBuilder
 
             // ajouter un article
             $new_article = '';
-            if($_SESSION['admin'])
+            if(IS_ADMIN)
             {
                 $id = 'n' . $this->id_node;
 

@@ -42,7 +42,7 @@
                     <?= $breadcrumb ?? '' ?>
                 </div>
             </div>
-<?php if($_SESSION['admin']){ ?>
+<?php if(IS_ADMIN){ ?>
             <script>
                 document.getElementById("head_favicon_content").src = window.Config.favicon;
                 let head_favicon = new InputFileFavicon('head_favicon');

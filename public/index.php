@@ -8,17 +8,16 @@ A -
     2/ routeur structuré: méthodes GET et POST, content-type, admin
     3/ routeur amélioré: pré-routage avec méthodes HTTP: GET, HEAD, POST, PUT, PATCH, DELETE, etc
     4/ réécriture avec les classes Request et Response sans toucher les liens
+    5/ http-foundation possède aussi une classe Session. intéressant!
 B - 
     1/ passer à des chemins modernes "ciblant des ressources" genre /chemin/de/la/page
         le mode modification de page doit thérioquement être appelé comme ça: /chemin/de/la/page/modif_page
         apparemment, le from=nom_page pour les formulaires ne se fait pas...
-    2/ utiliser le routeur de symfony: nécéssite que tous les contrôleurs soient des classes avec un namespace
-    3/ http-foundation possède aussi une classe Session. intéressant! */
+    2/ utiliser le routeur de symfony: nécéssite que tous les contrôleurs soient des classes avec un namespace */
 
 declare(strict_types=1);
 
 use Symfony\Component\HttpFoundation\Request;
-//use Symfony\Component\HttpFoundation\Session\Session;
 
 
 /* -- partie 1: prétraitement --
@@ -35,32 +34,36 @@ URL::setProtocol(Config::$protocol); // utile si port autre que 80 ou 443
 URL::setPort(Config::$port);
 URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 
-// les messages d'erreur de déploiement qu'on aime
-require('../src/installation.php');
-phpDependancies();
-installation(); // droits des dossiers et fichier config.ini
-
 // $entityManager
 require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter
+
+// mode de fonctionnement
+AppMode::load($entityManager);
+
+// tests de bon fonctionnement
+if(AppMode::is('maintenance')){
+    Installation::phpDependancies();
+    Installation::checkFilesAndFoldersRights();
+
+    // si appelée pour la 1ère fois, remplit la BDD et active le mode "run"
+    Installation::fillStartingDatabase($entityManager);
+}
 
 $request = Request::createFromGlobals();
 
 // session
-// (symfony/http-foundation pourrait nous aider avec les sessions)
-ini_set('session.cookie_samesite', 'Strict');
-ini_set('session.cookie_httponly', 'On');
-ini_set('session.use_strict_mode', 'On');
-ini_set('session.cookie_secure', 'On');
-session_start();
+require('../src/service/session.php');
 
-$_SESSION['admin'] = $_SESSION['admin'] ?? false;
-if($_SESSION['admin'] === false || empty($_SESSION['user'])){ // OUT !!
-    $_SESSION['user'] = '';
-    $_SESSION['admin'] = false;
+// en mode maintenance laisser la possibilité de se logger, bloquer le reste du site aux visiteurs
+if(AppMode::is('maintenance') && !IS_ADMIN
+    && !($request->query->has('page') && $request->query->get('page') === 'connection')
+    && !($request->query->has('action') && $request->query->get('action') === 'connection')){
+    require '../src/view/templates/maintenance.php';
+    die;
 }
 
 
 /* -- partie 2: routage et contrôleurs -- */
 
 define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? ''));
-require '../src/router.php';
+require '../src/service/router.php';

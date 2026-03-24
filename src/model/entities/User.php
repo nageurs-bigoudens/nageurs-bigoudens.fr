@@ -22,13 +22,22 @@ class User
     #[ORM\Column(type: "string", length: 255, unique: true)] // risque de modifier son mot de passe sans s'apercevoir qu'il fonctionne encore sur un autre compte
     private string $login;
 
+    #[ORM\Column(type: "string", length: 50)]
+    private string $role;
+
     #[ORM\Column(type: "string", length: 255)]
     private string $password;
 
-    public function __construct(string $login, string $password)
+    public function __construct(string $login, string $role, string $password)
     {
         $this->login = $login;
+        $this->role = $role;
         $this->password = $password;
+    }
+
+    public function getId(): int
+    {
+        return $this->id_user;
     }
 
     public function getLogin(): string
@@ -38,6 +47,14 @@ class User
     public function setLogin(string $login): void
     {
         $this->login = $login;
+    }
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+    public function setRole(string $role): void
+    {
+        $this->role = $role;
     }
     public function getPassword(): string
     {

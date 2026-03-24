@@ -18,10 +18,6 @@ class Menu extends Page
             ->createQuery('SELECT n FROM App\Entity\Page n WHERE n.parent IS null') // :Doctrine\ORM\Query
             ->getResult(); // :array de Page
 
-        if(count($bulk_data) === 0){
-            fillStartingDatabase($entityManager); // => installation.php
-        }
-
         foreach($bulk_data as $first_level_entries){
             // dans le menu
             if($first_level_entries->isInMenu()){

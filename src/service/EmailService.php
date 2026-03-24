@@ -1,5 +1,5 @@
 <?php
-// src/EmailService.php
+// src/service/EmailService.php
 
 declare(strict_types=1);
 

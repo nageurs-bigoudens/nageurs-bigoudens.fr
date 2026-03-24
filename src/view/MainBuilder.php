@@ -40,7 +40,7 @@ class MainBuilder extends AbstractBuilder
         }
         else{
             // si action = "modif_page", affiche des commandes supplémentaires
-            if($_SESSION['admin'] && self::$modif_mode){
+            if(IS_ADMIN && self::$modif_mode){
                 // ajouter un contrôle du champ in_menu
                 $this->viewEditBlocks($node);
             }

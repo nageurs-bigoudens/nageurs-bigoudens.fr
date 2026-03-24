@@ -9,12 +9,10 @@ class FormBuilder extends AbstractBuilder
 {
     static private ?Captcha $captcha = null;
 
-    public function __construct(Node $node)
-    {
+    public function __construct(Node $node){
         parent::__construct($node);
         
-        if(!empty($node->getNodeData()->getData()))
-        {
+        if(!empty($node->getNodeData()->getData())){
             extract($node->getNodeData()->getData());
         }
 
@@ -34,8 +32,7 @@ class FormBuilder extends AbstractBuilder
         $retention_period_sensible = $this->getRetentionPeriod($retention_period_sensible ?? null, App\Entity\Email::DEFAULT_RETENTION_PERIOD_SENSITIVE);
 
         $admin_content = '';
-        if($_SESSION['admin'])
-        {
+        if(IS_ADMIN){
             ob_start();
             require self::VIEWS_PATH . 'form_admin.php';
             $admin_content = ob_get_clean();
