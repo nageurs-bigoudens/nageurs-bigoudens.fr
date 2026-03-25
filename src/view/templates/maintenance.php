@@ -16,6 +16,7 @@
         <main>
         	<p>Le site est en cours de maintenance.</p>
         	<p>Il devrait être de nouveau accessible rapidement.</p>
+            <?= !empty(Config::$email_dest) ? '<p>Contact: ' . Config::$email_dest . '</p>' : '' ?>
         </main>
         <footer>
             <div class="logged_out">
