@@ -10,11 +10,12 @@
         <link rel="stylesheet" href="css/head.css">
         <link rel="stylesheet" href="css/body.css">
         <link rel="stylesheet" href="css/foot.css">
+        <meta http-equiv="refresh" content="60" /> <!-- rafraîchissement automatique toutes les minutes -->
     </head>
     <body>
         <main>
         	<p>Le site est en cours de maintenance.</p>
-        	<p>Il devrait être de nouveau accessible très bientôt.</p>
+        	<p>Il devrait être de nouveau accessible rapidement.</p>
         </main>
         <footer>
             <div class="logged_out">
