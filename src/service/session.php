@@ -4,17 +4,21 @@
 // à voir si c'est mieux avec:
 //use Symfony\Component\HttpFoundation\Session\Session;
 
-
-ini_set('session.cookie_samesite', 'Strict');
-ini_set('session.cookie_httponly', 'On');
-ini_set('session.use_strict_mode', 'On');
-ini_set('session.cookie_secure', 'On');
-session_start();
-validateSession($entityManager);
-
 // note: session_regenerate_id(true) se trouve dans UserController::connect
 
-function validateSession($entityManager): void
+use Doctrine\ORM\EntityManager;
+
+function startSession(EntityManager $entityManager): void
+{
+	ini_set('session.cookie_samesite', 'Strict');
+	ini_set('session.cookie_httponly', 'On');
+	ini_set('session.use_strict_mode', 'On');
+	ini_set('session.cookie_secure', 'On');
+	session_start();
+	validateSession($entityManager);
+}
+
+function validateSession(EntityManager $entityManager): void
 {
 	if(defined('IS_ADMIN')){
 		return;

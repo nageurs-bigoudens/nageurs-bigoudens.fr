@@ -37,11 +37,15 @@ URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 // $entityManager
 require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter
 
+// session
+require('../src/service/session.php');
+startSession($entityManager);
+
 // mode de fonctionnement
 AppMode::load($entityManager);
 
 // tests de bon fonctionnement
-if(AppMode::is('maintenance')){
+if(IS_ADMIN && AppMode::is('maintenance')){
     Installation::phpDependancies();
     Installation::checkFilesAndFoldersRights();
 
@@ -50,9 +54,6 @@ if(AppMode::is('maintenance')){
 }
 
 $request = Request::createFromGlobals();
-
-// session
-require('../src/service/session.php');
 
 // en mode maintenance laisser la possibilité de se logger, bloquer le reste du site aux visiteurs
 if(AppMode::is('maintenance') && !IS_ADMIN
