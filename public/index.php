@@ -48,11 +48,11 @@ AppMode::load($entityManager);
 if(IS_ADMIN && AppMode::is('maintenance')){
     Installation::phpDependancies();
     Installation::checkFilesAndFoldersRights();
-
-    // si appelée pour la 1ère fois, remplit la BDD et active le mode "run"
-    Installation::fillStartingDatabase($entityManager);
 }
-
+if(AppMode::is('maintenance')){
+    // si appelée pour la 1ère fois, remplit la BDD et active le mode "run"
+    DatabaseSettingUp::run($entityManager);
+}
 $request = Request::createFromGlobals();
 
 // en mode maintenance laisser la possibilité de se logger, bloquer le reste du site aux visiteurs
