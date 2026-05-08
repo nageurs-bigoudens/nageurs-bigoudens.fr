@@ -2,13 +2,12 @@
 	font-size: smaller;
 }
 .show_emails table{
-	
-	padding: 10px;
+	background-color: white;
+	/*padding: 10px;*/
 	border-collapse: collapse;
 	font-size: smaller;
 }
 .show_emails table th, .show_emails table td{
-	background-color: white;
 	border: 1px black solid;
 }
 .show_emails table td{

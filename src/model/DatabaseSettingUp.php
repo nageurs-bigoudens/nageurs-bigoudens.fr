@@ -28,9 +28,6 @@ class DatabaseSettingUp
 		// empêcher la réutilisation de cette fonction
 	    self::preventReinstallation($entityManager);
 
-	    // fin de l'installation
-	    AppMode::set($entityManager, 'run');
-
 	    // recharger la page?
 	    //header('Location: ' . new URL);
 	}
@@ -83,6 +80,8 @@ class DatabaseSettingUp
 		$emails = new Page("Courriels", 'emails', "Consulter les courriels en base de données", true, false, false, NULL, NULL);
 		$emails->addCSS('show_emails');
 		$emails->addJS('form');
+		$maintenance = new Page("Maintenance", 'maintenance', "Opérations de maintenance, installation, sauvegarde, restauration", true, false, false, NULL, NULL);
+		$maintenance->addJS('maintenance');
 		
 		/* -- table node -- */
 		// paramètres: name_node, article_timestamp, attributes, position, parent, page, article
@@ -97,6 +96,7 @@ class DatabaseSettingUp
 		$bloc_edit_menu = new Node('menu', 1, $main, $menu_paths, NULL);
 		$bloc_new_page = new Node('new_page', 1, $main, $new_page, NULL);
 		$bloc_emails = new Node('show_emails', 1, $main, $emails, NULL);
+		$bloc_maintenance = new Node('maintenance', 1, $main, $maintenance, NULL);
 
 		/* -- table node_data -- */
 		// paramètres: data, node, images
@@ -113,6 +113,7 @@ class DatabaseSettingUp
 		$entityManager->persist($menu_paths);
 		$entityManager->persist($new_page);
 		$entityManager->persist($emails);
+		$entityManager->persist($maintenance);
 		
 		/* -- table node -- */
 		$entityManager->persist($head);
@@ -126,6 +127,7 @@ class DatabaseSettingUp
 		$entityManager->persist($bloc_edit_menu);
 		$entityManager->persist($bloc_new_page);
 		$entityManager->persist($bloc_emails);
+		$entityManager->persist($bloc_maintenance);
 		
 		/* -- table node_data -- */
 		$entityManager->persist($head_data);

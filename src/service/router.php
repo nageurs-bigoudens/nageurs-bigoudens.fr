@@ -39,7 +39,7 @@ if($request->getMethod() === 'GET'){
     }
 
     // pages interdites
-    if(!IS_ADMIN && in_array(CURRENT_PAGE, ['menu_paths', 'new_page', 'user_edit', 'emails'])){
+    if(!IS_ADMIN && in_array(CURRENT_PAGE, ['menu_paths', 'new_page', 'user_edit', 'emails', 'maintenance'])){
         header('Location: ' . new URL);
         die;
     }
@@ -153,6 +153,16 @@ elseif($request->getMethod() === 'POST'){
                 }
                 elseif($request->query->get('action') === 'remove_event'){
                     CalendarController::removeEvent($json, $entityManager);
+                }
+
+                /* -- mode maintenance -- */
+                elseif($request->query->get('action') === 'get_logs'){
+                    MaintenanceController::getLogs($entityManager);
+                    die;
+                }
+                elseif($request->query->get('action') === 'erase_logs'){
+                    MaintenanceController::eraseLogs($entityManager);
+                    die;
                 }
                 else{
                     echo json_encode(['success' => false]);

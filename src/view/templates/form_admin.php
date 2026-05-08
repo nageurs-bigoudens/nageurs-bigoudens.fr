@@ -49,7 +49,12 @@ declare(strict_types=1);
 	    <input type="hidden" id="smtp_password_hidden_<?= $node->getNodeData()->getId() ?>" value="">
 	    <button onclick="setEmailParam('smtp_password', <?= $node->getNodeData()->getId() ?>)">Valider</button>
 	</p>
-	<p><i>Il s'agit du service qui acheminera les messages envoyés par ce formulaire. Les services d'envoi de courriels nécéssitent généralement de s'y connecter avec un identifiant et un mot de passe. Les adresses d'envoi et de réception peuvent être identiques. Le site web peut ne pas réussir à se connecter à certains fournisseurs.</i></p>
+	<p><i>Il s'agit du service qui acheminera les messages envoyés par ce formulaire.<br>
+		Site web => serveur d'envoi => serveur de réception => votre application "mail"</i></p>
+	<p><i>
+		Ce formulaire utilise les paramètres dans le fichier config.ini sur le serveur à mois que vous n'en renseignez d'autres ci-dessus. Les adresses d'envoi et de réception peuvent être identiques.
+	</i></p>
+	<p><i>Le site web peut ne pas réussir à se connecter à certains fournisseurs.</i></p>
 </div>
 <div class="admin_form">
 	<h3>Paramètres de réception</h3>

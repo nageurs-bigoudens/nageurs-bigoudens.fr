@@ -22,8 +22,10 @@ class EmailService
 	    $smtp_secure = $form_data->getData()['smtp_secure'] ?? Config::$smtp_secure;
 		$smtp_username = $form_data->getData()['smtp_username'] ?? Config::$smtp_username;
 		$smtp_password = $form_data->getData()['smtp_password'] ?? Config::$smtp_password;
-		$email_from = $form_data->getData()['email_from'] ?? Config::$email_from; // une adresse bidon est donnée à setFrom()
-		$email_from_name = $form_data->getData()['email_from_name'] ?? Config::$email_from_name; // = site web
+
+		$email_from = $form_data->getData()['email_from'] ?? Config::$email_from; // adresse de l'expéditeur affichée
+		$email_from = empty($email_from) ? $smtp_username : $email_from; // si vide
+		$email_from_name = $form_data->getData()['email_from_name'] ?? Config::$email_from_name; // = nom de l'expéditeur affiché
 		$email_dest = $form_data->getData()['email_dest'] ?? Config::$email_dest;
 		$email_dest_name = $form_data->getData()['email_dest_name'] ?? Config::$email_dest_name; // = destinataire formulaire
 
@@ -67,7 +69,7 @@ class EmailService
 
 	        // copie en BDD
 	        if(!$test_email && ($form_data->getData()['keep_emails'] ?? self::KEEP_EMAILS_DEFAULT)){
-	        	$db_email = new Email($name, $email, Config::$email_dest, $message, $form_data);
+	        	$db_email = new Email($name, $email, $email_dest, $message, $form_data);
 		        $entityManager->persist($db_email);
 		        self::updateLastContactDate($entityManager, $email);
 		        $entityManager->flush();

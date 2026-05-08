@@ -26,4 +26,13 @@ class Log
         $this->date_time = new \DateTime;
         $this->success = $success;
     }
+
+    public function getFormatedDate(): string
+    {
+        return $this->date_time->format('d/m/Y à H\hi');
+    }
+    public function getSuccess(): bool
+    {
+        return $this->success;
+    }
 }

@@ -2,14 +2,15 @@
 <section class="show_emails">
 	<h3>Table "<?= TABLE_PREFIX ?>email" de la base de données</h3>
 	<p><i>
-		Les e-mails ci-dessous sont des copies de ceux arrivés dans votre boite de messagerie (qui en théorie sont également concernés par le RGPD) depuis tous les formulaires existant sur le site. Ils sont conservés dans un but pratique et éventuellement dans un but de prospection, ou dans tout autre but justifiant leur conservation.
+		Les e-mails ci-dessous sont des copies de ceux arrivés dans votre boite de messagerie depuis tous les formulaires existant sur le site. Ils sont conservés dans un but pratique (historique, prospection) ou dans tout autre but justifiant leur conservation. Cette conservation est optionnelle et règlementée par la loi européenne RGPD.<br>
+		<b>Notez qu'utiliser cette application ne vous garantit pas d'être en conformité avec la loi, c'est un outil vous permettant de faire les choses comme vous l'entendez. Si tout ceci vous gêne, désactivez le stockage des e-mails et supprimez ceux déjà enregistrés (ci-dessous).</b>
 	</i></p>
 	<h4>Durées de conservation</h4>
 	<p><i>
 		Ce sont des durées maximales, les données peuvent être supprimées plus tôt ou même immédiatement. Le faire est d'ailleurs une obligation dans le cas où les personnes concernées le demandent.<br>
 	</i></p>
 	<p><i>
-		Les e-mails ordinaires d'un même expéditeur (même adresse e-mail) sont tous supprimés simultanément lorsque le plus récent d'entre eux atteint les 3 ans (utilisateur "inactif").<br>
+		Les e-mails ordinaires d'un même expéditeur (même adresse e-mail) sont tous supprimés simultanément lorsque le plus récent d'entre eux atteint les 3 ans (utilisateur est considéré inactif).<br>
 		Les e-mails sensibles quand à eux sont supprimés 5 ans après être devenus sensibles (durée juridique d'une preuve).
 	</i></p>
 	<p><i>

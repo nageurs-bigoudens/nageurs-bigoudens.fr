@@ -41,27 +41,15 @@ require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN 
 require('../src/service/session.php');
 startSession($entityManager);
 
-// mode de fonctionnement
-AppMode::load($entityManager);
-
 // tests de bon fonctionnement
-if(IS_ADMIN && AppMode::is('maintenance')){
+if(IS_ADMIN){
     Installation::phpDependancies();
     Installation::checkFilesAndFoldersRights();
 }
-if(AppMode::is('maintenance')){
-    // si appelée pour la 1ère fois, remplit la BDD et active le mode "run"
-    DatabaseSettingUp::run($entityManager);
-}
-$request = Request::createFromGlobals();
+// remplit la BDD initiale, ne fonctionne que si la BDD est vide
+DatabaseSettingUp::run($entityManager);
 
-// en mode maintenance laisser la possibilité de se logger, bloquer le reste du site aux visiteurs
-if(AppMode::is('maintenance') && !IS_ADMIN
-    && !($request->query->has('page') && $request->query->get('page') === 'connection')
-    && !($request->query->has('action') && $request->query->get('action') === 'connection')){
-    require '../src/view/templates/maintenance.php';
-    die;
-}
+$request = Request::createFromGlobals();
 
 
 /* -- partie 2: routage et contrôleurs -- */

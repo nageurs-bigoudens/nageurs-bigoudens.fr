@@ -18,15 +18,17 @@ class Config
     static public string $index_path = '';
     static public string $port = '80';
 
-    // e-mails
+    // envoi e-mails
     static public string $smtp_host = '';
     static public string $smtp_username = '';
     static public string $smtp_password = '';
     static public string $smtp_secure = ''; // tls (smarttls) ou ssl (smtps) ou plain_text/chaine vide
-    static public string $email_from = 'mon_adresse@email.fr';
+
+    // destination e-mails
+    static public string $email_from = ''; // correspondant affiché dans la boite de réception
     static public string $email_from_name = 'site web';
-    static public string $email_dest = '';
-    static public string $email_dest_name = 'destinataire formulaire';
+    static public string $email_dest = ''; // destinataire affiché dans la boite de réception
+    static public string $email_dest_name = 'moi';
 
     // copier dans ce tableau les variables contenant des chemins
     static private array $path_vars = [];

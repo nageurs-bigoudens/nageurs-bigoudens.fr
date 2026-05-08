@@ -58,8 +58,6 @@ class FooterBuilder extends AbstractBuilder
                     $mode = 'administrateur';
                     $div_admin = 'logged_in';
                 }
-                $link_new_page = new URL(['page' => 'new_page']);
-                $link_change_paths = new URL(['page' => 'menu_paths']);
                 
                 $link_change_password = new URL(['page' => 'user_edit', 'from' => CURRENT_PAGE]);
                 isset($_GET['id']) ? $link_change_password->addParams(['id' => $_GET['id']]) : '';
@@ -69,10 +67,11 @@ class FooterBuilder extends AbstractBuilder
 
                 $zone_admin = '<div class="admin_buttons_zone">
                     <p>Vous êtes en mode ' . $mode . ".</p>\n" . 
-                    '<div><a href="' . $link_new_page . '"><button>Nouvelle page</button></a></div>' . "\n";
-                $zone_admin .= $this->makePageModifModeButton();
-                $zone_admin .= '<div><a href="' . $link_change_paths . '"><button>Menu et chemins</button></a></div>' . "\n" . 
+                    '<div><a href="' . new URL(['page' => 'new_page']) . '"><button>Nouvelle page</button></a></div>' . "\n" .
+                    $this->makePageModifModeButton() . "\n" .
+                    '<div><a href="' . new URL(['page' => 'menu_paths']) . '"><button>Menu et chemins</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_change_password . '"><button>Mon compte</button></a></div>' . "\n" . 
+                    '<div><a href="' . new URL(['page' => 'maintenance']) . '"><button>Maintenance</button></a></div>' . "\n" . 
                     '<div><a href="' . $link_logout . '"><button>Déconnexion</button></a></div>' . "\n" . 
                 '</div>' . "\n";
             }
@@ -100,7 +99,7 @@ class FooterBuilder extends AbstractBuilder
     private function makePageModifModeButton(): string
     {
         $link_edit_page = new URL(['page' => CURRENT_PAGE]);
-        if(!in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths'])) // ajouter 'user_edit' et 'connection' le jour où ces pages auront un footer
+        if(!in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths', 'maintenance'])) // ajouter 'user_edit' et 'connection' le jour où ces pages auront un footer
         {
             if(MainBuilder::$modif_mode){
                 $link_edit_label = 'Sortir du mode modification';
@@ -109,7 +108,7 @@ class FooterBuilder extends AbstractBuilder
                 $link_edit_page->addParams(['mode' => 'page_modif']);
                 $link_edit_label = 'Modifier la page';
             }
-            return '<div><a href="' . $link_edit_page . '"><button>' . $link_edit_label . '</button></a></div>' . "\n";
+            return '<div><a href="' . $link_edit_page . '"><button>' . $link_edit_label . '</button></a></div>';
         }
         else{
             return '';
