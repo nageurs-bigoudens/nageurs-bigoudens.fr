@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); ?>
-<section>
+<section class="maintenance">
 	<h3>Maintenance du site</h3>
 	<div class="basic_div">
 		<p>
@@ -13,7 +13,7 @@
 	</div>
 	<div class="basic_div">
 		<p>
-			<a href="http://nageurs.localhost/index.php?page=emails"><button>Consulter les emails</button></a><br>
+			<a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les emails</button></a><br>
 			<i>Emails reçus depuis tous les formulaires de contact</i>
 		</p>
 	</div>

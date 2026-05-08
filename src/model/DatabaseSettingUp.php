@@ -81,6 +81,7 @@ class DatabaseSettingUp
 		$emails->addCSS('show_emails');
 		$emails->addJS('form');
 		$maintenance = new Page("Maintenance", 'maintenance', "Opérations de maintenance, installation, sauvegarde, restauration", true, false, false, NULL, NULL);
+		$maintenance->addCSS('maintenance');
 		$maintenance->addJS('maintenance');
 		
 		/* -- table node -- */

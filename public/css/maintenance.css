@@ -1,0 +1,9 @@
+.maintenance table
+{
+	border-collapse: collapse;
+	font-size: smaller;
+}
+.maintenance table th, .maintenance table td
+{
+	border: 1px black solid;
+}
