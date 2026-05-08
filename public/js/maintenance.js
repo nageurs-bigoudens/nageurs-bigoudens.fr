@@ -1,6 +1,11 @@
 function displayLogs(){
 	const log_table = getElementOrThrow('log_table');
-	console.log(log_table);
+	
+	// ouvrir, fermer, recharger
+	if(log_table.innerHTML != ''){
+		log_table.innerHTML = "";
+		return;
+	}
 
 	let fetcher = new Fetcher({
 		endpoint: 'index.php?action=get_logs',

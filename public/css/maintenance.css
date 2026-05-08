@@ -1,3 +1,16 @@
+.maintenance .basic_div
+{
+	margin-top: 8px;
+}
+.maintenance p
+{
+	margin: 10px 0;
+}
+.maintenance #log_table h4
+{
+	margin-top: 10px;
+	margin-bottom: 4px;
+}
 .maintenance table
 {
 	border-collapse: collapse;

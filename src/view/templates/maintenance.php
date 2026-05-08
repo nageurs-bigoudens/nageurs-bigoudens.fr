@@ -6,10 +6,9 @@
 			<button onclick="displayLogs()">Consulter les journaux de connexion</button><br>
 			<i>Qui a essayé de se connecter, quand et a-t'il réussi?</i>
 		</p>
-		<p>
-			<button onclick="cleanLogs()">Effacer les journaux de connexion</button>
-		</p>
 		<div id="log_table"></div>
+		<p><button onclick="cleanLogs()">Effacer les journaux de connexion</button></p>
+		
 	</div>
 	<div class="basic_div">
 		<p>
