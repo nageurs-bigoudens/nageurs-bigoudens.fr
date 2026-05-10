@@ -8,12 +8,12 @@ use Symfony\Component\Process\Process; // protection injection dans le shell
 
 class Backup
 {
-	static private string $backup_dir = '../var/backups';
+	static public string $backup_dir = '../var/backups';
 	static private int $amount_to_keep = 30;
 
-	static public function mySQLdump(EntityManager $entityManager): string
+	static public function mySQLdump(EntityManager $entityManager, string $type): string
 	{
-		$file_path = self::$backup_dir . '/db_' . Config::$database . '_' . new DateTime()->format('Y-m-d') . '.sql';
+		$file_path = self::$backup_dir . '/' . Config::$database . '_' . new DateTime()->format('Y-m-d') . '_' . $type . '.sql';
 
 		// les versions de mysql sont comme ci: 8.0.36
 		// celles de mariadb sont comme ça: 10.11.6-MariaDB
@@ -87,6 +87,66 @@ class Backup
 		$files_to_delete = array_slice($files, self::$amount_to_keep);
 		foreach($files_to_delete as $file){
 		    unlink($file);
+		}
+	}
+
+	static public function restoreDatabase(EntityManager $entityManager, string $file_name): void
+	{
+		// backup de sécurité
+		Backup::mySQLdump($entityManager, 'before-restore');
+		
+		$version = $entityManager->getConnection()->fetchOne('SELECT VERSION()');
+		$engine = stripos($version, 'mariadb') !== false ? 'mariadb' : 'mysql';
+
+		// choisir les tables à restaurer
+		$tables = $entityManager->getConnection()->createSchemaManager()->listTableNames();
+		foreach($tables as $key => $elem){
+	    	if($elem === TABLE_PREFIX . 'user'){
+	    		unset($tables[$key]);
+	    	}
+	    }
+	    // sécurité cas pas normal
+	    if(empty($tables)){
+	        throw new Exception("Aucune table à supprimer");
+	    }
+
+		$tmp = tempnam('../var', 'tmp_db_codes_'); // crée un fichier avec un nom aléatoire et des droits 600 (concurrence)
+		file_put_contents($tmp, 
+			"[client]\n
+			user=" . Config::$user . "\n
+			password=" . Config::$password . "\n
+			host=" . Config::$db_host . "\n");
+
+		
+
+		$command = new Process([
+		    $engine, // mariadb ou mysql
+		    '--defaults-extra-file=' . $tmp, // pour ne pas enregistrer les codes dans l'historique de la console ou dans les processus de l'OS
+		    Config::$database
+		]);
+		$command->setInput(file_get_contents(Backup::$backup_dir . '/' . $file_name)); // l'entrée <
+
+		
+
+		try{
+			// tout effacer
+			$tables_with_backquotes = array_map(fn($t) => '`' . $t . '`', $tables);
+		    $sql = "SET FOREIGN_KEY_CHECKS=0; DROP TABLE " . implode(', ', $tables_with_backquotes) . "; SET FOREIGN_KEY_CHECKS=1;";
+		    $entityManager->getConnection()->executeStatement($sql);
+
+			// la table user restante va poser problème
+			$entityManager->getConnection()->executeStatement('RENAME TABLE `' . TABLE_PREFIX . 'user` TO `' . TABLE_PREFIX . 'user_dont_touch`;');
+			
+			// restaurer
+			$command->mustRun(); // comme run() mais lance une ProcessFailedException
+
+			// remettre table user comme avant
+			$entityManager->getConnection()->executeStatement('DROP TABLE `' . TABLE_PREFIX . 'user`;');
+			$entityManager->getConnection()->executeStatement('RENAME TABLE `' . TABLE_PREFIX . 'user_dont_touch` TO `' . TABLE_PREFIX . 'user`;');
+		}
+		finally{
+			// exécuté même quand situé après "return"
+			unlink($tmp);
 		}
 	}
 }

@@ -39,3 +39,6 @@ function cleanLogs(){
 	});
 	fetcher.send({});
 }
+
+// notification après restauration
+

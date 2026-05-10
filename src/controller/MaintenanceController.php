@@ -6,6 +6,7 @@ declare(strict_types=1);
 use Doctrine\ORM\EntityManager;
 use App\Entity\log;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MaintenanceController
 {
@@ -49,7 +50,7 @@ class MaintenanceController
 		die;
 	}
 
-	static public function getLastDump(EntityManager $entityManager): void
+	static public function getLastDump(): void
 	{
 		try{
 			$file_path = Backup::getLastBackupName();
@@ -65,5 +66,34 @@ class MaintenanceController
 			die;
 		}
 		die;
+	}
+
+	// parce qu'il faut un contrôleur
+	static public function handleBackupSelection(EntityManager $entityManager, string $selected_file): void
+	{
+		if(pathinfo($selected_file)['extension'] !== 'sql'){ // pas censé se produire en fait
+        	throw new Exception("charger un fichier au format SQL");
+        }
+
+        Backup::restoreDatabase($entityManager, $selected_file);
+	}
+
+	static public function downloadSQL(EntityManager $entityManager, UploadedFile $uploaded_file): void
+	{
+        if(pathinfo($uploaded_file->getClientOriginalName())['extension'] !== 'sql'){
+        	throw new Exception("charger un fichier au format SQL");
+        }
+        //echo $uploaded_file->getSize(); // à garder de côté au cas où
+
+        $server_place = Config::$database . '_' . new DateTime()->format('Y-m-d') . '_uploaded.sql';
+
+        try{
+        	// enregistrer le fichier
+	        var_dump($uploaded_file->move(Backup::$backup_dir, $server_place));
+
+	        // s'en servir
+	        Backup::restoreDatabase($entityManager, $server_place);
+	    }
+	    finally{}
 	}
 }

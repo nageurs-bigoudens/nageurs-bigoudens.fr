@@ -62,7 +62,7 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
             return new Response($this->html, 302);
         }
         elseif(CURRENT_PAGE === 'maintenance'){
-            Backup::mySQLdump($entityManager); // créer un nouveau backup
+            Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup
         }
 
 

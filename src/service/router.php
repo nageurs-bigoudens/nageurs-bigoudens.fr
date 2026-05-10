@@ -2,7 +2,7 @@
 // src/service/router.php
 //
 /* fonctionnement:
-=> 1er test, méthode http: GET, POST ou autre chose
+=> 1er test, méthode http GET? POST?
 => 2ème test, type de contenu (méthode POST uniquement):
 "application/x-www-form-urlencoded" = formulaire
 "application/json" = requête AJAX avec fetch()
@@ -46,7 +46,7 @@ if($request->getMethod() === 'GET'){
 
     if(IS_ADMIN === true){
         if($request->query->has('action') && $request->query->get('action') === 'get_mysqldump'){
-            MaintenanceController::getLastDump($entityManager);
+            MaintenanceController::getLastDump();
             die;
         }
     }
@@ -87,7 +87,6 @@ elseif($request->getMethod() === 'POST'){
             UserController::connect($entityManager);
         }
     }
-
 
     if(IS_ADMIN === true)
     {
@@ -244,8 +243,8 @@ elseif($request->getMethod() === 'POST'){
             }
         }
 
-        // upload avec FormData
-        elseif(strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false)
+        /* -- upload avec FormData OU formulaire HTML AVEC fichier -- */
+        elseif(str_starts_with($request->headers->get('Content-Type'), 'multipart/form-data')) // = $_SERVER['CONTENT_TYPE']
         {
             // dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur ou glisser-déposer)
             if($request->query->has('action') && $request->query->get('action') === 'upload_image_tinymce'){
@@ -258,17 +257,38 @@ elseif($request->getMethod() === 'POST'){
             elseif($request->query->has('head_foot_image')){
                 HeadFootController::uploadAsset($entityManager, $request->query->get('head_foot_image'));
             }
+
+            /* -- page Maintenance -- */
+            elseif($request->query->has('action') && $request->query->get('action') === 'restore_database'
+                && $request->request->has('hidden') && $request->get('hidden') === ''
+                && $request->files->has('uploaded_sql'))
+            {
+                $url = new URL;
+                if($request->query->has('from')){
+                    $url->addParams(['page' => $request->query->get('from')]);
+                }
+
+                try{
+                    MaintenanceController::downloadSQL($entityManager, $request->files->get('uploaded_sql'));
+                    $url->addParams(['database_restauration' => 'successful']);
+                }
+                catch(Exception $e){
+                    $url->addParams(['database_restauration' => $e->getMessage()]);
+                }
+
+                header('Location: ' . $url);
+                die;
+            }
         }
 
         // requêtes XMLHttpRequest
         elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
         {
-            //echo "requête XMLHttpRequest reçue par le serveur";
             echo json_encode(['success' => false]); // noyer le poisson en laissant penser que le site gère les requêtes XHR
             die;
         }
 
-        /* -- envoi formulaire HTML -- */
+        /* -- formulaire HTML SANS fichier -- */
         elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
         {
             if($request->query->has('action') && $request->query->get('action') === 'delete_article' && isset($_GET['id'])){
@@ -294,7 +314,6 @@ elseif($request->getMethod() === 'POST'){
 
 
             /* -- mode Modification d'une page -- */
-
             // modification du chemins en snake_case
             elseif(isset($_POST['page_menu_path']) && $_POST['page_menu_path'] !== null
                 && isset($_POST['page_id']) && $_POST['page_id'] !== null
@@ -318,7 +337,6 @@ elseif($request->getMethod() === 'POST'){
 
 
             /* -- page Menu et chemins -- */
-
             // création d'une entrée de menu avec une URL
             elseif(isset($_POST["label_input"]) && isset($_POST["url_input"]) && isset($_POST["location"])){
                 MenuAndPathsController::newUrlMenuEntry($entityManager);
@@ -339,12 +357,35 @@ elseif($request->getMethod() === 'POST'){
                 UserController::updatePassword($entityManager);
             }
 
+            /* -- page Maintenance -- */
+            elseif($request->query->has('action') && $request->query->get('action') === 'restore_database'
+                && $request->request->has('hidden') && $request->get('hidden') === ''
+                && $request->request->has('selected_sql'))
+            {
+                $url = new URL;
+                if($request->query->has('from')){
+                    $url->addParams(['page' => $request->query->get('from')]);
+                }
+
+                try{
+                    MaintenanceController::handleBackupSelection($entityManager, $request->request->get('selected_sql'));
+                    $url->addParams(['database_restauration' => 'successful']);
+                }
+                catch(Exception $e){
+                    $url->addParams(['database_restauration' => $e->getMessage()]);
+                }
+
+                header('Location: ' . $url);
+                die;
+            }
+
             // redirection page d'accueil
             else{
                 header("Location: " . new URL(['error' => 'paramètres inconnus']));
                 die;
             }
         }
+
         // POST admin ne matchant pas
         else{
             echo json_encode(['success' => false]);
@@ -394,4 +435,3 @@ else{
         echo "erreur côté serveur";
     }
 }
-//die; // inutile

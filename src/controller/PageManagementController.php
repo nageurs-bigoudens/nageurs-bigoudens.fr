@@ -6,9 +6,7 @@ declare(strict_types=1);
 use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\NodeData;
-use App\Entity\Presentation;
 //use App\Entity\Image;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 
 class PageManagementController

@@ -21,24 +21,27 @@
 			<a href="<?= new URL(['action' => 'get_mysqldump']) ?>">
 				<button id="get_mysqldump">Télécharger une sauvegarde de la base de données</button>
 			</a><br>
-			<i>Obtenir un fichier SQL à conserver sur votre ordinateur. Une sauvegarde est réalisée à chaque visite de cette page.</i>
+			<i>Obtenir un fichier SQL à conserver sur votre ordinateur. Une sauvegarde (désignée par "auto") est réalisée à chaque visite de cette page.</i>
 		</p>
 	</div>
 	<div class="basic_div">
 		<p>Restaurer la base de données à partir d'un fichier SQL.<br>
-			<i>Attention l'actuelle BDD sera écrasée!</i>
+			<i>Attention, l'actuelle BDD sera écrasée! (à l'exception de la table <?= TABLE_PREFIX ?>user)</i>
 		</p>
-		<p>
-			<label for="">Utiliser une sauvegarde conservée sur le serveur</label>
-			<select>
+		<form action="<?= new URL(['from' => 'maintenance', 'action' => 'restore_database']) ?>" method="post">
+			<label for="selected_sql">Utiliser une sauvegarde conservée sur le serveur:</label><br>
+			<select id="selected_sql" name="selected_sql">
 				<?= $backup_options ?>
 			</select>
-		</p>
-		<p>
-			<label for="restore_sql_dump">Utiliser un fichier sur votre ordinateur:</label>
-			<input id="restore_sql_dump" type="file" accept=".sql" name="restore_sql_dump">
-			
-		</p>
+			<input type="hidden" name="hidden" value="">
+			<input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment restaurer la base de données? Toutes les données seront supprimées et remplacées par les nouvelles.')">
+		</form>
+		<form enctype="multipart/form-data" action="<?= new URL(['from' => 'maintenance', 'action' => 'restore_database']) ?>" method="post">
+			<label for="uploaded_sql">Utiliser un fichier sur votre ordinateur:</label><br>
+			<input id="uploaded_sql" type="file" accept=".sql" name="uploaded_sql">
+			<input type="hidden" name="hidden" value="">
+			<input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment restaurer la base de données? Toutes les données seront supprimées et remplacées par les nouvelles.')">
+		</form>
 	</div>
 
 	<div class="basic_div">
