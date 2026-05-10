@@ -37,7 +37,12 @@ class Backup
 		]);
 
 		try{
+			// unlink et chmod permettent que le serveur et l'utilisateur appelant bin/mysqldump.php réussissent
+			if(file_exists($file_path)){
+				unlink($file_path);
+			}
 			$command->mustRun(); // comme run() mais lance une ProcessFailedException
+			chmod($file_path, 0666);
 			return $file_path;
 		}
 		finally{
@@ -57,6 +62,23 @@ class Backup
 		finally{
 			unlink($file_path);
 		}*/
+	}
+
+	static public function getBackupList(): array
+	{
+		$backup_array = [];
+		foreach(scandir(Backup::$backup_dir) as $file){
+		    if($file[0] === '.'){
+		        continue;
+		    }
+		    $backup_array[] = $file;
+		}
+		return $backup_array;
+	}
+	static public function getLastBackupName(): string
+	{
+		$backup_list = self::getBackupList();
+		return $backup_list[count($backup_list) - 1];
 	}
 
 	static public function cleanBackups(): void {

@@ -20,3 +20,11 @@
 {
 	border: 1px black solid;
 }
+.maintenance select, .maintenance input[type="file"]::file-selector-button
+{
+	color: #ff1d04;
+	font-size: medium;
+	border-radius: 4px;
+	background-color: white;
+	border: lightgrey 2px outset;
+}

@@ -12,9 +12,13 @@ class Installation
 		// ajouter plus tard zlib pour la compression des backups
 		foreach($extensions as $extension){
 	        if(!extension_loaded($extension)){
-	            echo("<p>l'extension <b>" . $extension . '</b> est manquante</p>');
+	            echo("<p>l'extension <b>" . $extension . "</b> est manquante.</p>");
 	            $flag = true;
 	        }
+	    }
+	    if(!class_exists(DOMDocument::class)){ // théoriquement plus fiable que extension_loaded()
+	    	echo("<p>l'extension <b>dom</b> est manquante.</p>");
+	    	$flag = true;
 	    }
 
 	    /*if(!extension_loaded('imagick') && !extension_loaded('gd')){
@@ -33,27 +37,40 @@ class Installation
 	static public function checkFilesAndFoldersRights(): void
 	{
 		// -- droits des fichiers et dossiers --
-	    $droits_dossiers = 0755;
-	    $droits_fichiers = 0644;
+		$droits_dossiers = 0777;
 
+		$flag = false;
 	    if(!file_exists('user_data')){
-	    	// créer le dossier user_data
-	    	mkdir('user_data/');
-	        chmod('user_data/', $droits_dossiers);
-	    	echo '<p style="color: red;">Le dossier public/user_data introuvable et le serveur n\'a pas la permission de le créer.<br>
-	    	Pour faire ça bien:<br>sudo -u "serveur web" mkdir /chemin/du/site/public/user_data</p>
-	    	<p>Aide: "serveur web" se nomme "www-data" sur debian et ubuntu, il s\'appelera "http" sur d\'autres distributions.</p>';
-	    	die;
+	    	try{
+		    	mkdir('user_data/');
+		        chmod('user_data/', $droits_dossiers);
+		    }
+		    catch(Exception $e){
+		    	echo '<p style="color: red;">Le dossier public/user_data introuvable et le serveur n\'a pas la permission de le créer.<br>
+		    	Pour faire ça bien:<br>sudo -u "serveur web" mkdir /chemin/du/site/public/user_data</p>';
+		    	echo $e;
+		    	$flag = true;
+		    }
 	    }
 	    if(!file_exists('../var')){
-	    	mkdir('../var');
-	    	chmod('../var', $droits_dossiers);
-	    	//
+	    	try{
+		    	mkdir('../var');
+		    	chmod('../var', $droits_dossiers);
+		    }
+		    catch(Exception $e){
+		    	echo $e;
+		    	$flag = true;
+		    }
 	    }
 	    if(!file_exists('../var/backups')){
-	    	mkdir('../var/backups');
-	    	chmod('../var/backups', $droits_dossiers);
-	    	//
+	    	try{
+		    	mkdir('../var/backups');
+		    	chmod('../var/backups', $droits_dossiers); // autoriser à la fois le serveur et les scripts dans bin/
+		    }
+		    catch(Exception $e){
+		    	echo $e;
+		    	$flag = true;
+		    }
 	    }
 
 	    // droits 600 pour celui-ci
@@ -63,7 +80,7 @@ class Installation
 	    	echo '<p>Il doit obligatoirement contenir les codes de la base de données, le protocole http ou https (et éventuellement le port) utilisé pour créer les liens internes.<br>
 	    		Un modèle est disponible, il s\'agit du fichier config/config-template.ini</p>
 	    		<p>Ce fichier a une importance critique. Si vous le pouvez faites en sorte que le serveur en soit le propriétaire et donner lui des droits 600.</p>';
-	    	die;
+	    	$flag = true;
 	    }
 	    /*else{
 	    	// propriétaire du fichier
@@ -78,6 +95,9 @@ class Installation
 				}
 	    	}
 	    }*/
+	    if($flag){
+	    	die;
+	    }
 
 	    // tester les liens internes
     	//

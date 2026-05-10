@@ -52,7 +52,7 @@ if($request->getMethod() === 'GET'){
     }
 
     // construction d'une page
-    $response = (new ViewController)->buildView($entityManager, $request); // utilise Model
+    $response = (new ViewDirector)->buildView($entityManager, $request); // utilise Model
     // parenthèses nécéssaires autour de l'instanciation pour PHP < 8.4
 }
 

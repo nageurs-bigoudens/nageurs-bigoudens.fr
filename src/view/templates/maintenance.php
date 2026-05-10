@@ -19,9 +19,25 @@
 	<div class="basic_div">
 		<p>
 			<a href="<?= new URL(['action' => 'get_mysqldump']) ?>">
-				<button id="get_mysqldump">Télécharger la base de données</button>
+				<button id="get_mysqldump">Télécharger une sauvegarde de la base de données</button>
 			</a><br>
-			<i>Réalise un "mysqldump", vous obtiendrez un unique fichier contenant toute la BDD.</i>
+			<i>Obtenir un fichier SQL à conserver sur votre ordinateur. Une sauvegarde est réalisée à chaque visite de cette page.</i>
+		</p>
+	</div>
+	<div class="basic_div">
+		<p>Restaurer la base de données à partir d'un fichier SQL.<br>
+			<i>Attention l'actuelle BDD sera écrasée!</i>
+		</p>
+		<p>
+			<label for="">Utiliser une sauvegarde conservée sur le serveur</label>
+			<select>
+				<?= $backup_options ?>
+			</select>
+		</p>
+		<p>
+			<label for="restore_sql_dump">Utiliser un fichier sur votre ordinateur:</label>
+			<input id="restore_sql_dump" type="file" accept=".sql" name="restore_sql_dump">
+			
 		</p>
 	</div>
 

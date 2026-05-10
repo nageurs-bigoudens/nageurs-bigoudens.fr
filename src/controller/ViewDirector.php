@@ -1,5 +1,5 @@
 <?php
-// src/view/ViewController.php
+// src/view/ViewDirector.php
 //
 // génère le HTML avec des Builder
 
@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ViewController extends AbstractBuilder // ViewController est aussi le premier Builder
+class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier Builder
 {
     static public Node $root_node;
 
@@ -60,6 +60,9 @@ class ViewController extends AbstractBuilder // ViewController est aussi le prem
         // article non trouvé en BDD
         if(CURRENT_PAGE === 'article' && !IS_ADMIN && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
             return new Response($this->html, 302);
+        }
+        elseif(CURRENT_PAGE === 'maintenance'){
+            Backup::mySQLdump($entityManager); // créer un nouveau backup
         }
 
 
