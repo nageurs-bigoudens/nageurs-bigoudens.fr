@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
 use App\Entity\log;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class MaintenanceController
 {
@@ -44,6 +45,24 @@ class MaintenanceController
 		}
 		catch(Exception $e){
 			echo json_encode(['success' => false]);
+		}
+		die;
+	}
+
+	static public function getLastDump(EntityManager $entityManager): void
+	{
+		try{
+			$file_path = Backup::mySQLdump($entityManager);
+			header('Content-Type: application/octet-stream'); // signifie fichier quelconque, du binaire quoi!
+			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"'); // pour provoquer un téléchargement et non pour afficher
+			header('Content-Length: ' . filesize($file_path)); // peut servir côté client (barre de progression...)
+			readfile($file_path);
+			die;
+		}
+		// exeptions lancées dans Backup::mySQLdump
+		catch(ProcessFailedException $e){ // pas d'info $e pour le client
+			header('Location: ' . new URL(['page' => 'maintenance', 'error' => '500']));
+			die;
 		}
 		die;
 	}

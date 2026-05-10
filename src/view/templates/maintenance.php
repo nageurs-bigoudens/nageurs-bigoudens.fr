@@ -12,8 +12,16 @@
 	</div>
 	<div class="basic_div">
 		<p>
-			<a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les emails</button></a><br>
-			<i>Emails reçus depuis tous les formulaires de contact</i>
+			<a href="<?= new URL(['page' => 'emails']) ?>"><button>Consulter les emails</button></a>
+			<i>reçus depuis tous les formulaires de contact</i>
+		</p>
+	</div>
+	<div class="basic_div">
+		<p>
+			<a href="<?= new URL(['action' => 'get_mysqldump']) ?>">
+				<button id="get_mysqldump">Télécharger la base de données</button>
+			</a><br>
+			<i>Réalise un "mysqldump", vous obtiendrez un unique fichier contenant toute la BDD.</i>
 		</p>
 	</div>
 

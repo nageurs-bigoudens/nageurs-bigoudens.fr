@@ -1,4 +1,5 @@
 vendor/
+var/
 config/config.ini
 public/js/tinymce
 public/js/tinymce-langs

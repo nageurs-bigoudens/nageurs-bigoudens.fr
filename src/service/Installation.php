@@ -9,10 +9,9 @@ class Installation
 	{
 		$flag = false;
 		$extensions = ['pdo_mysql', 'mbstring', 'ctype', 'json', 'tokenizer', 'imagick']; // les 5 premières sont pour doctrine
-		// ajouter plus tard zip pour les backup
+		// ajouter plus tard zlib pour la compression des backups
 		foreach($extensions as $extension){
-	        if(!extension_loaded($extension))
-	        {
+	        if(!extension_loaded($extension)){
 	            echo("<p>l'extension <b>" . $extension . '</b> est manquante</p>');
 	            $flag = true;
 	        }
@@ -34,8 +33,8 @@ class Installation
 	static public function checkFilesAndFoldersRights(): void
 	{
 		// -- droits des fichiers et dossiers --
-	    $droits_dossiers = 0700;
-	    $droits_fichiers = 0600;
+	    $droits_dossiers = 0755;
+	    $droits_fichiers = 0644;
 
 	    if(!file_exists('user_data')){
 	    	// créer le dossier user_data
@@ -46,25 +45,43 @@ class Installation
 	    	<p>Aide: "serveur web" se nomme "www-data" sur debian et ubuntu, il s\'appelera "http" sur d\'autres distributions.</p>';
 	    	die;
 	    }
+	    if(!file_exists('../var')){
+	    	mkdir('../var');
+	    	chmod('../var', $droits_dossiers);
+	    	//
+	    }
+	    if(!file_exists('../var/backups')){
+	    	mkdir('../var/backups');
+	    	chmod('../var/backups', $droits_dossiers);
+	    	//
+	    }
 
+	    // droits 600 pour celui-ci
 	    if(!file_exists('../config/config.ini')){
 	    	// aide à la création du config.ini
 	    	echo '<p>Le fichier config/config.ini est introuvable.</p>';
 	    	echo '<p>Il doit obligatoirement contenir les codes de la base de données, le protocole http ou https (et éventuellement le port) utilisé pour créer les liens internes.<br>
 	    		Un modèle est disponible, il s\'agit du fichier config/config-template.ini</p>
-	    		<p>Quand vous aurez terminé votre config.ini, donnez-lui par sécurité des droits 600.</p>';
+	    		<p>Ce fichier a une importance critique. Si vous le pouvez faites en sorte que le serveur en soit le propriétaire et donner lui des droits 600.</p>';
 	    	die;
 	    }
-	    else{
-	    	// droits du config.ini
-			/*if(substr(sprintf('%o', fileperms('../config/config.ini')), -4) != 600){
-				chmod('../config/config.ini', $droits_fichiers);
-			}*/
+	    /*else{
+	    	// propriétaire du fichier
+	    	if(fileowner('../config/config.ini') != posix_geteuid()){
+	    		echo "<p>le fichier config/config.ini n'appartient pas au serveur.</p>";
+	    	}
+	    	else{
+	    		// droits du config.ini
+				if(substr(sprintf('%o', fileperms('../config/config.ini')), -4) != 600){
+					echo '<p>Attention, le </p>';
+					//chmod('../config/config.ini', $droits_fichiers);
+				}
+	    	}
+	    }*/
 
-	    	// tester les liens internes
-	    	//
+	    // tester les liens internes
+    	//
 
-	    	// le test de connexion à la BDD est dans le doctrine bootstrap
-	    }
+    	// le test de connexion à la BDD est dans le doctrine bootstrap
 	}
 }

@@ -12,7 +12,8 @@
         "symfony/http-foundation": "^7.3",
         "twbs/bootstrap-icons": "^1.13",
         "symfony/var-exporter": "^7.0",
-        "mklkj/tinymce-i18n": "^25.11"
+        "mklkj/tinymce-i18n": "^25.11",
+        "symfony/process": "^8.0"
     },
     "scripts": {
         "post-install-cmd": [

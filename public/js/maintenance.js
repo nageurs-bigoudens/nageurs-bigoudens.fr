@@ -7,7 +7,7 @@ function displayLogs(){
 		return;
 	}
 
-	let fetcher = new Fetcher({
+	const fetcher = new Fetcher({
 		endpoint: 'index.php?action=get_logs',
 		method: 'POST',
 		onSuccess: (data) => {
@@ -26,7 +26,7 @@ function cleanLogs(){
 	}
 	const log_table = getElementOrThrow('log_table');
 	
-	let fetcher = new Fetcher({
+	const fetcher = new Fetcher({
 		endpoint: 'index.php?action=erase_logs',
 		method: 'POST',
 		onSuccess: () => {
