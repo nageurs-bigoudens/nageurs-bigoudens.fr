@@ -1,3 +1,5 @@
+// js/maintenance.js
+
 function displayLogs(){
 	const log_table = getElementOrThrow('log_table');
 	
@@ -41,4 +43,4 @@ function cleanLogs(){
 }
 
 // notification après restauration
-
+// et éventuellement récupérer le message de l'exception d'une autre manière

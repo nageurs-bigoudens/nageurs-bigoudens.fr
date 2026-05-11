@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process; // protection injection dans le shell
 class Backup
 {
 	static public string $backup_dir = '../var/backups';
-	static private int $amount_to_keep = 30;
+	static private int $amount_to_keep = 20;
 
 	static public function mySQLdump(EntityManager $entityManager, string $type): string
 	{
@@ -81,19 +81,78 @@ class Backup
 		return $backup_list[count($backup_list) - 1];
 	}
 
-	static public function cleanBackups(): void {
+	static public function cleanBackups(): void
+	{
 		$files = glob(self::$backup_dir . '/*.sql');
-		usort($files, fn($a, $b) => filemtime($b) <=> filemtime($a)); // filemtime = date de dernière modification
-		$files_to_delete = array_slice($files, self::$amount_to_keep);
-		foreach($files_to_delete as $file){
-		    unlink($file);
+		//usort($files, fn($a, $b) => filemtime($b) <=> filemtime($a)); // filemtime = date de dernière modification
+		arsort($files);
+
+		// tri par nom de BDD puis par date
+		$sorted_files = [];
+		$list_by_database = []; // pour le nettoyage 2
+		foreach($files as $file){
+			$exploded = explode('_', basename($file));
+			$sorted_files[$exploded[0]][$exploded[1]][] = $file;
+			$list_by_database[$exploded[0]][] = $file;
+		}
+
+		$today = new DateTime()->format('Y-m-d');
+		foreach($sorted_files as $db_name => $from_one_database){
+			// on garde une "quantité à garder" par BDD
+			if(count($from_one_database) > self::$amount_to_keep){
+				// nettoyage 1
+				foreach($from_one_database as $date => $with_same_date){
+					// pas touche à aujourd'hui
+					if($date != $today){
+						self::cleanBackupsByPriority($with_same_date);
+					}
+				}
+				// nettoyage 2
+				$files_to_delete = array_slice($list_by_database[$db_name], self::$amount_to_keep);
+				foreach($files_to_delete as $file){
+				    unlink($file);
+				}
+			}
+		}
+	}
+
+	// conserver un seul backup par jour choisi dans cet ordre de préférence: console => before-restore => download => auto
+	// cet ordre correspond à: volonté de l'utilisateur => état du jour avant changement => volonté de changement => automatique sans contrôle
+	static private function cleanBackupsByPriority(array $files): void
+	{
+		$priorities = [
+			'console' => 1,
+			'before-restore' => 2,
+			'uploaded' => 3,
+			'auto' => 4,
+		];
+		$best_priority = PHP_INT_MAX;
+
+		// recherche du fichier à conserver
+		$to_keep = null;
+		foreach($files as $file){
+			foreach($priorities as $keyword => $priority){
+				if(str_contains(basename($file), $keyword) && $priority < $best_priority){
+					$best_priority = $priority;
+					$to_keep = $file;
+					break;
+				}
+			}
+		}
+		// suppression des autres
+		foreach($files as $file){
+		    if($file !== $to_keep){
+		        unlink($file);
+		    }
 		}
 	}
 
 	static public function restoreDatabase(EntityManager $entityManager, string $file_name): void
 	{
-		// backup de sécurité
-		Backup::mySQLdump($entityManager, 'before-restore');
+		// création d'un backup de sécurité non écrasable
+		if(!file_exists(self::$backup_dir . '/' . Config::$database . '_' . new DateTime()->format('Y-m-d') . '_before-restore.sql')){
+			Backup::mySQLdump($entityManager, 'before-restore');
+		}
 		
 		$version = $entityManager->getConnection()->fetchOne('SELECT VERSION()');
 		$engine = stripos($version, 'mariadb') !== false ? 'mariadb' : 'mysql';

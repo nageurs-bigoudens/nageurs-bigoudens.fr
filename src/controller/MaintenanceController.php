@@ -81,7 +81,7 @@ class MaintenanceController
 	static public function downloadSQL(EntityManager $entityManager, UploadedFile $uploaded_file): void
 	{
         if(pathinfo($uploaded_file->getClientOriginalName())['extension'] !== 'sql'){
-        	throw new Exception("charger un fichier au format SQL");
+        	throw new Exception("Charger un fichier au format SQL");
         }
         //echo $uploaded_file->getSize(); // à garder de côté au cas où
 
@@ -89,7 +89,7 @@ class MaintenanceController
 
         try{
         	// enregistrer le fichier
-	        var_dump($uploaded_file->move(Backup::$backup_dir, $server_place));
+	        $uploaded_file->move(Backup::$backup_dir, $server_place);
 
 	        // s'en servir
 	        Backup::restoreDatabase($entityManager, $server_place);
