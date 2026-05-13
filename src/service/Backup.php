@@ -75,7 +75,7 @@ class Backup
 		}
 		return $backup_array;
 	}
-	static public function getLastBackupName(): string
+	static public function getLastBackupName(): string // chemin inclu
 	{
 		$backup_list = self::getBackupList();
 		return $backup_list[count($backup_list) - 1];

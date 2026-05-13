@@ -53,7 +53,7 @@ class MaintenanceController
 	static public function getLastDump(): void
 	{
 		try{
-			$file_path = Backup::getLastBackupName();
+			$file_path = Backup::$backup_dir . '/' . Backup::getLastBackupName();
 			header('Content-Type: application/octet-stream'); // signifie fichier quelconque, du binaire quoi!
 			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"'); // pour provoquer un téléchargement et non pour afficher
 			header('Content-Length: ' . filesize($file_path)); // peut servir côté client (barre de progression...)
