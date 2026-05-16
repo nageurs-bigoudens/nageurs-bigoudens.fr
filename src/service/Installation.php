@@ -12,12 +12,12 @@ class Installation
 		// ajouter plus tard zlib pour la compression des backups
 		foreach($extensions as $extension){
 	        if(!extension_loaded($extension)){
-	            echo("<p>l'extension <b>" . $extension . "</b> est manquante.</p>");
+	            echo("<p>L'extension <b>" . $extension . "</b> est manquante.</p>");
 	            $flag = true;
 	        }
 	    }
 	    if(!class_exists(DOMDocument::class)){ // théoriquement plus fiable que extension_loaded()
-	    	echo("<p>l'extension <b>dom</b> est manquante.</p>");
+	    	echo("<p>L'extension <b>dom</b> est manquante.</p>");
 	    	$flag = true;
 	    }
 

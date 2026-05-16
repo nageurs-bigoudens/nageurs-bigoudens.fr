@@ -85,7 +85,8 @@ class MaintenanceController
         }
         //echo $uploaded_file->getSize(); // à garder de côté au cas où
 
-        $server_place = Config::$database . '_' . new DateTime()->format('Y-m-d') . '_uploaded.sql';
+        $date = new DateTime;
+        $server_place = Config::$database . '_' . $date->format('Y-m-d') . '_uploaded.sql';
 
         try{
         	// enregistrer le fichier

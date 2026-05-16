@@ -61,9 +61,6 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
         if(CURRENT_PAGE === 'article' && !IS_ADMIN && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
             return new Response($this->html, 302);
         }
-        elseif(CURRENT_PAGE === 'maintenance'){
-            Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup
-        }
 
 
         /* 4/ construction de la page avec builders et vues */

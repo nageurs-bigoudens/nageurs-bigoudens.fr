@@ -13,7 +13,8 @@ class Backup
 
 	static public function mySQLdump(EntityManager $entityManager, string $type): string
 	{
-		$file_path = self::$backup_dir . '/' . Config::$database . '_' . new DateTime()->format('Y-m-d') . '_' . $type . '.sql';
+		$date = new DateTime;
+		$file_path = self::$backup_dir . '/' . Config::$database . '_' . $date->format('Y-m-d') . '_' . $type . '.sql';
 
 		// les versions de mysql sont comme ci: 8.0.36
 		// celles de mariadb sont comme ça: 10.11.6-MariaDB
@@ -42,6 +43,9 @@ class Backup
 				unlink($file_path);
 			}
 			$command->mustRun(); // comme run() mais lance une ProcessFailedException
+
+			//$file_path = self::gzipCompress($file_path); // '.gz' ajouté à la fin
+
 			chmod($file_path, 0666);
 			return $file_path;
 		}
@@ -50,18 +54,22 @@ class Backup
 			unlink($tmp);
 			self::cleanBackups();
 		}
+	}
 
-		// compression gzip (gros gain de place sur le serveur), nécessite l'extension zlib
-		/*try{
+	// compression gzip (gros gain de place sur le serveur), nécessite l'extension zlib
+	static public function gzipCompress(string $file_path): string
+	{
+		try{
 			file_put_contents(
 			    $file_path . '.gz',
 			    gzencode(file_get_contents($file_path), 5), // plus rapide que 9 et taille identique d'après mes essais
 			);
-			return $file_path . '.gz';
+			unlink($file_path);
+			$file_path .= '.gz';
 		}
 		finally{
-			unlink($file_path);
-		}*/
+			return $file_path;
+		}
 	}
 
 	static public function getBackupList(): array
@@ -96,14 +104,14 @@ class Backup
 			$list_by_database[$exploded[0]][] = $file;
 		}
 
-		$today = new DateTime()->format('Y-m-d');
+		$date = new DateTime;
 		foreach($sorted_files as $db_name => $from_one_database){
 			// on garde une "quantité à garder" par BDD
 			if(count($from_one_database) > self::$amount_to_keep){
 				// nettoyage 1
-				foreach($from_one_database as $date => $with_same_date){
+				foreach($from_one_database as $date_key => $with_same_date){
 					// pas touche à aujourd'hui
-					if($date != $today){
+					if($date_key != $date->format('Y-m-d')){
 						self::cleanBackupsByPriority($with_same_date);
 					}
 				}
@@ -150,7 +158,8 @@ class Backup
 	static public function restoreDatabase(EntityManager $entityManager, string $file_name): void
 	{
 		// création d'un backup de sécurité non écrasable
-		if(!file_exists(self::$backup_dir . '/' . Config::$database . '_' . new DateTime()->format('Y-m-d') . '_before-restore.sql')){
+		$date = new DateTime;
+		if(!file_exists(self::$backup_dir . '/' . Config::$database . '_' . $date->format('Y-m-d') . '_before-restore.sql')){
 			Backup::mySQLdump($entityManager, 'before-restore');
 		}
 		
@@ -176,7 +185,6 @@ class Backup
 			password=" . Config::$password . "\n
 			host=" . Config::$db_host . "\n");
 
-		
 
 		$command = new Process([
 		    $engine, // mariadb ou mysql
@@ -185,7 +193,6 @@ class Backup
 		]);
 		$command->setInput(file_get_contents(Backup::$backup_dir . '/' . $file_name)); // l'entrée <
 
-		
 
 		try{
 			// tout effacer
