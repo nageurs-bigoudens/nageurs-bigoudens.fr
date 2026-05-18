@@ -74,12 +74,17 @@ class Backup
 
 	static public function getBackupList(): array
 	{
+		$files = scandir(Backup::$backup_dir); // affiche un warning si échoue (à cacher en prod)
+		if(!$files){
+			throw new RuntimeException("Le serveur a rencontré une erreur:<br>Accès aux backups impossible faute de permissions.");
+		}
+
 		$backup_array = [];
-		foreach(scandir(Backup::$backup_dir) as $file){
-		    if($file[0] === '.'){
-		        continue;
-		    }
-		    $backup_array[] = $file;
+		foreach($files as $file){
+			if($file[0] === '.'){
+				continue;
+			}
+			$backup_array[] = $file;
 		}
 		return $backup_array;
 	}
@@ -185,6 +190,7 @@ class Backup
 			password=" . Config::$password . "\n
 			host=" . Config::$db_host . "\n");
 
+		//$file_name = self::gzipExtract($file_name); // '.gz' ajouté à la fin
 
 		$command = new Process([
 		    $engine, // mariadb ou mysql

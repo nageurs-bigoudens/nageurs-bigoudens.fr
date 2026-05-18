@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
 use App\Entity\log;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MaintenanceController
@@ -61,9 +60,8 @@ class MaintenanceController
 			die;
 		}
 		// exeptions lancées dans Backup::mySQLdump
-		catch(ProcessFailedException $e){ // pas d'info $e pour le client
-			header('Location: ' . new URL(['page' => 'maintenance', 'error' => '500']));
-			die;
+		catch(RuntimeException $e){ // pas d'info $e pour le client7
+			header('Location: ' . new URL(['page' => 'maintenance', 'get_last_dump' => $e->getMessage()]));
 		}
 		die;
 	}

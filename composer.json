@@ -2,17 +2,17 @@
     "name": "ordipolo/cms",
     "description": "CMS maison avec PHP, doctrine et tinyMCE",
     "require": {
+        "composer": "*",
         "doctrine/dbal": "^4.3",
         "doctrine/orm": "^3.5",
-        "symfony/cache": "^7.3",
-        "composer": "*",
+        "symfony/cache": "^7.0",
         "htmlawed/htmlawed": "^1.2",
-        "tinymce/tinymce": "^8.2",
-        "phpmailer/phpmailer": "^7.0",
-        "symfony/http-foundation": "^7.3",
+        "tinymce/tinymce": "^8.5",
+        "mklkj/tinymce-i18n": "^26.5",
+        "phpmailer/phpmailer": "^7.1",
         "twbs/bootstrap-icons": "^1.13",
+        "symfony/http-foundation": "^7.0",
         "symfony/var-exporter": "^7.0",
-        "mklkj/tinymce-i18n": "^25.11",
         "symfony/process": "^7.0"
     },
     "scripts": {

@@ -92,7 +92,13 @@ class UserController
 				$_SESSION['user']['role'] = $user->getRole();
 
 				EmailService::cleanEmails($entityManager);
-				Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup
+				
+				try{
+					Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup
+				}
+				catch(RuntimeException $e){
+					echo '<script>window.error_message = "' . $e->getMessage() . '";</script>';
+				}
 
 				$url = new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
 				isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';

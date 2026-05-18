@@ -45,15 +45,18 @@ function moveOneLevelDown(page_id)
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success)
-        {
+        if(data.success){
 			// affichage
 			nav_zone.innerHTML = '';
         	nav_zone.insertAdjacentHTML('afterbegin', data.nav);
         	menu_edit_buttons.innerHTML = '';
 			menu_edit_buttons.insertAdjacentHTML('afterbegin', data.menu_buttons);
         }
-        else {
+        else if(!data.success && data.error == 'new_parent_is_a_link'){
+            toastNotify("Action interdite, une page ne peut avoir pour parent une adresse vers un site web.");
+            console.log("Action interdite, une page ne peut avoir pour parent une adresse vers un site web.");
+        }
+        else{
             console.error('Échec du déplacement');
         }
     })

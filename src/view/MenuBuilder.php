@@ -13,10 +13,10 @@ class MenuBuilder extends AbstractBuilder
     //private int $margin_left_multiplier = 29;
     private string $options = '';
 
-    public function __construct(Node $node, bool $template = true)
+    public function __construct(?Node $node, bool $template = true)
     {
-        // dans une ancienne version $node pouvait être null mais je ne sais plus pourquoi
-        $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
+        // $node peut $etre null parce qu'on ne construit pas de page dans MenuAndPathsController, on ne lit pas la table "node", etc
+        $viewFile = $node === null ? self::VIEWS_PATH . 'menu.php' : self::VIEWS_PATH . $node->getName() . '.php';
         
         if(file_exists($viewFile))
         {

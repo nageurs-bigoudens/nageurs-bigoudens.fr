@@ -31,7 +31,7 @@
 		    <p><img src="assets/arrow-right.svg"> devenir une branche de l'élément précédent</p>
 			<p><img src="assets/arrow-up.svg"><img src="assets/arrow-down.svg"> déplacer la branche parmi celles de même niveau</p>
 		    <p><input type="checkbox" checked> afficher/cacher</p>
-		    <p><img src="assets/edit.svg"> modifier un lien</p>
+		    <p><img src="assets/save.svg"> enregistrer une modification</p>
 		    <p><img src="assets/delete-bin.svg"> supprimer un lien</p>
 		</div>
 	</aside>

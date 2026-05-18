@@ -141,7 +141,7 @@ class MenuAndPathsController
 		$page = Model::$menu->findPageById((int)$id);
 
         $parent = $page->getParent(); // peut être null
-        if($parent == null){
+        if($parent === null){
             $parent = Model::$menu;
         }
 
@@ -150,6 +150,12 @@ class MenuAndPathsController
         if($page->getPosition() > 1){
             foreach($parent->getChildren() as $child){
                 if($child->getPosition() === $page->getPosition() - 1){
+                    // refus si $parent est une adresse, ça va casser le lien, exemple: index.php?page=chemin/http://un_site_web.fr/vers/ici
+                    if(str_starts_with($child->getEndOfPath(), 'http')){
+                        echo json_encode(['success' => false, 'error' => 'new_parent_is_a_link']);
+                        die;
+                    }
+
                     $page->setParent($child);
                     break;
                 }

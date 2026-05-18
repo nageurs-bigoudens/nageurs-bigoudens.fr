@@ -43,4 +43,24 @@ function cleanLogs(){
 }
 
 // notification après restauration
-// et éventuellement récupérer le message de l'exception d'une autre manière
+document.addEventListener('DOMContentLoaded', function(){
+	const params = new URLSearchParams(window.location.search);
+	// ça pourrait être bien de récupérer le message d'erreur de l'exception d'une autre manière (message dans la variable globale window? c'est faisable??)
+
+	if(typeof window.error_message !== "undefined"){
+		toastNotify(window.error_message);
+	}
+
+	if(params.has('read_backups_dir')){
+		toastNotify("Une erreur s'est produite:<br>" + params.get('read_backups_dir'));
+	}
+
+	if(params.has('database_restauration')){
+		if(params.get('database_restauration') === 'successful'){
+			toastNotify("La base de données a été restaurée avec succès !!");
+		}
+		else{
+			toastNotify("Une erreur s'est produite:<br>" + params.get('database_restauration'));
+		}
+	}
+});
