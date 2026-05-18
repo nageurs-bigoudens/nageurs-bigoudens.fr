@@ -16,7 +16,7 @@ class AssetEmployment
 {
     // clé primaire double
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: NodeData::class, inversedBy: 'nda_collection')]
+    #[ORM\ManyToOne(targetEntity: NodeData::class, inversedBy: 'asset_employment')]
     #[ORM\JoinColumn(name: 'node_data_id', referencedColumnName: 'id_node_data', onDelete: 'CASCADE')]
     private NodeData $node_data;
 
@@ -24,7 +24,7 @@ class AssetEmployment
     #[ORM\Column(type: 'string', length: 50)]
     private string $role;
 
-    #[ORM\ManyToOne(targetEntity: Asset::class)]
+    #[ORM\ManyToOne(targetEntity: Asset::class, inversedBy: 'asset_employment')]
     #[ORM\JoinColumn(name: 'asset_id', referencedColumnName: 'id_asset', onDelete: 'CASCADE')]
     private Asset $asset;
 
