@@ -16,7 +16,7 @@ class MaintenanceController
 			echo json_encode(['success' => false]);
 		}
 		else{
-			$view = '<h4>Table ' . TABLE_PREFIX . 'log de la BDD</h4>
+			$view = '<h4>Table ' . TABLE_PREFIX . 'log de la base de données</h4>
 				<table>
 					<thead>
 						<tr>
@@ -62,6 +62,22 @@ class MaintenanceController
 		// exeptions lancées dans Backup::mySQLdump
 		catch(RuntimeException $e){ // pas d'info $e pour le client7
 			header('Location: ' . new URL(['page' => 'maintenance', 'get_last_dump' => $e->getMessage()]));
+		}
+		die;
+	}
+	static public function getAllMedia(): void
+	{
+		try{
+			$file_path = '../var/' . UserDataService::createZip('all_media.zip', ['user_data/assets', 'user_data/images', 'user_data/media']);
+			header('Content-Type: application/zip');
+			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"'); // pour provoquer un téléchargement et non pour afficher
+			header('Content-Length: ' . filesize($file_path)); // peut servir côté client (barre de progression...)
+			readfile($file_path);
+			die;
+		}
+		// exeptions lancées dans Backup::mySQLdump
+		catch(RuntimeException $e){ // pas d'info $e pour le client7
+			header('Location: ' . new URL(['page' => 'maintenance', 'get_all_media' => $e->getMessage()]));
 		}
 		die;
 	}

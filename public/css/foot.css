@@ -177,7 +177,7 @@ footer .data > div
     position: fixed;
     z-index: 1;
     left: 50%;
-    bottom: 30px;
+    bottom: 40px;
     transform: translateX(-50%);
     /*opacity: 0;*/
     transition: opacity 0.5s, visibility 0.5s;

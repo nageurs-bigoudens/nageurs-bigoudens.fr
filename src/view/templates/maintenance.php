@@ -43,6 +43,18 @@
 			<input type="submit" value="Valider" onclick="return confirm('Voulez-vous vraiment restaurer la base de données? Toutes les données seront supprimées et remplacées par les nouvelles.')">
 		</form>
 	</div>
+	<div class="basic_div">
+		<p>
+			<a href="<?= new URL(['from' => 'maintenance', 'action' => 'get_all_media']) ?>">
+				<button id="get_all_media">Récupérer l'ensemble des fichiers mutimedia</button>
+			</a><br>
+			<i>Toutes vos photos et vos documents dans un "zip"</i>
+		</p>
+		<p>
+			<button onclick="openExplorer()" style="color: grey">Explorateur de fichiers</button><br>
+			<i>Gérer les fichiers multimedia, fonction actuellement indisponible</i>
+		</p>
+	</div>
 
 	<div class="basic_div">
 		<a href="http://nageurs.localhost/index.php"><button>Retour au site</button></a>

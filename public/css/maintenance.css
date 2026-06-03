@@ -28,3 +28,11 @@
 	background-color: white;
 	border: lightgrey 2px outset;
 }
+
+@media screen and (max-width: 480px)
+{
+	.maintenance select
+	{
+		font-size: 86%;
+	}
+}

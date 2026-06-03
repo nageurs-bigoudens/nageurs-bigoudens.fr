@@ -49,6 +49,10 @@ if($request->getMethod() === 'GET'){
             MaintenanceController::getLastDump();
             die;
         }
+        if($request->query->has('action') && $request->query->get('action') === 'get_all_media'){
+            MaintenanceController::getAllMedia();
+            die;
+        }
     }
 
     // construction d'une page

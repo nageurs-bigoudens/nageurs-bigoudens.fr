@@ -8,7 +8,7 @@ class Installation
 	static public function phpDependancies(): void
 	{
 		$flag = false;
-		$extensions = ['pdo_mysql', 'mbstring', 'ctype', 'json', 'tokenizer', 'imagick']; // les 5 premières sont pour doctrine
+		$extensions = ['pdo_mysql', 'mbstring', 'ctype', 'json', 'tokenizer', 'imagick', 'zip']; // les 5 premières sont pour doctrine
 		// ajouter plus tard zlib pour la compression des backups
 		foreach($extensions as $extension){
 	        if(!extension_loaded($extension)){
