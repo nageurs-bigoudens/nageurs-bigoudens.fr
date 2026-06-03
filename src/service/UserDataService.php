@@ -23,7 +23,7 @@ class UserDataService
 		    $iterator = new RecursiveIteratorIterator($directory);
 		    
 			foreach($iterator as $info){
-				if($info->getFilename() != "." && $info->getFilename() != ".."){ // chemins inutiles . et ..
+				if($info->getFilename() != "." && $info->getFilename() != ".." && $info->getFilename() != '.htaccess'){ // chemins inutiles . et .. et le .htaccess
 					$Zip->addGlob($info->getPathname(), 0, array(''));
 					$counter++;
 				}

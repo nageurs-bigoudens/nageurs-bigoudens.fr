@@ -22,6 +22,7 @@ class Backup
 		$engine = stripos($version, 'mariadb') !== false ? 'mariadb-dump' : 'mysqldump';
 
 		$tmp = tempnam('../var', 'tmp_db_codes_'); // crée un fichier avec un nom aléatoire et des droits 600 (concurrence)
+		// attention, si le dossier de destination n'est pas disponible, le fichier est placé avec les fichiers temporaires
 		file_put_contents($tmp, 
 			"[client]\n
 			user=" . Config::$user . "\n
@@ -87,11 +88,6 @@ class Backup
 			$backup_array[] = $file;
 		}
 		return $backup_array;
-	}
-	static public function getLastBackupName(): string // chemin inclu
-	{
-		$backup_list = self::getBackupList();
-		return $backup_list[count($backup_list) - 1];
 	}
 
 	static public function cleanBackups(): void

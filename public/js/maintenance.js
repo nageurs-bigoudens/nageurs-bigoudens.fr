@@ -58,6 +58,9 @@ document.addEventListener('DOMContentLoaded', function(){
 			toastNotify("Une erreur s'est produite:<br>" + params.get('database_restauration'));
 		}
 	}
+	if(params.has('get_last_dump')){
+		toastNotify(params.get('get_last_dump'));
+	}
 	if(params.has('get_all_media')){
 		toastNotify(params.get('get_all_media'));
 	}

@@ -49,10 +49,22 @@ class MaintenanceController
 		die;
 	}
 
-	static public function getLastDump(): void
+	static public function getLastDump(EntityManager $entityManager): void
 	{
+		$backup_list = Backup::getBackupList();
+		$nb = count($backup_list);
+
+		if($nb <= 0){ // se produit à la première connexion en mode admin pour une raison algorithimque
+			Backup::mySQLdump($entityManager, 'auto');
+			$backup_list = Backup::getBackupList();
+			$nb = count($backup_list);
+			if($nb <= 0){ // improbable, les dossiers devraient déjà avoir été créés
+				throw new RuntimeException("Le serveur a rencontré une erreur: aucun backup n'est disponible et ce n'est pas normal.");
+			}
+		}
+
 		try{
-			$file_path = Backup::$backup_dir . '/' . Backup::getLastBackupName();
+			$file_path = Backup::$backup_dir . '/' . $backup_list[$nb - 1];
 			header('Content-Type: application/octet-stream'); // signifie fichier quelconque, du binaire quoi!
 			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"'); // pour provoquer un téléchargement et non pour afficher
 			header('Content-Length: ' . filesize($file_path)); // peut servir côté client (barre de progression...)

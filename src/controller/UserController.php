@@ -81,8 +81,7 @@ class UserController
 		if($form->validate()){
 			// à mettre dans une classe métier UserService, Authentication, AuthService?
 			$user = self::getUserByName($_POST['login'], $entityManager);
-			if(!empty($user) && $_POST['login'] === $user->getLogin() && password_verify($_POST['password'], $user->getPassword()))
-			{
+			if(!empty($user) && $_POST['login'] === $user->getLogin() && password_verify($_POST['password'], $user->getPassword())){
 				$log = new Log(true);
 				
 				// protection fixation de session, si l'attaquant crée un cookie de session, il est remplacé
@@ -94,7 +93,9 @@ class UserController
 				EmailService::cleanEmails($entityManager);
 				
 				try{
-					Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup
+					if(file_exists('../var/backups')){
+						Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup, sauf si les dossiers nécessaires sont encore à créer
+					}
 				}
 				catch(RuntimeException $e){
 					echo '<script>window.error_message = "' . $e->getMessage() . '";</script>';

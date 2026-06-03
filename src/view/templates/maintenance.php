@@ -48,7 +48,7 @@
 			<a href="<?= new URL(['from' => 'maintenance', 'action' => 'get_all_media']) ?>">
 				<button id="get_all_media">Récupérer l'ensemble des fichiers mutimedia</button>
 			</a><br>
-			<i>Toutes vos photos et vos documents dans un "zip"</i>
+			<i>Toutes vos photos et vos documents dans un .zip</i>
 		</p>
 		<p>
 			<button onclick="openExplorer()" style="color: grey">Explorateur de fichiers</button><br>

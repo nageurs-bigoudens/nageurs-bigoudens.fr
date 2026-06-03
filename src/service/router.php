@@ -46,7 +46,7 @@ if($request->getMethod() === 'GET'){
 
     if(IS_ADMIN === true){
         if($request->query->has('action') && $request->query->get('action') === 'get_mysqldump'){
-            MaintenanceController::getLastDump();
+            MaintenanceController::getLastDump($entityManager);
             die;
         }
         if($request->query->has('action') && $request->query->get('action') === 'get_all_media'){
