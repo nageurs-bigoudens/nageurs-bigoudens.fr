@@ -10,7 +10,7 @@ class MaintenanceBuilder extends AbstractBuilder
 	public function __construct(Node $node){
 		$viewFile = self::VIEWS_PATH . $node->getName() . '.php';
 
-		// noter qu'un backup vient d'être créé depuis ViewDirector
+		// noter qu'un backup a été créé dans UserController::connect()
 		try{
 			$backup_array = Backup::getBackupList();
 		}

@@ -44,7 +44,7 @@ if($request->getMethod() === 'GET'){
         die;
     }
 
-    if(IS_ADMIN === true){
+    if(IS_ADMIN){
         if($request->query->has('action') && $request->query->get('action') === 'get_mysqldump'){
             MaintenanceController::getLastDump($entityManager);
             die;
@@ -70,7 +70,7 @@ elseif($request->getMethod() === 'POST'){
     }
     
     // requêtes JSON avec fetch()
-    if($_SERVER['CONTENT_TYPE'] === 'application/json')
+    if($request->headers->get('Content-Type') === 'application/json')
     {
         $json = json_decode($request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
 
@@ -84,7 +84,7 @@ elseif($request->getMethod() === 'POST'){
     }
 
     // envoi formulaire HTML
-    elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
+    elseif($request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
         // tentative de connexion
         if($request->query->has('action') && $request->query->get('action') === 'connection'){
             //$response = 
@@ -92,12 +92,12 @@ elseif($request->getMethod() === 'POST'){
         }
     }
 
-    if(IS_ADMIN === true)
+    if(IS_ADMIN)
     {
         /* -- requêtes AJAX -- */
 
         // requêtes JSON avec fetch()
-        if($_SERVER['CONTENT_TYPE'] === 'application/json')
+        if($request->headers->get('Content-Type') === 'application/json')
         {
             $json = json_decode($request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
 
@@ -293,7 +293,7 @@ elseif($request->getMethod() === 'POST'){
         }
 
         /* -- formulaire HTML SANS fichier -- */
-        elseif($_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
+        elseif($request->headers->get('Content-Type') === 'application/x-www-form-urlencoded')
         {
             if($request->query->has('action') && $request->query->get('action') === 'delete_article' && isset($_GET['id'])){
                 $response = ArticleController::deleteArticle($entityManager, $_GET); // version formulaire
@@ -418,7 +418,7 @@ if(isset($response)){
         header('Location: ' . new URL(['page' => $_GET['from'] ?? '']));
     }
     // redirection après traitement de formulaires HTTP
-    elseif($request->getMethod() === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
+    elseif($request->getMethod() === 'POST' && $request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
         $response_data = json_decode(($response)->getContent(), true);
         $url = new URL(['page' => $_GET['from'] ?? '']);
         $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
@@ -431,7 +431,7 @@ if(isset($response)){
 }
 // pas utilisation de RESPONSE (cas destiné à disparaître)
 else{
-    if($request->getMethod() === 'POST' && $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded'){
+    if($request->getMethod() === 'POST' && $request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
         header("Location: " . new URL(['error' => 'erreur côté serveur']));
     }
     else{
