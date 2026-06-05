@@ -66,6 +66,11 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
         /* 4/ construction de la page avec builders et vues */
         $this->useChildrenBuilder(self::$root_node);
 
+        if(isset($_SESSION['flash_message'])){
+            $this->html .= '<script>window.flash_message = "' . $_SESSION['flash_message'] . '";</script>';
+            unset($_SESSION['flash_message']);
+        }
+
         return new Response($this->html, 200);
     }
 }

@@ -14,11 +14,11 @@ class MaintenanceBuilder extends AbstractBuilder
 		try{
 			$backup_array = Backup::getBackupList();
 		}
-		// exeptions lancées dans Backup::mySQLdump
-		catch(RuntimeException $e){ // pas d'info $e pour le client
+		catch(RuntimeException $e){
 			$backup_array = [];
-			echo '<script>window.error_message = "' . $e->getMessage() . '";</script>';
+			$_SESSION['flash_message'] = $e->getMessage(); // peut écraser une flash error déjà dans $_SESSION['flash_message']
 		}
+		
 		$backup_options = '';
 		for($i = count($backup_array) - 1; $i >= 0; $i--){
 			$backup_options .= '<option value="' . $backup_array[$i] . '">' . $backup_array[$i] . '</option>';

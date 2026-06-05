@@ -12,8 +12,7 @@ class HeadBuilder extends AbstractBuilder
     {
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';
         
-        if(file_exists($viewFile))
-        {
+        if(file_exists($viewFile)){
             // css et js
             $page = Model::$page_path->getLast();
 

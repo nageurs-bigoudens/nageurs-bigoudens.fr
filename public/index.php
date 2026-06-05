@@ -55,4 +55,18 @@ $request = Request::createFromGlobals();
 /* -- partie 2: routage et contrôleurs -- */
 
 define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? ''));
-require '../src/service/router.php';
+
+Router::dispatch($request, $entityManager);
+
+// futur bon code après correction du routeur
+/*try{
+    $response = Router::dispatch($request, $entityManager);
+}
+catch(Throwable $e){
+    $response = new JsonResponse([
+        'success' => false,
+        'message' => 'Erreur interne'
+    ], 500);
+    // mieux utiliser une classe ErrorHandler qui gère les différents types d'erreur
+}
+$response->send();*/

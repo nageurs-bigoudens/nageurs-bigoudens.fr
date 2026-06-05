@@ -93,6 +93,10 @@ function makeDropLeftMenuEntries(){
 
 // exécuté à la fin du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
+	// afficher un message d'erreur (flash message ou survenu en générant la page)
+	if(typeof window.flash_message !== "undefined"){
+		toastNotify(window.flash_message);
+	}
 
 	// ouvrir/fermer les sous-menus avec écran tactile
 	document.querySelectorAll('.sub-menu-toggle').forEach(button => {

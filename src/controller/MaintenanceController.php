@@ -5,7 +5,10 @@ declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
 use App\Entity\log;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class MaintenanceController
 {
@@ -51,76 +54,101 @@ class MaintenanceController
 
 	static public function getLastDump(EntityManager $entityManager): void
 	{
-		$backup_list = Backup::getBackupList();
-		$nb = count($backup_list);
-
-		if($nb <= 0){ // se produit à la première connexion en mode admin pour une raison algorithimque
-			Backup::mySQLdump($entityManager, 'auto');
+		try{
 			$backup_list = Backup::getBackupList();
 			$nb = count($backup_list);
-			if($nb <= 0){ // improbable, les dossiers devraient déjà avoir été créés
-				throw new RuntimeException("Le serveur a rencontré une erreur: aucun backup n'est disponible et ce n'est pas normal.");
-			}
-		}
 
-		try{
+			if($nb <= 0){ // se produit à la première connexion en mode admin pour une raison algorithimque
+				Backup::mySQLdump($entityManager, 'auto');
+				$backup_list = Backup::getBackupList();
+				$nb = count($backup_list);
+				if($nb <= 0){ // improbable, les dossiers devraient déjà avoir été créés
+					throw new RuntimeException("Le serveur a rencontré une erreur: aucun backup n'est disponible et ce n'est pas normal.");
+				}
+			}
+
 			$file_path = Backup::$backup_dir . '/' . $backup_list[$nb - 1];
-			header('Content-Type: application/octet-stream'); // signifie fichier quelconque, du binaire quoi!
-			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"'); // pour provoquer un téléchargement et non pour afficher
-			header('Content-Length: ' . filesize($file_path)); // peut servir côté client (barre de progression...)
-			readfile($file_path);
-			die;
+			$response = new BinaryFileResponse($file_path);
+			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT); // ne pas essayer de l'afficher dans le navigateur
 		}
-		// exeptions lancées dans Backup::mySQLdump
-		catch(RuntimeException $e){ // pas d'info $e pour le client7
-			header('Location: ' . new URL(['page' => 'maintenance', 'get_last_dump' => $e->getMessage()]));
+		catch(RuntimeException $e){
+			$_SESSION['flash_message'] = $e->getMessage();
+			$response = new RedirectResponse((string) new URL(['page' => 'maintenance']));
 		}
+		$response->send();
 		die;
 	}
 	static public function getAllMedia(): void
 	{
 		try{
 			$file_path = '../var/' . UserDataService::createZip('all_media.zip', ['user_data/assets', 'user_data/images', 'user_data/media']);
-			header('Content-Type: application/zip');
-			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"'); // pour provoquer un téléchargement et non pour afficher
-			header('Content-Length: ' . filesize($file_path)); // peut servir côté client (barre de progression...)
-			readfile($file_path);
-			die;
+			$response = new BinaryFileResponse($file_path);
+			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT); // ne pas essayer de l'afficher dans le navigateur
 		}
-		// exeptions lancées dans Backup::mySQLdump
-		catch(RuntimeException $e){ // pas d'info $e pour le client7
-			header('Location: ' . new URL(['page' => 'maintenance', 'get_all_media' => $e->getMessage()]));
+		catch(RuntimeException $e){
+			$_SESSION['flash_message'] = $e->getMessage();
+			$response = new RedirectResponse((string) new URL(['page' => 'maintenance']));
 		}
+		$response->send();
 		die;
 	}
 
 	// parce qu'il faut un contrôleur
-	static public function handleBackupSelection(EntityManager $entityManager, string $selected_file): void
+	static public function handleBackupSelection(EntityManager $entityManager, Request $request): void
 	{
-		if(pathinfo($selected_file)['extension'] !== 'sql'){ // pas censé se produire en fait
-        	throw new Exception("charger un fichier au format SQL");
+		$selected_file = $request->request->get('selected_sql');
+		$url = new URL;
+        if($request->query->has('from')){
+            $url->addParams(['page' => $request->query->get('from')]);
         }
-
-        Backup::restoreDatabase($entityManager, $selected_file);
-	}
-
-	static public function downloadSQL(EntityManager $entityManager, UploadedFile $uploaded_file): void
-	{
-        if(pathinfo($uploaded_file->getClientOriginalName())['extension'] !== 'sql'){
-        	throw new Exception("Charger un fichier au format SQL");
-        }
-        //echo $uploaded_file->getSize(); // à garder de côté au cas où
-
-        $date = new DateTime;
-        $server_place = Config::$database . '_' . $date->format('Y-m-d') . '_uploaded.sql';
 
         try{
+			if(pathinfo($selected_file)['extension'] !== 'sql'){ // pas censé se produire en fait
+	        	throw new Exception("charger un fichier au format SQL");
+	        }
+	        Backup::restoreDatabase($entityManager, $selected_file);
+
+	        $_SESSION['flash_message'] = "La base de données a été restaurée avec succès !!";
+	    }
+	    catch(Exception $e){
+	    	$_SESSION['flash_message'] = "Une erreur s'est produite: " . $e->getMessage();
+	    }
+
+	    $response = new RedirectResponse((string)$url);
+	    $response->send();
+	    die;
+	}
+
+	static public function downloadSQL(EntityManager $entityManager, Request $request): void
+	{
+        $uploaded_file = $request->files->get('uploaded_sql');
+        $date = new DateTime;
+        $server_place = Config::$database . '_' . $date->format('Y-m-d') . '_uploaded.sql';
+        $url = new URL;
+        if($request->query->has('from')){
+            $url->addParams(['page' => $request->query->get('from')]);
+        }
+
+        try{
+	        if(pathinfo($uploaded_file->getClientOriginalName())['extension'] !== 'sql'){
+	        	throw new Exception("Charger un fichier au format SQL");
+	        }
+	        //echo $uploaded_file->getSize(); // à garder de côté au cas où
+
         	// enregistrer le fichier
 	        $uploaded_file->move(Backup::$backup_dir, $server_place);
 
 	        // s'en servir
 	        Backup::restoreDatabase($entityManager, $server_place);
+
+	        $_SESSION['flash_message'] = "La base de données a été restaurée avec succès !!";
 	    }
-	    finally{}
+	    catch(Exception $e){
+	    	$_SESSION['flash_message'] = "Une erreur s'est produite: " . $e->getMessage();
+	    }
+
+	    $response = new RedirectResponse((string)$url);
+	    $response->send();
+	    die;
 	}
 }
