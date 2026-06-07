@@ -41,3 +41,18 @@ function cleanLogs(){
 	});
 	fetcher.send({});
 }
+
+function preventClickSpam(button){
+	if(button.disabled){
+        return;
+    }
+
+	button.disabled = true;
+	button.style.color = 'grey';
+	toastNotify('Veuillez patienter...', 1000);
+
+	setTimeout(() => {
+        button.disabled = false;
+        button.style.color = '#ff1d04';
+    }, 1000);
+}

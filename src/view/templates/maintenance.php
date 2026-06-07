@@ -19,7 +19,7 @@
 	<div class="basic_div">
 		<p>
 			<a href="<?= new URL(['action' => 'get_mysqldump']) ?>">
-				<button id="get_mysqldump">Télécharger une sauvegarde de la base de données</button>
+				<button id="get_mysqldump" onclick="preventClickSpam(this)">Télécharger une sauvegarde de la base de données</button>
 			</a><br>
 			<i>Obtenir un fichier SQL à conserver sur votre ordinateur. Une sauvegarde (désignée par "auto") est réalisée à chaque visite de cette page.</i>
 		</p>
@@ -46,7 +46,7 @@
 	<div class="basic_div">
 		<p>
 			<a href="<?= new URL(['from' => 'maintenance', 'action' => 'get_all_media']) ?>">
-				<button id="get_all_media">Récupérer l'ensemble des fichiers mutimedia</button>
+				<button id="get_all_media" onclick="preventClickSpam(this)">Récupérer l'ensemble des fichiers mutimedia</button>
 			</a><br>
 			<i>Toutes vos photos et vos documents dans un .zip</i>
 		</p>
