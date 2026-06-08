@@ -152,6 +152,9 @@ document.addEventListener('DOMContentLoaded', function(){
                 return date;
             }
 
+			if(!info.event.start || !info.event.end){
+                throw new Error("info.event.start ou info.event.end est null");
+            }
             const formated_start = formatDate(info.event.start);
             const formated_end = formatDate(info.event.allDay ? minusOneDay(info.event.end) : info.event.end);
             
@@ -223,8 +226,8 @@ document.addEventListener('DOMContentLoaded', function(){
         const event_title = event_title_input.value;
         const event_description = event_description_input.value;
         const event_all_day = event_all_day_input.checked;
-        let event_start = event_start_input.value;
-        let event_end = event_end_input.value;
+        let event_start = new Date(event_start_input.value);
+        let event_end = new Date(event_end_input.value);
         const event_color = event_color_input.value; // #3788d8 par défaut
         
         let event_id = '';
@@ -235,18 +238,16 @@ document.addEventListener('DOMContentLoaded', function(){
         }
 
         // contrôle de saisie
-        if(event_title.length !== 0 && event_start.length !== 0 && event_end.length !== 0 && event_color.length !== 0
+        if(event_title.length !== 0 && event_start_input.value.length !== 0 && event_end_input.value.length !== 0 && event_color.length !== 0
             && (new_event || event_id.length !== 0))
         {
             if(event_all_day){
                 // on remet le jour de fin exclu
-                const tmp_object = new Date(event_end);
-                tmp_object.setDate(tmp_object.getDate() + 1);
-                event_end = tmp_object.toISOString().split('T')[0];
+                event_end.setDate(event_end.getDate() + 1);
             }
             else{
-                event_start = new Date(event_start).toISOString();
-                event_end = new Date(event_end).toISOString();
+                event_start = new Date(event_start);
+                event_end = new Date(event_end);
             }
 
             // contrôle date/heure de fin après le début

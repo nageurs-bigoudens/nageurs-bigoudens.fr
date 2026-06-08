@@ -78,7 +78,11 @@ function toggleTouchMenu(){
 
 function makeDropLeftMenuEntries(){
 	// détection d'éléments de 1er niveau possédant un menu déroulant possédant un menu déroulant
-	document.getElementById('nav_zone').querySelector('.nav_main').querySelectorAll('.drop-down:has(.drop-right)').forEach(drop_down => {
+	const nav_zone = document.getElementById('nav_zone');
+	if(!nav_zone){
+		return;
+	}
+	nav_zone.querySelector('.nav_main').querySelectorAll('.drop-down:has(.drop-right)').forEach(drop_down => {
 		const rect = drop_down.getBoundingClientRect(); // coordonnées spatiales
 
 		// il se situe dans la moitié droite
@@ -124,13 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	});
 
+	// menu principal
 	navHeight(); // hauteur de <nav> en fonction de celle du menu en position fixe
 	makeDropLeftMenuEntries(); // changer en drop-left les drop-right des éléments du menu dans la moitié droite de la fenêtre
+
+	// dates des articles "news"
 	insertLocalDates();
 });
 
 function navHeight(){
 	const nav = document.querySelector('nav'); // détection
+	if(!nav){
+		return;
+	}
 	const nav_zone = document.getElementById('nav_zone');
 	const resize_observer = new ResizeObserver(entries => { // param de type tableau
 		let nav_button_height = window.innerWidth <= 768 ? 26 : 0; // 26 = taille du bouton
@@ -139,9 +149,7 @@ function navHeight(){
 			nav_zone.style.height = (entry.contentRect.height + nav_button_height) + 'px';
 		}
 	});
-	if(nav){
-		resize_observer.observe(nav);
-	}
+	resize_observer.observe(nav);
 }
 
 function fetchArticles(bloc_id){
