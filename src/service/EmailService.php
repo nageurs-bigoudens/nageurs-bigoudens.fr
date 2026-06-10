@@ -7,13 +7,13 @@ use PHPMailer\PHPMailer\PHPMailer;
 //use PHPMailer\PHPMailer\Exception;
 use Doctrine\ORM\EntityManager;
 use App\Entity\Email;
-use App\Entity\NodeData;
+use App\Entity\EmailForm;
 
 class EmailService
 {
 	const KEEP_EMAILS_DEFAULT = false;
 
-	static public function send(EntityManager $entityManager, NodeData $form_data, bool $test_email, string $name = '', string $email = '', string $message = ''): bool
+	static public function send(EntityManager $entityManager, EmailForm $form_data, bool $test_email, string $name = '', string $email = '', string $message = ''): bool
 	{
 		$mail = new PHPMailer(true); // true => exceptions
 	    $mail->CharSet = 'UTF-8';

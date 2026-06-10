@@ -8,7 +8,7 @@ use App\Entity\Page;
 
 class ShowEmailsBuilder extends AbstractBuilder
 {
-    public function __construct(Node $node = null)
+    public function __construct(?Node $node)
     {
         //parent::__construct($node);
         $viewFile = self::VIEWS_PATH . $node->getName() . '.php';

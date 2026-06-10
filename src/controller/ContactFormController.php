@@ -4,13 +4,15 @@
 declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
+use App\Entity\EmailForm;
+use App\Entity\Email;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactFormController
 {
 	static public function keepEmails(EntityManager $entityManager, array $json): JsonResponse
 	{
-		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+		$form_data = $entityManager->find(EmailForm::class, $json['id']);
 		$form_data->updateData('keep_emails', $json['checked'] ? true : false);
 		$entityManager->persist($form_data);
 		$entityManager->flush();
@@ -18,7 +20,7 @@ class ContactFormController
 	}
 	static public function setEmailsRetentionPeriod(EntityManager $entityManager, array $json): JsonResponse
 	{
-		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+		$form_data = $entityManager->find(EmailForm::class, $json['id']);
 		$form_data->updateData($json['field'], (int)$json['months']);
 		$entityManager->persist($form_data);
 		$entityManager->flush();
@@ -28,22 +30,15 @@ class ContactFormController
 	{
 		$form = new FormValidation($json, 'email_params');
 		
-		$error = '';
 		if($form->validate()){
-			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+			$form_data = $entityManager->find(EmailForm::class, $json['id']);
 			$form_data->updateData($json['what_param'], trim($json['value']));
-			$entityManager->persist($form_data);
+			$entityManager->persist($form_data); // ??
 			$entityManager->flush();
-		}
-		else{
-			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
-		}
-
-		if(empty($error)){
 			return new JsonResponse(['success' => true]);
 		}
 		else{
-			return new JsonResponse(['success' => false, 'error' => $error]);
+			return new JsonResponse(['success' => false, 'error' => $form->getErrors()[0]]); // la 1ère erreur sera affichée
 		}
 	}
 
@@ -55,7 +50,7 @@ class ContactFormController
 		$error = '';
 		if($form->validate()){
 			// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
-			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+			$form_data = $entityManager->find(EmailForm::class, $json['id']);
 			if($form_data === null){
 				return new JsonResponse(['success' => false, 'error' => 'server_error'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
 			}
@@ -78,7 +73,7 @@ class ContactFormController
 	static public function sendTestEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
 		// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
-		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
+		$form_data = $entityManager->find(EmailForm::class, $json['id']);
 		if($form_data === null){
 			return new JsonResponse(['success' => false, 'error' => 'server_error'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
 		}
@@ -92,14 +87,14 @@ class ContactFormController
 	}
 	static public function deleteEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
-		$email = $entityManager->find('App\Entity\Email', $json['id']);
+		$email = $entityManager->find(Email::class, $json['id']);
 		$entityManager->remove($email);
 		$entityManager->flush();
 		return new JsonResponse(['success' => true]);
 	}
 	static public function toggleSensitiveEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
-		$email = $entityManager->find('App\Entity\Email', $json['id']);
+		$email = $entityManager->find(Email::class, $json['id']);
 		$email->makeSensitive($json['checked']);
 		$entityManager->flush();
 		return new JsonResponse(['success' => true, 'checked' => $json['checked'], 'deletion_date' => $email->getDeletionDate()->format('d/m/Y')]);

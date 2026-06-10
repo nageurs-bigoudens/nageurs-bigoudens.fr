@@ -44,9 +44,6 @@ class NodeData
     #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: AssetEmployment::class, cascade: ['persist', 'remove'])]
     private Collection $asset_employment;
 
-    /*#[ORM\OneToMany(mappedBy: 'node_data', targetEntity: Email::class, cascade: ['persist', 'remove'])] // => noeud "form", inutilisé et conflit avec le tableau $emails
-    private Collection $emails;*/
-
     private int $nb_pages = 1;
     private array $emails = []; // => noeud "show_emails"
 
@@ -157,6 +154,7 @@ class NodeData
         return $nda->getAsset() ?? null;
     }
 
+    // pour affichage page Courriels
     public function getEmails(): array // appelée dans ShowEmailsBuilder
     {
         return $this->emails;

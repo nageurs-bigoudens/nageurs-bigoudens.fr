@@ -6,6 +6,7 @@ declare(strict_types=1);
 use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\NodeData;
+use App\Entity\EmailForm;
 //use App\Entity\Image;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -144,7 +145,9 @@ class PageManagementController
 	    }
 
 	    $block = new Node($request->request->get("bloc_select"), $position, $main, $page);
-	    $data = new NodeData(['title' => trim(htmlspecialchars($request->request->get("bloc_title")))], $block);
+
+	    $DataClass = $request->request->get("bloc_select") === 'form' ? EmailForm::class : NodeData::class; // cas particulier avec bloc 'email_form'
+	    $data = new $DataClass(['title' => trim(htmlspecialchars($request->request->get("bloc_title")))], $block);
 
 	    // valeurs par défaut
 	    if($request->request->get("bloc_select") === 'post_block'){
@@ -200,8 +203,15 @@ class PageManagementController
 	        if(isset($page)){
 	        	$entityManager->persist($page);
 	        }
+	        $block->getNodeData()->setNode(null);
 	        $entityManager->remove($block);
-	        $entityManager->flush();
+	        try{
+		        $entityManager->flush();
+		    }
+		    catch(Exception $e){
+		    	// utiliser une flash error
+		    	return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'mode' => 'page_modif', 'error' => $e->getMessage()]));
+		    }
 	    }
 
 	    return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'mode' => 'page_modif']));
@@ -277,8 +287,7 @@ class PageManagementController
 				$chrono_order = false;
 			}
 			else{
-				echo json_encode(['success' => false]);
-				die;
+				return new JsonResponse(['success' => false]);
 			}
 			$model->getNode()->getNodeData()->setChronoOrder($chrono_order);
 			$entityManager->flush();

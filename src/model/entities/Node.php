@@ -45,13 +45,14 @@ class Node
     #[ORM\OneToOne(targetEntity: NodeData::class, mappedBy: "node", cascade: ['persist', 'remove'])]
     private ?NodeData $node_data = null;
 
+    #[ORM\OneToOne(targetEntity: EmailForm::class, mappedBy: "node", cascade: ['persist'])] // pas de remove, les e-mails sont associés au EmailForm
+    private ?EmailForm $email_form = null;
 
     // attributs non destinés à doctrine
     private array $children = []; // tableau de Node
     private ?self $adopted = null; // = "new" est un enfant de "main" lorsque la page est "article"
 
-    public function __construct(string $name = '', int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null)
-    {
+    public function __construct(string $name = '', int $position = 0, ?self $parent = null, ?Page $page = null, ?Article $article = null){
         $this->name_node = $name;
         $this->position = $position;
         $this->parent = $parent;
@@ -105,9 +106,10 @@ class Node
     {
         $this->article = $article;
     }*/
-    public function getNodeData(): ?NodeData
+    // une interface serait cool!
+    public function getNodeData(): NodeData|EmailForm|null
     {
-        return $this->node_data;
+        return $this->name_node === 'form' ? $this->email_form : $this->node_data;
     }
     public function getChildren(): array
     {

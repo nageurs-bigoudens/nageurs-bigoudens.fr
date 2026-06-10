@@ -48,18 +48,18 @@ class Email
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $is_sensitive_since;
 
-    #[ORM\ManyToOne(targetEntity: NodeData::class)]
-    #[ORM\JoinColumn(name: "node_data_id", referencedColumnName: "id_node_data", nullable: true)]
-    private ?NodeData $node_data;
+    #[ORM\ManyToOne(targetEntity: EmailForm::class)]
+    #[ORM\JoinColumn(name: "email_form_id", referencedColumnName: "id_email_form", nullable: true)]
+    private ?EmailForm $email_form;
 
-    public function __construct(string $sender_name, string $sender_address, string $recipient, string $content, NodeData $node_data, bool $sensitive = false){
+    public function __construct(string $sender_name, string $sender_address, string $recipient, string $content, EmailForm $email_form, bool $sensitive = false){
         $this->sender_name = strtolower($sender_name);
         $this->sender_address = strtolower($sender_address);
         $this->recipient = strtolower($recipient);
         $this->content = $content;
         $this->date_time = new \DateTime;
         $this->last_contact_date = new \DateTime;
-        $this->node_data = $node_data;
+        $this->email_form = $email_form;
         $this->makeSensitive($sensitive);
     }
 
@@ -113,14 +113,14 @@ class Email
         $this->last_contact_date = new \DateTime;
     }
 
-    public function getDeletionDate(): \DateTime // utilise une durée de conservation $period qui est propre au bloc formulaire (à son NodeData)
+    public function getDeletionDate(): \DateTime // utilise une durée de conservation $period qui est propre au bloc formulaire (à son EmailForm)
     {
         // tests appliqués:
         // => e-mail associé à un formulaire?
         // => ce formulaire dispose d'une durée de stockage spécifique?
         // => cette donnée est un entier > 0
         $key = $this->is_sensitive ? 'retention_period_sensible' : 'retention_period';
-        $period = $this->node_data ? (int)($this->node_data->getData()[$key] ?? null) : null;
+        $period = $this->email_form ? (int)($this->email_form->getData()[$key] ?? null) : null;
 
         $default = $this->is_sensitive ? self::DEFAULT_RETENTION_PERIOD_SENSITIVE : self::DEFAULT_RETENTION_PERIOD;
         $period = ($period === null || $period <= 0) ? $default : $period;

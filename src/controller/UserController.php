@@ -122,7 +122,7 @@ class UserController
 		$url = new URL;
 		isset($_GET['from']) ? $url->addParams(['page' => $_GET['from']]) : '';
 		isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
-		return new RedirectResponse('Location: ' . $url);
+		return new RedirectResponse((string)$url);
 	}
 
 	// user
@@ -161,7 +161,7 @@ class UserController
 			sleep(1);
 			$url->addParams(['error_username' => $error]);
 		}
-		return new RedirectResponse('Location: ' . $url);
+		return new RedirectResponse((string)$url);
 	}
 
 	// user
@@ -200,7 +200,7 @@ class UserController
 			sleep(1);
 			$url->addParams(['error_password' => $error]);
 		}
-		return new RedirectResponse('Location: ' . $url);
+		return new RedirectResponse((string)$url);
 	}
 
 	// dans une classe mère ou un trait après découpage de UserController?
