@@ -3,9 +3,11 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 class FileUploadController
 {
-	static public function checkFileDownload(array $file): bool
+	static private function checkFileDownload(array $file): bool
 	{
 		$extensions_white_list = ['pdf', 'rtf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp']; // = extensions_white_list côté javascript
 		$mime_type_white_list = ['application/pdf', 'application/rtf', 'text/rtf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet', 'application/vnd.oasis.opendocument.presentation'];
@@ -32,7 +34,7 @@ class FileUploadController
 	    return in_array($real_type, $mime_type_white_list, true);
 	}
 
-	static public function fileUploadTinyMce(): void
+	static public function fileUploadTinyMce(): JsonResponse
 	{
 		if(isset($_FILES['file'])){
 	        $dest = 'user_data/media/';
@@ -46,22 +48,18 @@ class FileUploadController
 	        
 	        if(self::checkFileDownload($_FILES['file'])){
 	        	if(move_uploaded_file($_FILES['file']['tmp_name'], $file_path)){
-					echo json_encode(['location' => $file_path]);
+					return new JsonResponse(['location' => $file_path]);
 				}
 				else{
-					http_response_code(500);
-					echo json_encode(['message' => 'Erreur enregistrement du fichier.']);
+					return new JsonResponse(['message' => 'Erreur enregistrement du fichier.'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
 				}
 	        }
 	        else{
-	        	http_response_code(400);
-				echo json_encode(['message' => 'Erreur 400: fichier non valide.']);
+				return new JsonResponse(['message' => 'Erreur 400: fichier non valide.'], JsonResponse::HTTP_BAD_REQUEST); // code 400
 			}
 	    }
 	    else{
-	        http_response_code(400);
-	        echo json_encode(['message' => 'Erreur 400: Bad Request']);
+	        return new JsonResponse(['message' => 'Erreur 400: Bad Request'], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
-	    die;
 	}
 }

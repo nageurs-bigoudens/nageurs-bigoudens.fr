@@ -5,10 +5,11 @@ declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
 use App\Entity\Event;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CalendarController
 {
-	static public function getData(EntityManager $entityManager): void
+	static public function getData(EntityManager $entityManager): JsonResponse
 	{
 	    // bornes début et fin du calendrier affiché à l'heure locale
 	    // noter que la vue "planning" est similaire à la vue "semaine"
@@ -33,50 +34,41 @@ class CalendarController
 	        $events[] = $event->toArray();
 	    }
 
-	    header('Content-Type: application/json');
-	    echo json_encode($events);
-	    die;
+	    return new JsonResponse($events);
 	}
 
-	static public function newEvent(array $json, EntityManager $entityManager):void
+	static public function newEvent(array $json, EntityManager $entityManager): JsonResponse
 	{
 		try{
 	        $event = new Event($json);
 	    }
 	    catch(InvalidArgumentException $e){
-	        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-	        http_response_code(400);
-	        die;
+	        return new JsonResponse(['success' => false, 'error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
 	    $entityManager->persist($event);
 	    $entityManager->flush();
 		
-		echo json_encode(['success' => true, 'id' => $event->getId()]);
-		die;
+		return new JsonResponse(['success' => true, 'id' => $event->getId()]);
 	}
-	static public function updateEvent(array $json, EntityManager $entityManager):void
+	static public function updateEvent(array $json, EntityManager $entityManager): JsonResponse
 	{
 		$event = $entityManager->find('App\Entity\Event', (int)$json['id']);
 	    try{
 	        $event->securedUpdateFromJSON($json);
 	    }
 	    catch(InvalidArgumentException $e){
-	        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-	        http_response_code(400);
-	        die;
+	        return new JsonResponse(['success' => false, 'error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
 	    $entityManager->flush();
 
-		echo json_encode(['success' => true]);
-		die;
+		return new JsonResponse(['success' => true]);
 	}
-	static public function removeEvent(array $json, EntityManager $entityManager):void
+	static public function removeEvent(array $json, EntityManager $entityManager): JsonResponse
 	{
 		$event = $entityManager->find('App\Entity\Event', (int)$json['id']);
 	    $entityManager->remove($event);
 	    $entityManager->flush();
 
-		echo json_encode(['success' => true]);
-		die;
+		return new JsonResponse(['success' => true]);
 	}
 }

@@ -3,442 +3,375 @@
 //
 /* fonctionnement:
 => 1er test, méthode http GET? POST?
-=> 2ème test, type de contenu (méthode POST uniquement):
+=> 2ème test, type de contenu:
 "application/x-www-form-urlencoded" = formulaire
 "application/json" = requête AJAX avec fetch()
 "multipart/form-data" = upload d'image par tinymce
 $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' requête AJAX xhs, non utilisée
-=> 3ème test, comme le 2ème test mais uniquement si IS_ADMIN est vrai
-*/
+=> 3ème test, comme le 2ème test mais uniquement si IS_ADMIN est vrai */
+
+/* classes de réponses pour les contrôleurs
+Response($html, Response::HTTP_OK)                  page html
+JsonResponse(['success' => true, 'data' => $data])  ajax
+RedirectResponse('index.php?page=login')            redirection
+BinaryFileResponse($filePath)                       téléchargement
+StreamedResponse(function () {echo "ligne 1\n";echo "ligne 2\n";})  gros fichier */
+
+// relire ça à l'occaz:
+// https://symfony.com/doc/current/introduction/from_flat_php_to_symfony.html
 
 declare(strict_types=1);
 
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class Router{
-    // boulot = faire que TOUS les contrôleurs retournent une Response (et faire retourner une réponse par dispatch)
+    private Request $request;
+    private EntityManager $entityManager;
+    private string $route = ''; // défaut page d'accueil
 
-    // exemple de méthode dispatch
-    /*public static function dispatch(Request $request): Response
+    public function __construct(Request $request, EntityManager $entityManager){
+        $this->request = $request;
+        $this->entityManager = $entityManager;
+
+        if(!User::existUsers($entityManager)){ // table "user" vide
+            $this->route = 'no_user';
+        }
+    }
+
+    public function dispatch(): Response
     {
-        if ($request->getMethod() === 'GET') {
-            return PageController::home($request);
-        }
-
-        if ($request->getMethod() === 'POST') {
-            return UserController::login($request);
-        }
-
-        return new RedirectResponse('/');
-    }*/
-
-    /* classes de réponses pour les contrôleurs
-    Response($html, Response::HTTP_OK)                  page html
-    JsonResponse(['success' => true, 'data' => $data])  ajax
-    RedirectResponse('index.php?page=login')            redirection
-    BinaryFileResponse($filePath)                       téléchargement
-    StreamedResponse(function () {echo "ligne 1\n";echo "ligne 2\n";})  gros fichier
-    */
-
-    static public function dispatch(Request $request, EntityManager $entityManager){
-        if($request->getMethod() === 'GET'){
+        if($this->request->getMethod() === 'GET'){
             // table "user" vide
-            if(!UserController::existUsers($entityManager)){
+            if($this->route === 'no_user'){
+                ob_start();
                 require AbstractBuilder::VIEWS_PATH . 'user_create.php';
-                die;
+                return new Response(ob_get_clean());
             }
 
             // bouton déconnexion (méthode GET parce que l'utilisateur ne modifie plus de données à partir de là)
-            if($request->query->has('action') && $request->query->get('action') === 'deconnection'){
-                UserController::disconnect($entityManager);
+            if($this->request->query->get('action') === 'deconnection'){
+                return UserController::disconnect(); // retourne un RedirectResponse
             }
 
             // articles suivants
-            if($request->query->has('fetch') && $request->query->get('fetch') === 'next_articles'){
-                ArticleController::fetch($entityManager, $request);
+            if($this->request->query->get('fetch') === 'next_articles'){
+                return ArticleController::fetch($this->entityManager, $this->request); // retourne un JsonResponse
             }
 
             // données du calendrier
-            // création du calendrier et changement de dates affichées (boutons flèches mais pas changement de vue)
-            if($request->query->has('action') && $request->query->get('action') === 'get_events'
-                && $request->query->has('start') && $request->query->has('end') && empty($request->getPayload()->all())) // getPayload ne récupère pas que des POST
-            {
-                CalendarController::getData($entityManager);
+            // création du calendrier ou changement de dates affichées (boutons flèches mais pas changement de vue)
+            if($this->request->query->get('action') === 'get_events'
+                && $this->request->query->has('start') && $this->request->query->has('end') && empty($this->request->getPayload()->all())){ // getPayload ne récupère pas que des POST
+                return CalendarController::getData($this->entityManager);
             }
 
             // pages interdites
             if(!IS_ADMIN && in_array(CURRENT_PAGE, ['menu_paths', 'new_page', 'user_edit', 'emails', 'maintenance'])){
-                header('Location: ' . new URL);
-                die;
+                return new RedirectResponse((string)new URL);
             }
 
             if(IS_ADMIN){
-                if($request->query->has('action') && $request->query->get('action') === 'get_mysqldump'){
-                    MaintenanceController::getLastDump($entityManager);
-                    die;
+                if($this->request->query->get('action') === 'get_mysqldump'){
+                    return MaintenanceController::getLastDump($this->entityManager);
                 }
-                if($request->query->has('action') && $request->query->get('action') === 'get_all_media'){
-                    MaintenanceController::getAllMedia();
-                    die;
+                if($this->request->query->get('action') === 'get_all_media'){
+                    return MaintenanceController::getAllMedia();
                 }
             }
 
             // construction d'une page
-            $response = (new ViewDirector)->buildView($entityManager, $request); // utilise Model
+            return (new ViewDirector)->buildView($this->entityManager, $this->request); // utilise Model
             // parenthèses nécéssaires autour de l'instanciation pour PHP < 8.4
         }
 
 
-        elseif($request->getMethod() === 'POST'){
-            /* -- contrôleurs appellables par tout le monde -- */
+        elseif($this->request->getMethod() === 'POST'){
+            /* -- contrôleurs appelables par tout le monde -- */
 
             // table "user" vide
-            if(!UserController::existUsers($entityManager)){
-                UserController::createAdminUser($entityManager);
+            if($this->route === 'no_user'){
+                return UserController::createAdminUser($this->entityManager);
             }
             
-            // requêtes JSON avec fetch()
-            if($request->headers->get('Content-Type') === 'application/json')
+            // requête JSON avec fetch()
+            if($this->request->headers->get('Content-Type') === 'application/json')
             {
-                $json = json_decode($request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
+                $json = json_decode($this->request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
 
-                if(isset($_GET['action']))
-                {
-                    // formulaire de contact
-                    if($_GET['action'] === 'send_email'){
-                        ContactFormController::sendVisitorEmail($entityManager, $json);
-                    }
+                // formulaire de contact
+                if($this->request->query->get('action') === 'send_email'){
+                    return ContactFormController::sendVisitorEmail($this->entityManager, $json);
                 }
+                /*else{
+                    return new JsonResponse(['success' => false, 'error' => 'tu fais quoi là mec?']);
+                }*/
             }
 
             // envoi formulaire HTML
-            elseif($request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
+            elseif($this->request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
                 // tentative de connexion
-                if($request->query->has('action') && $request->query->get('action') === 'connection'){
-                    //$response = 
-                    UserController::connect($entityManager);
+                if($this->request->query->get('action') === 'connection'){
+                    return UserController::connect($this->entityManager);
                 }
+                /*else{
+                    return new RedirectResponse((string)new URL(['error' => 'tu fais quoi là mec?']));
+                }*/
             }
 
-            if(IS_ADMIN)
-            {
+            if(IS_ADMIN){
                 /* -- requêtes AJAX -- */
 
                 // requêtes JSON avec fetch()
-                if($request->headers->get('Content-Type') === 'application/json')
-                {
-                    $json = json_decode($request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
+                if($this->request->headers->get('Content-Type') === 'application/json'){
+                    $json = json_decode($this->request->getContent(), true); // = json_decode(file_get_contents('php://input'), true);
 
-                    if($request->query->has('action'))
-                    {
+                    if($this->request->query->has('action')){
                         /* -- manipulation des articles -- */
-                        if($_GET['action'] === 'editor_submit' && isset($json['id']) && isset($json['content'])){
-                            ArticleController::editorSubmit($entityManager, $json);
+                        if($this->request->query->get('action') === 'editor_submit' && isset($json['id']) && isset($json['content'])){
+                            return ArticleController::editorSubmit($this->entityManager, $json);
                         }
-                        elseif($_GET['action'] === 'delete_article' && isset($json['id'])){
-                            $response = ArticleController::deleteArticle($entityManager, $json); // version AJAX
+                        elseif($this->request->query->get('action') === 'delete_article' && isset($json['id'])){
+                            return ArticleController::deleteArticle($this->entityManager, $this->request); // version AJAX
                         }
-                        elseif($_GET['action'] === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
-                            ArticleController::switchPositions($entityManager, $json);
+                        elseif($this->request->query->get('action') === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
+                            return ArticleController::switchPositions($this->entityManager, $json);
                         }
-                        elseif($_GET['action'] === 'date_submit' && isset($json['id']) && isset($json['date'])){
-                            ArticleController::dateSubmit($entityManager, $json);
-                        }
-
-                        /* -- bloc Formulaire -- */
-                        elseif($_GET['action'] === 'keep_emails'){
-                            ContactFormController::keepEmails($entityManager, $json);
-                        }
-                        elseif($_GET['action'] === 'set_retention_period'){
-                            ContactFormController::setEmailsRetentionPeriod($entityManager, $json);
-                        }
-                        elseif($_GET['action'] === 'set_email_param'){
-                            ContactFormController::setEmailParam($entityManager, $json);
-                        }
-                        elseif($_GET['action'] === 'test_email'){
-                            ContactFormController::sendTestEmail($entityManager, $json);
+                        elseif($this->request->query->get('action') === 'date_submit' && isset($json['id']) && isset($json['date'])){
+                            return ArticleController::dateSubmit($this->entityManager, $json);
                         }
 
-                        /* -- page emails -- */
-                        elseif($_GET['action'] === 'delete_email'){
-                            ContactFormController::deleteEmail($entityManager, $json);
-                        }
-                        elseif($_GET['action'] === 'toggle_sensitive_email'){
-                            ContactFormController::toggleSensitiveEmail($entityManager, $json);
-                        }
+                        switch($this->request->query->get('action')){
+                            /* -- bloc Formulaire -- */
+                            case 'keep_emails':
+                                return ContactFormController::keepEmails($this->entityManager, $json);
+                            case 'set_retention_period':
+                                return ContactFormController::setEmailsRetentionPeriod($this->entityManager, $json);
+                            case 'set_email_param':
+                                return ContactFormController::setEmailParam($this->entityManager, $json);
+                            case 'test_email':
+                                return ContactFormController::sendTestEmail($this->entityManager, $json);
 
-                        /* -- upload d'image dans tinymce par copier-coller -- */
-                        // collage de HTML contenant une ou plusieurs balises <img>
-                        elseif($request->query->get('action') === 'upload_image_url'){
-                            ImageUploadController::uploadImageHtml();
-                        }
-                        // collage d'une image (code base64 dans le presse-papier) non encapsulée dans du HTML
-                        elseif($request->query->get('action') === 'upload_image_base64'){
-                            ImageUploadController::uploadImageBase64();
-                        }
+                            /* -- page emails -- */
+                            case 'delete_email':
+                                return ContactFormController::deleteEmail($this->entityManager, $json);
+                            case 'toggle_sensitive_email':
+                                return ContactFormController::toggleSensitiveEmail($this->entityManager, $json);
 
+                            /* -- upload d'image dans tinymce par copier-coller -- */
+                            // collage de HTML contenant une ou plusieurs balises <img>
+                            case 'upload_image_url':
+                                return ImageUploadController::uploadImageHtml();
+                            // collage d'une image (code base64 dans le presse-papier) non encapsulée dans du HTML
+                            case 'upload_image_base64':
+                                return ImageUploadController::uploadImageBase64();
 
-                        /* -- requêtes spécifiques au calendrier -- */
-                        elseif($request->query->get('action') === 'new_event'){
-                            CalendarController::newEvent($json, $entityManager);
-                        }
-                        elseif($request->query->get('action') === 'update_event'){
-                            CalendarController::updateEvent($json, $entityManager);
-                        }
-                        elseif($request->query->get('action') === 'remove_event'){
-                            CalendarController::removeEvent($json, $entityManager);
-                        }
+                            /* -- requêtes spécifiques au calendrier -- */
+                            case 'new_event':
+                                return CalendarController::newEvent($json, $this->entityManager);
+                            case 'update_event':
+                                return CalendarController::updateEvent($json, $this->entityManager);
+                            case 'remove_event':
+                                return CalendarController::removeEvent($json, $this->entityManager);
 
-                        /* -- mode maintenance -- */
-                        elseif($request->query->get('action') === 'get_logs'){
-                            MaintenanceController::getLogs($entityManager);
-                            die;
-                        }
-                        elseif($request->query->get('action') === 'erase_logs'){
-                            MaintenanceController::eraseLogs($entityManager);
-                            die;
-                        }
-                        else{
-                            echo json_encode(['success' => false]);
-                            die;
+                            /* -- mode maintenance -- */
+                            case 'get_logs':
+                                return MaintenanceController::getLogs($this->entityManager);
+                            case 'erase_logs':
+                                return MaintenanceController::eraseLogs($this->entityManager);
+
+                            default:
+                                return new JsonResponse(['success' => false]);
                         }
                     }
 
                     /* -- site entier (header, footer, favicon) -- */
-                    elseif($request->query->has('head_foot_text')){
-                        HeadFootController::setTextData($entityManager, $request->query->get('head_foot_text'), $json);
+                    elseif($this->request->query->has('head_foot_text')){
+                        return HeadFootController::setTextData($this->entityManager, $this->request->query->get('head_foot_text'), $json);
                     }
-                    elseif($request->query->has('head_foot_social_check')){
-                        HeadFootController::displaySocialNetwork($entityManager, $request->query->get('head_foot_social_check'), $json);
+                    elseif($this->request->query->has('head_foot_social_check')){
+                        return HeadFootController::displaySocialNetwork($this->entityManager, $this->request->query->get('head_foot_social_check'), $json);
                     }
 
                     /* -- page Menu et chemins -- */
-                    elseif(isset($_GET['menu_edit']))
-                    {
+                    elseif($this->request->query->has('menu_edit')){
                         // ne suit pas la règle, faire ça dans un contrôleur?
-                        Model::$menu = new Menu($entityManager); // récupération des données
+                        Model::$menu = new Menu($this->entityManager); // récupération des données
 
                         // flèche gauche <=: position = position du parent + 1, parent = grand-parent, recalculer les positions
-                        if($_GET['menu_edit'] === 'move_one_level_up' && isset($json['id'])){
-                            MenuAndPathsController::MoveOneLevelUp($entityManager, $json);
+                        if($this->request->query->get('menu_edit') === 'move_one_level_up' && isset($json['id'])){
+                            return MenuAndPathsController::MoveOneLevelUp($this->entityManager, $json);
                         }
-                        // flèche droite =>: position = nombre d'éléments de la fraterie + 1, l'élément précédent devient le parent
-                        elseif($_GET['menu_edit'] === 'move_one_level_down' && isset($json['id'])){
-                            MenuAndPathsController::MoveOneLevelDown($entityManager, $json);
+                        // flèche droite =>: position (léments de a fraterie + 1, l'élément précédent devient le parent
+                        elseif($this->request->query->get('menu_edit') === 'move_one_level_down' && isset($json['id'])){
+                            return MenuAndPathsController::MoveOneLevelDown($this->entityManager, $json);
                         }
-                        elseif($_GET['menu_edit'] === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
-                            MenuAndPathsController::switchPositions($entityManager, $json);
+                        elseif($this->request->query->get('menu_edit') === 'switch_positions' && isset($json['id1']) && isset($json['id2'])){
+                            return MenuAndPathsController::switchPositions($this->entityManager, $json);
                         }
-                        elseif($_GET['menu_edit'] === 'display_in_menu' && isset($json['id']) && isset($json['checked'])){
-                            MenuAndPathsController::displayInMenu($entityManager, $json);
+                        elseif($this->request->query->get('menu_edit') === 'display_in_menu' && isset($json['id']) && isset($json['checked'])){
+                            return MenuAndPathsController::displayInMenu($this->entityManager, $json);
                         }
-                        elseif($_GET['menu_edit'] === 'url_edit' && isset($json['id']) && isset($json['field']) && isset($json['input_data'])){
-                            MenuAndPathsController::editUrl($entityManager, $json);
+                        elseif($this->request->query->get('menu_edit') === 'url_edit' && isset($json['id']) && isset($json['field']) && isset($json['input_data'])){
+                            return MenuAndPathsController::editUrl($this->entityManager, $json);
+                        }
+                        else{
+                            return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST); // code 400
                         }
                     }
 
                     /* -- mode Modification d'une page -- */
                     // partie "page"
-                    elseif(isset($_GET['page_edit']))
-                    {
-                        // titre de la page
-                        if($_GET['page_edit'] === 'page_title'){
-                            PageManagementController::setPageTitle($entityManager, $json);
-                        }
-                        // description dans les métadonnées
-                        elseif($_GET['page_edit'] === 'page_description'){
-                            PageManagementController::setPageDescription($entityManager, $json);
+                    elseif($this->request->query->has('page_edit')){
+                        switch($this->request->query->get('page_edit')){
+                            case 'page_title':
+                                return PageManagementController::setPageTitle($this->entityManager, $json);
+                            case 'page_description':
+                                return PageManagementController::setPageDescription($this->entityManager, $json);
+                            default:
+                                return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST); // code 400
                         }
                     }
 
                     // partie "blocs"
-                    elseif($request->query->has('bloc_edit'))
-                    {
-                        if($request->query->get('bloc_edit') === 'rename_page_bloc'){
-                            PageManagementController::renameBloc($entityManager, $json);
+                    elseif($this->request->query->has('bloc_edit')){
+                        switch($this->request->query->get('bloc_edit')){
+                            case 'rename_page_bloc':
+                                return PageManagementController::renameBloc($this->entityManager, $json);
+                            case 'switch_blocs_positions':
+                                return PageManagementController::SwitchBlocsPositions($this->entityManager, $json, $this->request->query->get('page'));
+                            case 'change_articles_order':
+                                return PageManagementController::changeArticlesOrder($this->entityManager, $json);
+                            case 'change_presentation':
+                                return PageManagementController::changePresentation($this->entityManager, $json);
+                            case 'change_cols_min_width':
+                                return PageManagementController::changeColsMinWidth($this->entityManager, $json);
+                            case 'change_pagination_limit':
+                                return PageManagementController::changePaginationLimit($this->entityManager, $json);
+                            default:
+                                return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST); // code 400
                         }
-                        elseif($request->query->get('bloc_edit') === 'switch_blocs_positions'){
-                            PageManagementController::SwitchBlocsPositions($entityManager, $json);
-                        }
-                        elseif($request->query->get('bloc_edit') === 'change_articles_order'){
-                            PageManagementController::changeArticlesOrder($entityManager, $json);
-                        }
-                        elseif($request->query->get('bloc_edit') === 'change_presentation'){
-                            PageManagementController::changePresentation($entityManager, $json);
-                        }
-                        elseif($request->query->get('bloc_edit') === 'change_cols_min_width'){
-                            PageManagementController::changeColsMinWidth($entityManager, $json);
-                        }
-                        elseif($request->query->get('bloc_edit') === 'change_pagination_limit'){
-                            PageManagementController::changePaginationLimit($entityManager, $json);
-                        }
+                    }
+
+                    else{
+                        return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST); // code 400
                     }
                 }
 
-                /* -- upload avec FormData OU formulaire HTML AVEC fichier -- */
-                elseif(str_starts_with($request->headers->get('Content-Type'), 'multipart/form-data')) // = $_SERVER['CONTENT_TYPE']
-                {
+                /* -- upload avec FormData OU formulaire HTML avec fichier -- */
+                elseif(str_starts_with($this->request->headers->get('Content-Type'), 'multipart/form-data')){ // = $_SERVER['CONTENT_TYPE']
                     // dans tinymce avec le plugin (bouton "insérer une image" de l'éditeur ou glisser-déposer)
-                    if($request->query->has('action') && $request->query->get('action') === 'upload_image_tinymce'){
-                        ImageUploadController::imageUploadTinyMce();
+                    if($this->request->query->get('action') === 'upload_image_tinymce'){
+                        return ImageUploadController::imageUploadTinyMce();
                     }
                     // dans tinymce, des quatre méthodes: bouton "link", drag & drop, html, base64
-                    elseif($request->query->has('action') && $request->query->get('action') === 'upload_file_tinymce'){
-                        FileUploadController::fileUploadTinyMce();
+                    elseif($this->request->query->get('action') === 'upload_file_tinymce'){
+                        return FileUploadController::fileUploadTinyMce();
                     }
-                    elseif($request->query->has('head_foot_image')){
-                        HeadFootController::uploadAsset($entityManager, $request->query->get('head_foot_image'));
+                    elseif($this->request->query->has('head_foot_image')){
+                        return HeadFootController::uploadAsset($this->entityManager, $this->request->query->get('head_foot_image'));
                     }
 
                     /* -- page Maintenance -- */
-                    elseif($request->query->has('action') && $request->query->get('action') === 'restore_database'
-                        && $request->request->has('hidden') && $request->get('hidden') === ''
-                        && $request->files->has('uploaded_sql'))
-                    {
-                        MaintenanceController::downloadSQL($entityManager, $request);
+                    elseif($this->request->query->get('action') === 'restore_database' && $this->request->request->get('hidden') === ''
+                        && $this->request->files->has('uploaded_sql')){
+                        return MaintenanceController::downloadSQL($entityManager, $request);
+                    }
+                    else{
+                        // choix ici entre répondre en JSON ou par une redirection, choix du JSON pour pouvoir passer un message
+                        return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST); // code 400
                     }
                 }
 
-                // requêtes XMLHttpRequest
-                elseif(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
-                {
-                    echo json_encode(['success' => false]); // noyer le poisson en laissant penser que le site gère les requêtes XHR
-                    die;
-                }
-
-                /* -- formulaire HTML SANS fichier -- */
-                elseif($request->headers->get('Content-Type') === 'application/x-www-form-urlencoded')
-                {
-                    if($request->query->has('action') && $request->query->get('action') === 'delete_article' && isset($_GET['id'])){
-                        $response = ArticleController::deleteArticle($entityManager, $_GET); // version formulaire
+                /* -- formulaire HTML sans fichier -- */
+                elseif($this->request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
+                    if($this->request->query->get('action') === 'delete_article' && $this->request->query->has('id')){
+                        return ArticleController::deleteArticle($this->entityManager, $this->request); // version formulaire
                     }
 
                     /* -- nouvelle page -- */
-                    elseif(isset($_POST['page_name']) && $_POST['page_name'] !== null
-                        && isset($_POST['page_name_path']) && $_POST['page_name_path'] !== null
-                        && isset($_POST['page_location']) && $_POST['page_location'] !== null
-                        && isset($_POST['page_description']) && $_POST['page_description'] !== null
-                        && isset($_POST['new_page_hidden']) && $_POST['new_page_hidden'] === '')
-                    {
-                        PageManagementController::newPage($entityManager, $_POST);
+                    elseif($this->request->request->get('page_name') !== null
+                        && $this->request->request->get('page_name_path') !== null
+                        && $this->request->request->get('page_location') !== null
+                        && $this->request->request->get('page_description') !== null
+                        && $this->request->request->get('new_page_hidden') === ''){
+                        return PageManagementController::newPage($this->entityManager, $this->request->request);
                     }
                     
                     /* -- suppression d'une page -- */
-                    elseif(isset($_POST['page_id']) && $_POST['page_id'] !== null
-                        && isset($_POST['submit_hidden']) && $_POST['submit_hidden'] === '')
-                    {
-                        PageManagementController::deletePage($entityManager);
+                    elseif($this->request->request->get('page_id') !== null
+                        && $this->request->request->get('submit_hidden') === ''){
+                        return PageManagementController::deletePage($this->entityManager, $this->request->request->get('page_id'));
                     }
 
 
                     /* -- mode Modification d'une page -- */
                     // modification du chemins en snake_case
-                    elseif(isset($_POST['page_menu_path']) && $_POST['page_menu_path'] !== null
-                        && isset($_POST['page_id']) && $_POST['page_id'] !== null
-                        && isset($_POST['page_name_path_hidden']) && $_POST['page_name_path_hidden'] === '')
-                    {
-                        PageManagementController::updatePageMenuPath($entityManager);
+                    elseif($this->request->request->get('page_menu_path') !== null
+                        && $this->request->request->get('page_id') !== null
+                        && $this->request->request->get('page_name_path_hidden') === ''){
+                        return PageManagementController::updatePageMenuPath($this->entityManager, $this->request->request->get('page_menu_path'));
                     }
                     // ajout d'un bloc dans une page
-                    elseif(isset($_POST['bloc_title']) && $_POST['bloc_title'] !== null
-                        && isset($_POST['bloc_select']) && $_POST['bloc_select'] !== null
-                        && isset($_POST['bloc_title_hidden']) && $_POST['bloc_title_hidden'] === '') // contrôle anti-robot avec input hidden
-                    {
-                        PageManagementController::addBloc($entityManager);
+                    elseif($this->request->request->get('bloc_title') !== null
+                        && $this->request->request->get('bloc_select') !== null
+                        && $this->request->request->get('bloc_title_hidden') === ''){ // contrôle anti-robot avec input hidden
+                        return PageManagementController::addBloc($this->entityManager, $this->request);
                     }
                     // suppression d'un bloc de page
-                    elseif(isset($_POST['delete_bloc_id']) && $_POST['delete_bloc_id'] !== null
-                        && isset($_POST['delete_bloc_hidden']) && $_POST['delete_bloc_hidden'] === '') // contrôle anti-robot avec input hidden
-                    {
-                        PageManagementController::deleteBloc($entityManager);
+                    elseif($this->request->request->get('delete_bloc_id') !== null
+                        && $this->request->request->get('delete_bloc_hidden') === ''){ // contrôle anti-robot avec input hidden
+                        return PageManagementController::deleteBloc($this->entityManager, $this->request);
                     }
 
 
                     /* -- page Menu et chemins -- */
                     // création d'une entrée de menu avec une URL
-                    elseif(isset($_POST["label_input"]) && isset($_POST["url_input"]) && isset($_POST["location"])){
-                        MenuAndPathsController::newUrlMenuEntry($entityManager);
+                    elseif($this->request->request->has("label_input") && $this->request->request->has("url_input") && $this->request->request->has("location")){
+                        return MenuAndPathsController::newUrlMenuEntry($this->entityManager);
                     }
                     // suppression d'une entrée de menu avec une URL
-                    elseif(isset($_POST['delete']) && isset($_POST['x']) && isset($_POST['y'])){ // 2 params x et y sont là parce qu'on a cliqué sur une image
-                        MenuAndPathsController::deleteUrlMenuEntry($entityManager);
+                    elseif($this->request->request->has('delete') && $this->request->request->has('x') && $this->request->request->has('y')){ // 2 params x et y sont là parce qu'on a cliqué sur une image
+                        return MenuAndPathsController::deleteUrlMenuEntry($this->entityManager);
                     }
 
 
                     /* -- page Mon compte -- */
-                    elseif($request->query->has('action') && $request->query->get('action') === 'update_username')
-                    {
-                        UserController::updateUsername($entityManager);
+                    elseif($this->request->query->get('action') === 'update_username'){
+                        return UserController::updateUsername($this->entityManager);
                     }
-                    elseif($request->query->has('action') && $request->query->get('action') === 'update_password')
-                    {
-                        UserController::updatePassword($entityManager);
+                    elseif($this->request->query->get('action') === 'update_password'){
+                        return UserController::updatePassword($this->entityManager);
                     }
 
                     /* -- page Maintenance -- */
-                    elseif($request->query->has('action') && $request->query->get('action') === 'restore_database'
-                        && $request->request->has('hidden') && $request->get('hidden') === ''
-                        && $request->request->has('selected_sql'))
-                    {
-                        MaintenanceController::handleBackupSelection($entityManager, $request);
+                    elseif($this->request->query->get('action') === 'restore_database' && $this->request->get('hidden') === '' && $this->request->request->has('selected_sql')){
+                        return MaintenanceController::handleBackupSelection($this->entityManager, $this->request);
                     }
 
                     // redirection page d'accueil
-                    else{
-                        header("Location: " . new URL(['error' => 'paramètres inconnus']));
-                        die;
-                    }
+                    return new RedirectResponse((string)new URL(['error' => 'paramètres inconnus']));
+                }
+
+                // requêtes XMLHttpRequest
+                elseif($this->request->isXmlHttpRequest()){
+                    return new JsonResponse(['success' => false]); // noyer le poisson en laissant penser que le site gère les requêtes XHR
                 }
 
                 // POST admin ne matchant pas
-                else{
-                    echo json_encode(['success' => false]);
-                    die;
-                }
+                return new Response('bad parameters', Response::HTTP_BAD_REQUEST); // code 400
             }
-            // POST non admin ne matchant pas
-            else{
-                echo json_encode(['success' => false]);
-                die;
-            }
+
+            // POST non-admin ne matchant pas
+            return new Response('bad parameters', Response::HTTP_BAD_REQUEST); // code 400
         }
 
-        // méthode inconnue
+        // méthode HTTP inconnue
         else{
-            header("Location: " . new URL(['error' => 'tu fais quoi là mec?']));
-            die;
-        }
-
-
-
-        /* -- utilisation de la réponse -- */
-        if(isset($response)){
-            // cas gérés (d'autres sont à prévoir): mauvais id de la page article, accès page création d'article sans être admin
-            if($request->isMethod('GET') && $response->getStatusCode() == 302){ // 302 redirection temporaire
-                header('Location: ' . new URL(['page' => $_GET['from'] ?? '']));
-            }
-            // redirection après traitement de formulaires HTTP
-            elseif($request->getMethod() === 'POST' && $request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
-                $response_data = json_decode(($response)->getContent(), true);
-                $url = new URL(['page' => $_GET['from'] ?? '']);
-                $url->addParams(['success' => $response_data['success'], 'message' => $response_data['message']]);
-                header('Location: ' . $url);
-            }
-            // affichage d'une page OU requête AJAX
-            else{
-                $response->send();
-            }
-        }
-        // pas utilisation de RESPONSE (cas destiné à disparaître)
-        else{
-            if($request->getMethod() === 'POST' && $request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
-                header("Location: " . new URL(['error' => 'erreur côté serveur']));
-            }
-            else{
-                http_response_code(500);
-                echo "erreur côté serveur";
-            }
+            return new RedirectResponse((string)new URL(['error' => 'tu fais quoi là mec?']));
         }
     }
 }

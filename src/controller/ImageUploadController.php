@@ -3,6 +3,8 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 class ImageUploadController
 {
 	const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif'];
@@ -78,16 +80,13 @@ class ImageUploadController
 	}
 
 	// téléchargement par le plugin (bouton "insérer une image")
-	static public function imageUploadTinyMce(): void
+	static public function imageUploadTinyMce(): JsonResponse
 	{
 		if(!isset($_FILES['file'])){
-			http_response_code(400);
-	        echo json_encode(['message' => 'Erreur 400: Bad Request']);
+	        return new JsonResponse(['message' => 'Erreur 400: Bad Request'], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
 	    if(!is_uploaded_file($_FILES['file']['tmp_name'])) {
-            http_response_code(400);
-            echo json_encode(['message' => "Le fichier n'a pas été téléchargé correctement."]);
-            die;
+            return new JsonResponse(['message' => "Le fichier n'a pas été téléchargé correctement."], JsonResponse::HTTP_BAD_REQUEST); // code 400
         }
 
         $dest = 'user_data/images/';
@@ -113,35 +112,29 @@ class ImageUploadController
         //
 
         if(self::imagickCleanAndWriteImage($image_data, $local_path)){ // recréer l’image pour la nettoyer
-            echo json_encode(['location' => $local_path]); // renvoyer l'URL de l'image téléchargée
+            return new JsonResponse(['location' => $local_path]); // renvoyer l'URL de l'image téléchargée
         }
         else{
-            http_response_code(500);
-            echo json_encode(['message' => 'Erreur image non valide']);
+            return new JsonResponse(['message' => 'Erreur image non valide'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
         }
-	    die;
 	}
 
 	// collage de HTML => recherche de balises <img>, téléchargement côté serveur et renvoi de l'adresse sur le serveur 
-	static public function uploadImageHtml(): void
+	static public function uploadImageHtml(): JsonResponse
 	{
 		$json = json_decode(file_get_contents('php://input'), true);
 	    
 	    if(!isset($json['image_url'])){
-	    	http_response_code(400);
-            echo json_encode(['message' => "Erreur 400: Bad Request"]);
-            die;
+            return new JsonResponse(['message' => "Erreur 400: Bad Request"], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
 
         $image_data = self::curlDownloadImage($json['image_url']); // téléchargement de l’image par le serveur avec cURL au lieu de file_get_contents
         if(!$image_data){
-            http_response_code(400);
-            echo json_encode(['message' => "Erreur, le serveur n'a pas réussi à télécharger l'image."]);
-            die;
+            return new JsonResponse(['message' => "Erreur, le serveur n'a pas réussi à télécharger l'image."], JsonResponse::HTTP_BAD_REQUEST); // code 400
         }
 
         $dest = 'user_data/images/';
-        if(!is_dir($dest)) { // Vérifier si le répertoire existe, sinon le créer
+        if(!is_dir($dest)){ // Vérifier si le répertoire existe, sinon le créer
             mkdir($dest, 0755, true);
         }
         
@@ -154,17 +147,15 @@ class ImageUploadController
         $local_path = uniqid($dest . $name . '_') . '.' . $extension;
         
         if(self::imagickCleanAndWriteImage($image_data, $local_path)){ // recréer l’image pour la nettoyer
-            echo json_encode(['location' => $local_path]); // nouvelle adresse
+            return new JsonResponse(['location' => $local_path]); // nouvelle adresse
         }
         else{
-            http_response_code(500);
-            echo json_encode(['message' => 'Erreur image non valide', 'format' => $extension]);
+            return new JsonResponse(['message' => 'Erreur image non valide', 'format' => $extension], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
         }
-	    die;
 	}
 
 	// collage simple d'une image (base64 dans le presse-papier) non encapsulée dans du HTML
-	static public function uploadImageBase64(): void
+	static public function uploadImageBase64(): JsonResponse
 	{
 		$json = json_decode(file_get_contents('php://input'), true);
 	    $dest = 'user_data/images/';
@@ -175,9 +166,7 @@ class ImageUploadController
 
 	    // détection de data:image/ et de ;base64, et capture du format dans $type
 	    if(!isset($json['image_base64']) || !preg_match('/^data:image\/(\w+);base64,/', $json['image_base64'], $type)){
-	        http_response_code(400);
-	        echo json_encode(['message' => 'Données image base64 manquantes ou invalides']);
-	        die;
+	        return new JsonResponse(['message' => 'Données image base64 manquantes ou invalides'], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
 
 	    $extension = strtolower($type[1]); // dans (\w+)
@@ -188,19 +177,15 @@ class ImageUploadController
 	    $name = 'pasted_image'; 
 	    $image_data = base64_decode(substr($json['image_base64'], strpos($json['image_base64'], ',') + 1)); // découpe la chaine à la virgule puis convertit en binaire
 	    if($image_data === false){
-	        http_response_code(400);
-	        echo json_encode(['message' => 'Décodage base64 invalide']);
-	        die;
+	        return new JsonResponse(['message' => 'Décodage base64 invalide'], JsonResponse::HTTP_BAD_REQUEST); // code 400
 	    }
 	    $local_path = uniqid($dest . $name . '_') . '.' . $extension;
 
 	    if(self::imagickCleanAndWriteImage($image_data, $local_path)){
-	        echo json_encode(['location' => $local_path]);
+	        return new JsonResponse(['location' => $local_path]);
 	    }
 	    else{
-	        http_response_code(500);
-	        echo json_encode(['message' => 'Erreur image non valide', 'format' => $extension]);
+	        return new JsonResponse(['message' => 'Erreur image non valide', 'format' => $extension], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
 	    }
-	    die;
 	}
 }

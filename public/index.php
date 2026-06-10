@@ -56,11 +56,16 @@ $request = Request::createFromGlobals();
 
 define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? ''));
 
-Router::dispatch($request, $entityManager);
+//Router::dispatch($request, $entityManager);
+//$response = Router::dispatch($request, $entityManager);
 
-// futur bon code après correction du routeur
+$router = new Router($request, $entityManager);
+$response = $router->dispatch();
+$response->send();
+
+// gestion des erreurs
 /*try{
-    $response = Router::dispatch($request, $entityManager);
+    $response = $router->dispatch();
 }
 catch(Throwable $e){
     $response = new JsonResponse([

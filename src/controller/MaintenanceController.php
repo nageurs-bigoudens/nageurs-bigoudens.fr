@@ -6,17 +6,18 @@ declare(strict_types=1);
 use Doctrine\ORM\EntityManager;
 use App\Entity\log;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class MaintenanceController
 {
-	static public function getLogs(EntityManager $entityManager): void
+	static public function getLogs(EntityManager $entityManager): JsonResponse
 	{
 		$data = $entityManager->getRepository(Log::class)->findAll();
 		if(empty($data)){
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
 		else{
 			$view = '<h4>Table ' . TABLE_PREFIX . 'log de la base de données</h4>
@@ -35,24 +36,22 @@ class MaintenanceController
             	</tr>';
             }
             $view .= '</tbody></table>';
-			echo json_encode(['success' => true, 'view' => $view]);
+			return new JsonResponse(['success' => true, 'view' => $view]);
 		}
-		die;
 	}
-	static public function eraseLogs(EntityManager $entityManager): void
+	static public function eraseLogs(EntityManager $entityManager): JsonResponse
 	{
 		try{
 			$table = $entityManager->getClassMetadata(Log::class)->getTableName();
 			$entityManager->getConnection()->executeStatement("TRUNCATE TABLE {$table}"); // SQL donné à DBAL
-			echo json_encode(['success' => true]);
+			return new JsonResponse(['success' => true]);
 		}
 		catch(Exception $e){
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false, 'error' => $e->getMessage()]);
 		}
-		die;
 	}
 
-	static public function getLastDump(EntityManager $entityManager): void
+	static public function getLastDump(EntityManager $entityManager): BinaryFileResponse|RedirectResponse
 	{
 		try{
 			$backup_list = Backup::getBackupList();
@@ -75,10 +74,9 @@ class MaintenanceController
 			$_SESSION['flash_message'] = $e->getMessage();
 			$response = new RedirectResponse((string) new URL(['page' => 'maintenance']));
 		}
-		$response->send();
-		die;
+		return $response;
 	}
-	static public function getAllMedia(): void
+	static public function getAllMedia(): BinaryFileResponse|RedirectResponse
 	{
 		try{
 			$file_path = '../var/' . UserDataService::createZip('all_media.zip', ['user_data/assets', 'user_data/images', 'user_data/media']);
@@ -89,12 +87,11 @@ class MaintenanceController
 			$_SESSION['flash_message'] = $e->getMessage();
 			$response = new RedirectResponse((string) new URL(['page' => 'maintenance']));
 		}
-		$response->send();
-		die;
+		return $response;
 	}
 
 	// parce qu'il faut un contrôleur
-	static public function handleBackupSelection(EntityManager $entityManager, Request $request): void
+	static public function handleBackupSelection(EntityManager $entityManager, Request $request): RedirectResponse
 	{
 		$selected_file = $request->request->get('selected_sql');
 		$url = new URL;
@@ -114,12 +111,10 @@ class MaintenanceController
 	    	$_SESSION['flash_message'] = "Une erreur s'est produite: " . $e->getMessage();
 	    }
 
-	    $response = new RedirectResponse((string)$url);
-	    $response->send();
-	    die;
+	    return new RedirectResponse((string)$url);
 	}
 
-	static public function downloadSQL(EntityManager $entityManager, Request $request): void
+	static public function downloadSQL(EntityManager $entityManager, Request $request): RedirectResponse
 	{
         $uploaded_file = $request->files->get('uploaded_sql');
         $date = new DateTime;
@@ -147,8 +142,6 @@ class MaintenanceController
 	    	$_SESSION['flash_message'] = "Une erreur s'est produite: " . $e->getMessage();
 	    }
 
-	    $response = new RedirectResponse((string)$url);
-	    $response->send();
-	    die;
+	    return new RedirectResponse((string)$url);
 	}
 }

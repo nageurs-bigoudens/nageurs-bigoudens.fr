@@ -16,27 +16,12 @@ declare(strict_types=1);
 use Doctrine\ORM\EntityManager;
 use App\Entity\User;
 use App\Entity\Log;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class UserController
 {
 	// account
-	static public function existUsers(EntityManager $entityManager): bool
-	{
-	    if(!$entityManager // table vide
-	        ->createQuery("SELECT u FROM App\Entity\User u")
-	        ->setMaxResults(1)
-	        ->getOneOrNullResult())
-		{
-			unset($_SESSION['user']);
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-
-	// account
-	static public function createAdminUser(EntityManager $entityManager)
+	static public function createAdminUser(EntityManager $entityManager): RedirectResponse
 	{
 		unset($_SESSION['user']);
 
@@ -58,20 +43,18 @@ class UserController
 			$url->addParams(['error' => $error]);
 		}
 
-		header('Location: ' . $url);
-		die;
+		return new RedirectResponse((string)$url);
 	}
 
 	// account
 	//static public function createUser(EntityManager $entityManager){}
 
 	// auth
-	static public function connect(EntityManager $entityManager): void
+	static public function connect(EntityManager $entityManager): RedirectResponse
 	{
-		if(IS_ADMIN) // déjà connecté?
-		{
-			header('Location: ' . new URL);
-			die;
+		$url = new URL;
+		if(IS_ADMIN){ // déjà connecté?
+			return new RedirectResponse((string)$url);
 		}
 		unset($_SESSION['user']);
 
@@ -101,7 +84,7 @@ class UserController
 					echo '<script>window.error_message = "' . $e->getMessage() . '";</script>';
 				}
 
-				$url = new URL(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
+				$url->addParams(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
 				isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
 			}
 			else
@@ -118,18 +101,17 @@ class UserController
 		
 		if(!empty($error)){
 			sleep(1); // défense basique à la force brute
-			$url = new URL(['page' => 'connection']);
+			$url->addParams(['page' => 'connection']);
 			isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
 			isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : null;
 			$url->addParams(['error' => $error]);
 		}
 
-		header('Location: ' . $url);
-		die;
+		return new RedirectResponse((string)$url);
 	}
 
 	// auth
-	static public function disconnect(): void
+	static public function disconnect(): RedirectResponse
 	{
 		// nettoyage complet
 		unset($_SESSION['user']); // mémoire vive
@@ -140,15 +122,14 @@ class UserController
 		$url = new URL;
 		isset($_GET['from']) ? $url->addParams(['page' => $_GET['from']]) : '';
 		isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
-		header('Location: ' . $url);
-		die;
+		return new RedirectResponse('Location: ' . $url);
 	}
 
 	// user
-	static public function updateUsername(EntityManager $entityManager): void
+	static public function updateUsername(EntityManager $entityManager): RedirectResponse
 	{
 		if(!IS_ADMIN){ // superflux, fait dans le routeur
-			self::disconnect();
+			return self::disconnect();
 		}
 
 		$url = new URL(['page' => 'user_edit']);
@@ -180,15 +161,14 @@ class UserController
 			sleep(1);
 			$url->addParams(['error_username' => $error]);
 		}
-		header('Location: ' . $url);
-		die;
+		return new RedirectResponse('Location: ' . $url);
 	}
 
 	// user
-	static public function updatePassword(EntityManager $entityManager): void
+	static public function updatePassword(EntityManager $entityManager): RedirectResponse
 	{
 		if(!IS_ADMIN){ // superflux, fait dans le routeur
-			self::disconnect();
+			return self::disconnect();
 		}
 
 		$url = new URL(['page' => 'user_edit']);
@@ -220,8 +200,7 @@ class UserController
 			sleep(1);
 			$url->addParams(['error_password' => $error]);
 		}
-		header('Location: ' . $url);
-		die;
+		return new RedirectResponse('Location: ' . $url);
 	}
 
 	// dans une classe mère ou un trait après découpage de UserController?

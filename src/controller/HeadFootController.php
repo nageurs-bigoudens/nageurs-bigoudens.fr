@@ -7,15 +7,15 @@ use App\Entity\NodeData;
 use App\Entity\Asset;
 use App\Entity\AssetEmployment;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class HeadFootController
 {
-	static public function setTextData(EntityManager $entityManager, string $request_params, array $json): void
+	static public function setTextData(EntityManager $entityManager, string $request_params, array $json): JsonResponse
 	{
 		$params_array = explode('_', $request_params); // header_title, header_description, footer_name, footer_address, footer_email
 		if(count($params_array) !== 2){
-			echo json_encode(['success' => false]);
-			die;
+			return new JsonResponse(['success' => false]);
 		}
 
 		$model = new Model($entityManager);
@@ -34,18 +34,16 @@ class HeadFootController
 			}
 
 			$entityManager->flush();
-			echo json_encode(['success' => true]);
+			return new JsonResponse(['success' => true]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
-	static public function uploadAsset(EntityManager $entityManager, string $request_params): void
+	static public function uploadAsset(EntityManager $entityManager, string $request_params): JsonResponse
 	{
 		if(empty($_FILES)){
-			http_response_code(400);
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false], JsonResponse::HTTP_BAD_REQUEST); // code 400
 		}
 		else{
 			if(!is_dir(Asset::USER_PATH)){
@@ -81,9 +79,8 @@ class HeadFootController
 			}
 
 			/* -- écriture du fichier sur le disque -- */
-			if(!ImageUploadController::imagickCleanAndWriteImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $name, $extension)){ // recréer l’image pour la nettoyer
-				http_response_code(500);
-	            echo json_encode(['success' => false, 'message' => "Erreur de l'enregistrement de l'image: problème de permission ou format non valide.", 'format' => $extension]);
+			if(!ImageUploadController::imagickCleanAndWriteImage(file_get_contents($file['tmp_name']), Asset::USER_PATH . $name)){ // recréer l’image pour la nettoyer
+	            return new JsonResponse(['success' => false, 'message' => "Erreur de l'enregistrement de l'image: problème de permission ou format non valide.", 'format' => $extension], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
 			}
 			else{
 				$params_array = explode('_', $request_params); // head_favicon, header_logo, header_background, footer_logo
@@ -111,23 +108,20 @@ class HeadFootController
 						$entityManager->persist($asset);
 					}
 					$entityManager->flush();
-					echo json_encode(['success' => true, 'location' => Asset::USER_PATH . $name, 'mime_type' => $mime_type]);
+					return new JsonResponse(['success' => true, 'location' => Asset::USER_PATH . $name, 'mime_type' => $mime_type]);
 				}
 				else{
-					http_response_code(500);
-					echo json_encode(['success' => false, 'message' => "Erreur noeud non trouvé, c'est pas du tout normal!"]);
+					return new JsonResponse(['success' => false, 'message' => "Erreur noeud non trouvé, c'est pas du tout normal!"], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
 				}
 			}
 		}
-		die;
 	}
 
-	static public function displaySocialNetwork(EntityManager $entityManager, string $request_params, array $json): void
+	static public function displaySocialNetwork(EntityManager $entityManager, string $request_params, array $json): JsonResponse
 	{
 		$params_array = explode('_', $request_params);
 		if(count($params_array) !== 2){
-			echo json_encode(['success' => false]);
-			die;
+			return new JsonResponse(['success' => false]);
 		}
 
 		$model = new Model($entityManager);
@@ -138,11 +132,10 @@ class HeadFootController
 			$node_data->updateData('social_show', $social_show);
 
 			$entityManager->flush();
-			echo json_encode(['success' => true, 'checked' => $json['checked']]);
+			return new JsonResponse(['success' => true, 'checked' => $json['checked']]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
 }

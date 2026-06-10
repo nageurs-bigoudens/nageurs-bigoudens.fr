@@ -9,6 +9,7 @@ use App\Entity\Node;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier Builder
 {
@@ -31,7 +32,7 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
         if(CURRENT_PAGE === 'article'){
             if(IS_ADMIN){
                 if(!$request->query->has('id')){
-                    return new Response($this->html, 302);
+                    return new RedirectResponse((string)new URL(['page' => $_GET['from'] ?? '']));
                 }
                 else{
                     // mode création d'article
@@ -42,10 +43,10 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
                 }
             }
             elseif($request->query->get('id')[0] === 'n'){ // accès page nouvelle article interdit sans être admin
-                return new Response($this->html, 302);
+                return new RedirectResponse((string)new URL(['page' => $_GET['from'] ?? '']));
             }
         }
-        //else // l'id dans l'URL n'a pas d'effet ailleurs
+        // pas de else, l'id dans l'URL n'a pas d'effet ailleurs
 
 
         /* 2/ accès au modèle */
@@ -59,7 +60,7 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
 
         // article non trouvé en BDD
         if(CURRENT_PAGE === 'article' && !IS_ADMIN && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
-            return new Response($this->html, 302);
+            return new RedirectResponse((string)new URL(['page' => $_GET['from'] ?? '']));
         }
 
 
@@ -71,6 +72,6 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
             unset($_SESSION['flash_message']);
         }
 
-        return new Response($this->html, 200);
+        return new Response($this->html);
     }
 }

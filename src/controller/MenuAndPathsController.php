@@ -5,10 +5,12 @@ declare(strict_types=1);
 
 use App\Entity\Page;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class MenuAndPathsController
 {
-    static public function newUrlMenuEntry(EntityManager $entityManager): void
+    static public function newUrlMenuEntry(EntityManager $entityManager): RedirectResponse
     {
         Model::$menu = new Menu($entityManager);
         $previous_page = Model::$menu->findPageById((int)$_POST["location"]); // (int) à cause de declare(strict_types=1);
@@ -16,8 +18,8 @@ class MenuAndPathsController
 
         $url_input = trim($_POST["url_input"]); // faire htmlspecialchars à l'affichage
         if(!filter_var($url_input, FILTER_VALIDATE_URL) || !str_starts_with($url_input, 'http')){
-            header("Location: " . new URL(['page' => $_GET['from'], 'error' => 'invalide_url']));
-            die;
+            // utiliser une flash error
+            return new RedirectResponse((string)new URL(['page' => $_GET['from'], 'error' => 'invalide_url']));
         }
 
         $page = new Page(
@@ -38,24 +40,23 @@ class MenuAndPathsController
 
         $entityManager->persist($page);
         $entityManager->flush();
-        header("Location: " . new URL(['page' => $_GET['from']]));
-        die;
+        return new RedirectResponse((string)new URL(['page' => $_GET['from']]));
     }
 
     // on pourrait utiliser FormValidation ici
-    static public function editUrl(EntityManager $entityManager, array $json): void
+    static public function editUrl(EntityManager $entityManager, array $json): JsonResponse
     {
         $url_data = trim($json['input_data']); // garder htmlspecialchars pour l'affichage
         $page = $entityManager->find('App\Entity\Page', $json['id']);
 
         if(!$page){
-            echo json_encode(['success' => false, 'message' => "id invalide"]);
+            return new JsonResponse(['success' => false, 'message' => "id invalide"]);
         }
         elseif(!in_array($json['field'], ['url_name', 'url_content'])){
-            echo json_encode(['success' => false, 'message' => "champ invalide"]);
+            return new JsonResponse(['success' => false, 'message' => "champ invalide"]);
         }
         elseif($json['field'] === 'url_content' && (!filter_var($url_data, FILTER_VALIDATE_URL) || !str_starts_with($url_data, 'http'))){
-            echo json_encode(['success' => false, 'message' => "la chaîne envoyée n'est pas une URL valide"]);
+            return new JsonResponse(['success' => false, 'message' => "la chaîne envoyée n'est pas une URL valide"]);
         }
         else{
             if($json['field'] === 'url_name'){
@@ -65,12 +66,11 @@ class MenuAndPathsController
                 $page->setEndOfPath($url_data);
             }
             $entityManager->flush();
-            echo json_encode(['success' => true, 'url_data' => $url_data]);
+            return new JsonResponse(['success' => true, 'url_data' => $url_data]);
         }
-        die;
     }
 
-    static public function deleteUrlMenuEntry(EntityManager $entityManager): void
+    static public function deleteUrlMenuEntry(EntityManager $entityManager): RedirectResponse
     {
         Model::$menu = new Menu($entityManager);
         $page = Model::$menu->findPageById((int)$_POST["delete"]);
@@ -84,11 +84,10 @@ class MenuAndPathsController
 
         $entityManager->remove($page); // suppression en BDD
         $entityManager->flush();
-        header("Location: " . new URL(['page' => $_GET['from']]));
-        die;
+        return new RedirectResponse((string)new URL(['page' => $_GET['from']]));
     }
 
-	static public function MoveOneLevelUp(EntityManager $entityManager, array $json): void
+	static public function MoveOneLevelUp(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$id = $json['id'];
 		$page = Model::$menu->findPageById((int)$id);
@@ -96,8 +95,7 @@ class MenuAndPathsController
         $parent = $page->getParent(); // peut être null
         if($parent === null){
             // 1er niveau: ne rien faire
-            echo json_encode(['success' => false]);
-            die;
+            return new JsonResponse(['success' => false, 'message' => 'nothing to do']);
         }
         // BDD
         else{
@@ -130,12 +128,11 @@ class MenuAndPathsController
             $parent->removeChild($page);
             $nav_builder = new NavBuilder();
 	        $menu_builder = new MenuBuilder(null, false);
-			echo json_encode(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
-			die;
+			return new JsonResponse(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
         }
 	}
 
-	static public function MoveOneLevelDown(EntityManager $entityManager, array $json): void
+	static public function MoveOneLevelDown(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$id = $json['id'];
 		$page = Model::$menu->findPageById((int)$id);
@@ -152,8 +149,7 @@ class MenuAndPathsController
                 if($child->getPosition() === $page->getPosition() - 1){
                     // refus si $parent est une adresse, ça va casser le lien, exemple: index.php?page=chemin/http://un_site_web.fr/vers/ici
                     if(str_starts_with($child->getEndOfPath(), 'http')){
-                        echo json_encode(['success' => false, 'error' => 'new_parent_is_a_link']);
-                        die;
+                        return new JsonResponse(['success' => false, 'error' => 'new_parent_is_a_link']);
                     }
 
                     $page->setParent($child);
@@ -171,11 +167,10 @@ class MenuAndPathsController
         $nav_builder = new NavBuilder();
 		$menu_builder = new MenuBuilder(null, false);
 
-		echo json_encode(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
-		die;
+		return new JsonResponse(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
 	}
 
-	static public function SwitchPositions(EntityManager $entityManager, array $json): void
+	static public function SwitchPositions(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$id1 = $json['id1'];
         $id2 = $json['id2'];
@@ -196,15 +191,14 @@ class MenuAndPathsController
 	        
 	        // nouveau menu
 	        $nav_builder = new NavBuilder();
-	        echo json_encode(['success' => true, 'nav' => $nav_builder->render()]);
+	        return new JsonResponse(['success' => true, 'nav' => $nav_builder->render()]);
         }
         else{
-        	echo json_encode(['success' => false]);
+        	return new JsonResponse(['success' => false]);
         }
-	    die;
 	}
 
-	static public function displayInMenu(EntityManager $entityManager, array $json): void
+	static public function displayInMenu(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$id = $json['id'];
 		$checked = $json['checked'];
@@ -216,11 +210,10 @@ class MenuAndPathsController
 
 			// nouveau menu
 			$nav_builder = new NavBuilder();
-			echo json_encode(['success' => true, 'nav' => $nav_builder->render()]);
+			return new JsonResponse(['success' => true, 'nav' => $nav_builder->render()]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
 }

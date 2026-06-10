@@ -8,25 +8,28 @@ use App\Entity\Node;
 use App\Entity\NodeData;
 //use App\Entity\Image;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class PageManagementController
 {
 	/* -- partie page -- */
-	static public function setPageTitle(EntityManager $entityManager, array $json): void
+	static public function setPageTitle(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$page = $entityManager->find('App\Entity\Page', $json['page_id']);
 		$page->setPageName(htmlspecialchars($json['title']));
 		$entityManager->flush();
-		echo json_encode(['success' => true, 'title' => $page->getPageName()]);
-		die;
+		return new JsonResponse(['success' => true, 'title' => $page->getPageName()]);
 	}
 
-	static public function updatePageMenuPath(EntityManager $entityManager): void
+	static public function updatePageMenuPath(EntityManager $entityManager, string $page_menu_path): RedirectResponse
 	{
 	    Model::$menu = new Menu($entityManager);
 	    Model::$page_path = new Path();
 	    $page = Model::$page_path->getLast();
-	    $path = htmlspecialchars($_POST['page_menu_path']);
+	    $path = htmlspecialchars($page_menu_path);
 
 	    // mise en snake_case: filtre caractères non-alphanumériques, minuscule, doublons d'underscore, trim des underscores
 	    $path = trim(preg_replace('/_+/', '_', strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $path))), '_');
@@ -37,30 +40,28 @@ class PageManagementController
 	        }
 	    }
 	    $entityManager->flush();
-	    header("Location: " . new URL(['page' => $page->getPagePath(), 'mode' => 'page_modif']));
-	    die;
+	    return new RedirectResponse((string)new URL(['page' => $page->getPagePath(), 'mode' => 'page_modif']));
 	}
 
-	static public function setPageDescription(EntityManager $entityManager, array $json): void
+	static public function setPageDescription(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$page = $entityManager->find('App\Entity\Page', $json['page_id']);
 		$page->setDescription(htmlspecialchars($json['description']));
 		$entityManager->flush();
-		echo json_encode(['success' => true, 'description' => $page->getDescription()]);
-		die;
+		return new JsonResponse(['success' => true, 'description' => $page->getDescription()]);
 	}
 
-	static public function newPage(EntityManager $entityManager, array $post): void
+	static public function newPage(EntityManager $entityManager, InputBag $post): RedirectResponse
 	{
 	    // titre et chemin
 	    Model::$menu = new Menu($entityManager);
-	    $previous_page = Model::$menu->findPageById((int)$post["page_location"]); // (int) à cause de declare(strict_types=1);
+	    $previous_page = Model::$menu->findPageById((int)$post->get("page_location")); // (int) à cause de declare(strict_types=1);
 	    $parent = $previous_page->getParent();
 
 	    $page = new Page(
-	        trim(htmlspecialchars($post["page_name"])),
-	        trim(htmlspecialchars($post["page_name_path"])),
-	        trim(htmlspecialchars($post["page_description"])),
+	        trim(htmlspecialchars($post->get("page_name"))),
+	        trim(htmlspecialchars($post->get("page_name_path"))),
+	        trim(htmlspecialchars($post->get("page_description"))),
 	        true, true, false,
 	        $previous_page->getPosition(),
 	        $parent); // peut et DOIT être null si on est au 1er niveau
@@ -80,14 +81,13 @@ class PageManagementController
 	    $entityManager->flush();
 
 	    // page créée, direction la page en mode modification pour ajouter des blocs
-	    header("Location: " . new URL(['page' => $page->getPagePath(), 'mode' => 'page_modif']));
-	    die;
+	    return new RedirectResponse((string)new URL(['page' => $page->getPagePath(), 'mode' => 'page_modif']));
 	}
 
-	static public function deletePage(EntityManager $entityManager): void
+	static public function deletePage(EntityManager $entityManager, string $page_id): RedirectResponse
 	{
 		$menu = new Menu($entityManager);
-		$page = $menu->findPageById((int)$_POST['page_id']);
+		$page = $menu->findPageById((int)$page_id);
 		$url = new URL;
 
 		// test dernière page
@@ -115,13 +115,12 @@ class PageManagementController
 		    $next_page = $menu->getChildren()->isEmpty() ? $next_page = $page->getChildren()[0] : $menu->getChildren()[0];
 		    $url->addParams(['page' => $next_page->getEndOfPath()]);
 		}
-		
-	    header("Location: " . $url);
-	    die;
+
+		return new RedirectResponse((string)$url);
 	}
 
 	/* partie "blocs" */
-	static public function addBloc(EntityManager $entityManager): void
+	static public function addBloc(EntityManager $entityManager, Request $request): RedirectResponse
 	{
 	    $model = new Model($entityManager);
 	    $model->makeMenuAndPaths(); // on a besoin de page_path qui dépend de menu
@@ -131,31 +130,30 @@ class PageManagementController
 	    $main = $model->getNode();
 	    $position = count($main->getChildren()) + 1; // position dans la fraterie
 
-	    if(!in_array($_POST["bloc_select"], array_keys(Blocks::$blocks), true)) // 3è param: contrôle du type
-	    {
-	        header("Location: " . new URL(['page' => $_GET['page'], 'error' => 'bad_bloc_type']));
-	        die;
+	    if(!in_array($request->request->get("bloc_select"), array_keys(Blocks::$blocks), true)){ // 3è param: contrôle du type
+	    	// utiliser une flash error
+	        return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'error' => 'bad_bloc_type']));
 	    }
 
-	    if(in_array($_POST["bloc_select"], ['calendar', 'form'])){
-	        $page->addCSS($_POST["bloc_select"]);
-	        if($_POST["bloc_select"] === 'form'){
-	            $page->addJS($_POST["bloc_select"]);
+	    if(in_array($request->request->get("bloc_select"), ['calendar', 'form'])){
+	        $page->addCSS($request->request->get("bloc_select"));
+	        if($request->request->get("bloc_select") === 'form'){
+	            $page->addJS($request->request->get("bloc_select"));
 	        }
 	        $entityManager->persist($page);
 	    }
 
-	    $block = new Node($_POST["bloc_select"], $position, $main, $page);
-	    $data = new NodeData(['title' => trim(htmlspecialchars($_POST["bloc_title"]))], $block);
+	    $block = new Node($request->request->get("bloc_select"), $position, $main, $page);
+	    $data = new NodeData(['title' => trim(htmlspecialchars($request->request->get("bloc_title")))], $block);
 
 	    // valeurs par défaut
-	    if($_POST["bloc_select"] === 'post_block'){
+	    if($request->request->get("bloc_select") === 'post_block'){
 	    	$data->setPresentation('fullwidth');
 	    }
-	    elseif($_POST["bloc_select"] === 'news_block'){
+	    elseif($request->request->get("bloc_select") === 'news_block'){
 	    	$data->setPresentation('grid');
 	    }
-	    elseif($_POST["bloc_select"] === 'galery'){
+	    elseif($request->request->get("bloc_select") === 'galery'){
 	    	$data->setPresentation('mosaic'); // un jour on mettra carousel
 	    }
 	    // else = null par défaut
@@ -163,11 +161,10 @@ class PageManagementController
 	    $entityManager->persist($block);
 	    $entityManager->persist($data);
 	    $entityManager->flush();
-	    header("Location: " . new URL(['page' => $_GET['page'], 'mode' => 'page_modif']));
-	    die;
+	    return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'mode' => 'page_modif']));
 	}
 
-	static public function deleteBloc(EntityManager $entityManager): void
+	static public function deleteBloc(EntityManager $entityManager, Request $request): RedirectResponse
 	{
 	    $model = new Model($entityManager);
 	    $model->makeMenuAndPaths();
@@ -179,7 +176,7 @@ class PageManagementController
 	    $type = '';
 	    $nb_same_type = 0;
 	    foreach($main->getChildren() as $child){
-	        if($child->getId() === (int)$_POST['delete_bloc_id']){
+	        if($child->getId() === (int)$request->request->get('delete_bloc_id')){
 	            $block = $child;
 	            $type = $block->getName();
 	        }
@@ -207,11 +204,10 @@ class PageManagementController
 	        $entityManager->flush();
 	    }
 
-	    header("Location: " . new URL(['page' => $_GET['page'], 'mode' => 'page_modif']));
-	    die;
+	    return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'mode' => 'page_modif']));
 	}
 	
-	static public function renameBloc(EntityManager $entityManager, array $json): void
+	static public function renameBloc(EntityManager $entityManager, array $json): JsonResponse
 	{
 		if(isset($json['bloc_title']) && $json['bloc_title'] !== null && isset($json['bloc_id']) && is_int($json['bloc_id'])){
             $model = new Model($entityManager);
@@ -223,17 +219,16 @@ class PageManagementController
             $model->getNode()->getNodeData()->updateData('title', htmlspecialchars($json['bloc_title']));
 
             $entityManager->flush();
-            echo json_encode(['success' => true, 'title' => $data['title']]);
+            return new JsonResponse(['success' => true, 'title' => $data['title']]);
         }
         else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
 
-	static public function SwitchBlocsPositions(EntityManager $entityManager, array $json): void
+	static public function SwitchBlocsPositions(EntityManager $entityManager, array $json, string $page): JsonResponse
 	{
-		if(isset($json['id1']) && is_int($json['id1']) && isset($json['id2']) && is_int($json['id2']) && isset($_GET['page'])){
+		if(isset($json['id1']) && is_int($json['id1']) && isset($json['id2']) && is_int($json['id2']) && isset($page)){
     		$model = new Model($entityManager);
     		$model->makeMenuAndPaths(); // true pour $model->findItsChildren();
     		$model->findUniqueNodeByName('main');
@@ -262,15 +257,14 @@ class PageManagementController
 	        $bloc2->setPosition($tmp);
 
     		$entityManager->flush();
-            echo json_encode(['success' => true]);
+            return new JsonResponse(['success' => true]);
     	}
     	else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
 
-	static public function changeArticlesOrder(EntityManager $entityManager, array $json): void
+	static public function changeArticlesOrder(EntityManager $entityManager, array $json): JsonResponse
 	{
 		if(isset($json['id']) && isset($json['chrono_order'])){
 			$model = new Model($entityManager);
@@ -289,15 +283,14 @@ class PageManagementController
 			$model->getNode()->getNodeData()->setChronoOrder($chrono_order);
 			$entityManager->flush();
 			
-			echo json_encode(['success' => true, 'chrono_order' => $json['chrono_order']]);
+			return new JsonResponse(['success' => true, 'chrono_order' => $json['chrono_order']]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
 
-	static public function changePresentation(EntityManager $entityManager, array $json): void
+	static public function changePresentation(EntityManager $entityManager, array $json): JsonResponse
 	{
 		if(isset($json['id']) && isset($json['presentation'])){
 			$model = new Model($entityManager);
@@ -311,18 +304,17 @@ class PageManagementController
 				if($json['presentation'] === 'grid'){
 					$response_data['cols_min_width'] = $model->getNode()->getNodeData()->getColsMinWidth();
 				}
-				echo json_encode($response_data);
+				return new JsonResponse($response_data);
 			}
 			else{
-				echo json_encode(['success' => false]);
+				return new JsonResponse(['success' => false]);
 			}
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
-	static public function changeColsMinWidth(EntityManager $entityManager, array $json): void
+	static public function changeColsMinWidth(EntityManager $entityManager, array $json): JsonResponse
 	{
 		if(isset($json['id']) && isset($json['cols_min_width'])){
 			$model = new Model($entityManager);
@@ -330,14 +322,13 @@ class PageManagementController
 			$model->getNode()->getNodeData()->setColsMinWidth((int)$json['cols_min_width']); // attention conversion?
 
 			$entityManager->flush();
-			echo json_encode(['success' => true, 'cols_min_width' => $json['cols_min_width']]);
+			return new JsonResponse(['success' => true, 'cols_min_width' => $json['cols_min_width']]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
-	static public function changePaginationLimit(EntityManager $entityManager, array $json): void
+	static public function changePaginationLimit(EntityManager $entityManager, array $json): JsonResponse
 	{
 		if(isset($json['id']) && isset($json['pagination_limit'])){
 			$model = new Model($entityManager);
@@ -347,11 +338,10 @@ class PageManagementController
 
 			$entityManager->flush();
 
-			echo json_encode(['success' => true, 'old_limit' => $old_limit, 'new_limit' => $json['pagination_limit']]);
+			return new JsonResponse(['success' => true, 'old_limit' => $old_limit, 'new_limit' => $json['pagination_limit']]);
 		}
 		else{
-			echo json_encode(['success' => false]);
+			return new JsonResponse(['success' => false]);
 		}
-		die;
 	}
 }

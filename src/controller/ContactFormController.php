@@ -4,28 +4,27 @@
 declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactFormController
 {
-	static public function keepEmails(EntityManager $entityManager, array $json): void
+	static public function keepEmails(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
 		$form_data->updateData('keep_emails', $json['checked'] ? true : false);
 		$entityManager->persist($form_data);
 		$entityManager->flush();
-		echo json_encode(['success' => true, 'checked' => $json['checked']]);
-		die;
+		return new JsonResponse(['success' => true, 'checked' => $json['checked']]);
 	}
-	static public function setEmailsRetentionPeriod(EntityManager $entityManager, array $json): void
+	static public function setEmailsRetentionPeriod(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
 		$form_data->updateData($json['field'], (int)$json['months']);
 		$entityManager->persist($form_data);
 		$entityManager->flush();
-		echo json_encode(['success' => true, 'months' => $json['months']]);
-		die;
+		return new JsonResponse(['success' => true, 'months' => $json['months']]);
 	}
-	static public function setEmailParam(EntityManager $entityManager, array $json): void
+	static public function setEmailParam(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$form = new FormValidation($json, 'email_params');
 		
@@ -41,16 +40,15 @@ class ContactFormController
 		}
 
 		if(empty($error)){
-			echo json_encode(['success' => true]);
+			return new JsonResponse(['success' => true]);
 		}
 		else{
-			echo json_encode(['success' => false, 'error' => $error]);
+			return new JsonResponse(['success' => false, 'error' => $error]);
 		}
-		die;
 	}
 
 	// les deux méthodes suivantes sont "factorisables", elles ne se distinguent que par la gestion ou non du formulaire rempli par le visiteur
-	static public function sendVisitorEmail(EntityManager $entityManager, array $json): void
+	static public function sendVisitorEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$form = new FormValidation($json, 'email_send');
 
@@ -59,9 +57,7 @@ class ContactFormController
 			// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
 			$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
 			if($form_data === null){
-				http_response_code(500);
-				echo json_encode(['success' => false, 'error' => 'server_error']);
-				die;
+				return new JsonResponse(['success' => false, 'error' => 'server_error'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); // code 500
 			}
 			
 			if(!EmailService::send($entityManager, $form_data, false, $form->getField('name'), $form->getField('email'), $form->getField('message'))){
@@ -73,45 +69,39 @@ class ContactFormController
 		}
 
 		if(empty($error)){
-			echo json_encode(['success' => true]);
+			return new JsonResponse(['success' => true]);
 		}
 		else{
-			echo json_encode(['success' => false, 'error' => $error]);
+			return new JsonResponse(['success' => false, 'error' => $error]);
 		}
-		die;
 	}
-	static public function sendTestEmail(EntityManager $entityManager, array $json): void
+	static public function sendTestEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
 		// destinataire = e-mail par défaut dans config.ini OU choisi par l'utilisateur
 		$form_data = $entityManager->find('App\Entity\NodeData', $json['id']);
 		if($form_data === null){
-			http_response_code(500);
-			echo json_encode(['success' => false, 'error' => 'server_error']);
-			die;
+			return new JsonResponse(['success' => false, 'error' => 'server_error'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
 		if(EmailService::send($entityManager, $form_data, true, 'nom du visiteur', 'adresse@du_visiteur.fr', "TEST d'un envoi d'e-mail depuis le site web")){
-			echo json_encode(['success' => true]);
+			return new JsonResponse(['success' => true]);
 		}
 		else{
-			echo json_encode(['success' => false, 'error' => 'email_not_sent']);
+			return new JsonResponse(['success' => false, 'error' => 'email_not_sent']);
 		}
-		die;
 	}
-	static public function deleteEmail(EntityManager $entityManager, array $json): void
+	static public function deleteEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$email = $entityManager->find('App\Entity\Email', $json['id']);
 		$entityManager->remove($email);
 		$entityManager->flush();
-		echo json_encode(['success' => true]);
-		die;
+		return new JsonResponse(['success' => true]);
 	}
-	static public function toggleSensitiveEmail(EntityManager $entityManager, array $json): void
+	static public function toggleSensitiveEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$email = $entityManager->find('App\Entity\Email', $json['id']);
 		$email->makeSensitive($json['checked']);
 		$entityManager->flush();
-		echo json_encode(['success' => true, 'checked' => $json['checked'], 'deletion_date' => $email->getDeletionDate()->format('d/m/Y')]);
-		die;
+		return new JsonResponse(['success' => true, 'checked' => $json['checked'], 'deletion_date' => $email->getDeletionDate()->format('d/m/Y')]);
 	}
 }

@@ -8,10 +8,12 @@ use App\Entity\Article;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ArticleController
 {
-	static public function fetch(EntityManager $entityManager, Request $request): void
+	static public function fetch(EntityManager $entityManager, Request $request): JsonResponse
 	{
 		if($request->query->has('id') && !empty($request->query->get('id')) && $request->query->has('last_article')){
 			$id = (int)$request->get('id'); // type et nettoie
@@ -29,6 +31,9 @@ class ArticleController
 				elseif($parent_block->getName() === 'news_block'){
 					$builder_name = 'NewBuilder';
 				}
+				else{
+					return new JsonResponse(['success' => false, 'error' => 'server side error'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+				}
 
 				$html = '';
 				foreach($bulk_data as $article){
@@ -36,24 +41,20 @@ class ArticleController
 					$html .= $builder->render();
 				}
 
-				echo json_encode(['success' => true, 'html' => $html, 'truncated' => $get_articles_return[1]]);
-				die;
+				return new JsonResponse(['success' => true, 'html' => $html, 'truncated' => $get_articles_return[1]]);
 			}
 			else{
-				echo json_encode(['success' => false, 'error' => 'mauvais type de bloc']);
-				die;
+				return new JsonResponse(['success' => false, 'error' => 'server side error']);
 			}
 		}
 		else{
-			echo json_encode(['success' => false, 'error' => 'la requête ne comporte pas les paramètres attendus']);
-			die;
+			return new JsonResponse(['success' => false, 'error' => 'bad parameters']);
 		}
 	}
 
-	static public function editorSubmit(EntityManager $entityManager, array $json): void
+	static public function editorSubmit(EntityManager $entityManager, array $json): JsonResponse
 	{
-		if(json_last_error() === JSON_ERROR_NONE)
-	    {
+		if(json_last_error() === JSON_ERROR_NONE){
 	        $id = $json['id'];
 	        if(in_array($id[0], ['t', 'p', 'i', 'd'])){
 	        	$id = substr($id, 1);
@@ -76,8 +77,7 @@ class ArticleController
 	        if($json['id'][0] === 'n'){ // ici $id est un bloc
 	        	$section_id = (int)substr($id, 1); // id du bloc <section>
 	        	if(!$model->findNodeById($section_id)){ // erreur mauvais id
-	        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad id']);
-	        		die;
+	        		return new JsonResponse(['success' => false, 'error' => 'article_not_saved, bad id']);
 	        	}
 	        	$model->makeSectionNode();
 	        	$section = $model->getNode();
@@ -85,8 +85,7 @@ class ArticleController
 	        	// ajout d'une news
 	        	if(is_array($content)){
 		        	if($section->getPage()->getEndOfPath() !== $json['from']){ // erreur mauvais from
-		        		echo json_encode(['success' => false, 'error' => 'article_not_saved, bad from']);
-		        		die;
+		        		return new JsonResponse(['success' => false, 'error' => 'article_not_saved, bad from']);
 		        	}
 
 	                $date = new \DateTime($content['d'] . ':' . (new \DateTime)->format('s')); // l'input type="datetime-local" ne donne pas les secondes, on les ajoute: 'hh:mm' . ':ss'
@@ -112,14 +111,12 @@ class ArticleController
 	        	$entityManager->persist($article_node);
 	        	$entityManager->flush();
 	        	
-	        	echo json_encode(['success' => true, 'article_id' => $article_node->getId()]);
-	        	die;
+	        	return new JsonResponse(['success' => true, 'article_id' => $article_node->getId()]);
 	        }
 	        // modification article
 	        //else{}
 
-	        if($model->makeArticleNode($id)) // une entrée est trouvée
-	        {
+	        if($model->makeArticleNode($id)){ // une entrée est trouvée
 	        	$node = $model->getArticleNode();
 	        	switch($json['id'][0]){
 					case 'i':
@@ -132,54 +129,74 @@ class ArticleController
 						$node->getArticle()->setTitle($content); // html de l'éditeur
 						break;
 					case 'd':
-						echo json_encode(['success' => false, 'message' => 'l\'action editor_submit ne supporte pas les dates, utiliser date_submit.']);
-						die;
+						return new JsonResponse(['success' => false, 'message' => 'l\'action editor_submit ne supporte pas les dates, utiliser date_submit.']);
 					default: // modif article simple (id sans lettre devant)
 						$node->getArticle()->setContent($content);
 				}
 		        $entityManager->flush();
-		        echo json_encode(['success' => true]);
+		        return new JsonResponse(['success' => true]);
 	        }
-	        else
-	        {
-	        	echo json_encode(['success' => false, 'message' => 'article non identifié']);
+	        else{
+	        	return new JsonResponse(['success' => false, 'message' => 'article non identifié']);
 	        }
 	    }
 	    else{
-	        echo json_encode(['success' => false, 'message' => 'Erreur de décodage JSON']);
+	        return new JsonResponse(['success' => false, 'message' => 'Erreur de décodage JSON']);
 	    }
-	    die;
 	}
 
-	static public function deleteArticle(EntityManager $entityManager, array $data): Response // $data peut être un $_GET ou du JSON
+	static public function deleteArticle(EntityManager $entityManager, Request $request): Response
 	{
 		$model = new Model($entityManager);
-		if(!$model->makeArticleNode($data['id'], true)){
-			return new Response(
-	    		'{"success": false, "message": "Erreur: pas d\'article à supprimer"}',
-                Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+
+		if($request->headers->get('Content-Type') === 'application/json'){
+			$id = json_decode($request->getContent(), true)['id'];
 		}
-	    $article = $model->getArticleNode();
-		$section = $model->getNode();
+		elseif($request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
+			$id = $request->query->get('id');
+		}
+		// ni JSON ni form, c'est quoi? un POST vide?
+		else{
+			return new Response('la méthode deleteArticle ne peut être appelée de cette manière');
+		}
 
-	    $entityManager->remove($article);
-	    $section->removeChild($article);
-	    $section->sortChildren(true); // régénère les positions
+		if(!$model->makeArticleNode($id, true)){
+			$params = ['false', "Erreur 500 pas d\'article à supprimer"];
+		}
+		else{
+			$article = $model->getArticleNode();
+			$section = $model->getNode();
 
-	    try{
-	    	$entityManager->flush();
-	    	return new Response(
-	    		'{"success": true, "message": "Article supprimé avec succès"}',
-                Response::HTTP_OK); // 200
+		    $entityManager->remove($article);
+		    $section->removeChild($article);
+		    $section->sortChildren(true); // régénère les positions
+
+		    try{
+		    	$entityManager->flush();
+		    	$params = ['true', 'Article supprimé avec succès'];
+		    }
+		    catch(Exception $e){
+		    	$params = ['false', 'Erreur 500 ' . $e->getMessage()];
+		    }
+		}
+
+		if($request->headers->get('Content-Type') === 'application/json'){
+	    	return new JsonResponse(
+	    		['success' => $params[0], 'message' => $params[1]],
+	    		$params[0] ? JsonResponse::HTTP_OK : JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+	    	);
 	    }
-	    catch(Exception $e){
-	    	return new Response(
-	    		'{"success": false, "message": "Erreur: ' . $e->getMessage() . '"}',
-                Response::HTTP_INTERNAL_SERVER_ERROR); // 500
-	    }
+	    elseif($request->headers->get('Content-Type') === 'application/x-www-form-urlencoded'){
+	    	$url = new URL(['page' => $request->query->get('from') ?? '', 'success' => $params[0], 'message' => $params[1]]);
+			return new RedirectResponse((string)$url);
+		}
+		else{
+			// cas inaccesible
+			throw new Exception('la méthode deleteArticle ne peut être appelée de cette manière');
+		}
 	}
 
-	static public function switchPositions(EntityManager $entityManager, array $json): void
+	static public function switchPositions(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$model = new Model($entityManager);
 		$model->makeArticleNode($json['id1'], true);
@@ -202,11 +219,10 @@ class ArticleController
 	    $article2->setPosition($tmp);
 	    $entityManager->flush();
 
-		echo json_encode(['success' => true]);
-		die;
+		return new JsonResponse(['success' => true]);
 	}
 
-	static public function dateSubmit(EntityManager $entityManager, array $json): void
+	static public function dateSubmit(EntityManager $entityManager, array $json): JsonResponse
 	{
 		$id = substr($json['id'], 1);
 		$date = new DateTime($json['date']);
@@ -217,7 +233,6 @@ class ArticleController
 		$node->getArticle()->setDateTime($date);
 		$entityManager->flush();
 		
-		echo json_encode(['success' => true]);
-		die;
+		return new JsonResponse(['success' => true]);
 	}
 }
