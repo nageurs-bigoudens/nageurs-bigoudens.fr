@@ -83,9 +83,8 @@ class Router{
                 }
             }
 
-            // construction d'une page
-            return (new ViewDirector)->buildView($this->entityManager, $this->request); // utilise Model
-            // parenthèses nécéssaires autour de l'instanciation pour PHP < 8.4
+            // affichage d'une page
+            return ViewController::getWebPage($this->entityManager, $this->request);
         }
 
 

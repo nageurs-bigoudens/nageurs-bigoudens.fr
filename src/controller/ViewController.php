@@ -1,23 +1,16 @@
 <?php
-// src/controller/ViewDirector.php
-//
-// génère le HTML avec des Builder
+// src/controller/ViewController.php
 
 declare(strict_types=1);
 
-use App\Entity\Node;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier Builder
+class ViewController
 {
-    public Node $root_node;
-
-    public function __construct(){} // surcharge celui de AbstractBuilder
-
-    public function buildView(EntityManager $entityManager, Request $request): Response
+    static function getWebPage(EntityManager $entityManager, Request $request): RedirectResponse
     {
         /* 1/ 1er contrôle des paramètres */
 
@@ -53,25 +46,17 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
         $model = new Model($entityManager);
         $model->makeMenuAndPaths();
         $model->getWholePageData($request);
-        $this->root_node = $model->getNode();
 
 
         /* 3/ 2ème contrôle des paramètres avec les données récupérées */
 
         // article non trouvé en BDD
-        if(CURRENT_PAGE === 'article' && !IS_ADMIN && $this->root_node->getNodeByName('main')->getAdoptedChild() === null){
+        if(CURRENT_PAGE === 'article' && !IS_ADMIN && $model->getNode()->getNodeByName('main')->getAdoptedChild() === null){
             return new RedirectResponse((string)new URL(['page' => $request->query->get('from') ?? '']));
         }
 
 
         /* 4/ construction de la page avec builders et vues */
-        $this->useChildrenBuilder($this->root_node);
-
-        if(isset($_SESSION['flash_message'])){
-            $this->html .= '<script>window.flash_message = "' . $_SESSION['flash_message'] . '";</script>';
-            unset($_SESSION['flash_message']);
-        }
-
-        return new Response($this->html);
+        return new Response((new ViewDirector)->buildHTML($model->getNode()));
     }
 }

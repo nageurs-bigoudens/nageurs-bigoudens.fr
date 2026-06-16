@@ -21,7 +21,7 @@
 			<a href="<?= new URL(['action' => 'get_mysqldump']) ?>">
 				<button id="get_mysqldump" onclick="preventClickSpam(this)">Télécharger une sauvegarde de la base de données</button>
 			</a><br>
-			<i>Obtenir un fichier SQL à conserver sur votre ordinateur. Une sauvegarde (désignée par "auto") est réalisée à chaque visite de cette page.</i>
+			<i>Obtenir un fichier SQL à conserver. Une sauvegarde (désignée par "auto") est réalisée à chaque connexion au mode admin.</i>
 		</p>
 	</div>
 	<div class="basic_div">
