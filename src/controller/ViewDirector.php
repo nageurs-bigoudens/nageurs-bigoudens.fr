@@ -1,5 +1,5 @@
 <?php
-// src/view/ViewDirector.php
+// src/controller/ViewDirector.php
 //
 // génère le HTML avec des Builder
 
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier Builder
 {
-    static public Node $root_node;
+    public Node $root_node;
 
     public function __construct(){} // surcharge celui de AbstractBuilder
 
@@ -32,7 +32,7 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
         if(CURRENT_PAGE === 'article'){
             if(IS_ADMIN){
                 if(!$request->query->has('id')){
-                    return new RedirectResponse((string)new URL(['page' => $_GET['from'] ?? '']));
+                    return new RedirectResponse((string)new URL(['page' => $request->query->get('from') ?? '']));
                 }
                 else{
                     // mode création d'article
@@ -43,7 +43,7 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
                 }
             }
             elseif($request->query->get('id')[0] === 'n'){ // accès page nouvelle article interdit sans être admin
-                return new RedirectResponse((string)new URL(['page' => $_GET['from'] ?? '']));
+                return new RedirectResponse((string)new URL(['page' => $request->query->get('from') ?? '']));
             }
         }
         // pas de else, l'id dans l'URL n'a pas d'effet ailleurs
@@ -53,19 +53,19 @@ class ViewDirector extends AbstractBuilder // ViewDirector est aussi le premier 
         $model = new Model($entityManager);
         $model->makeMenuAndPaths();
         $model->getWholePageData($request);
-        self::$root_node = $model->getNode();
+        $this->root_node = $model->getNode();
 
 
         /* 3/ 2ème contrôle des paramètres avec les données récupérées */
 
         // article non trouvé en BDD
-        if(CURRENT_PAGE === 'article' && !IS_ADMIN && self::$root_node->getNodeByName('main')->getAdoptedChild() === null){
-            return new RedirectResponse((string)new URL(['page' => $_GET['from'] ?? '']));
+        if(CURRENT_PAGE === 'article' && !IS_ADMIN && $this->root_node->getNodeByName('main')->getAdoptedChild() === null){
+            return new RedirectResponse((string)new URL(['page' => $request->query->get('from') ?? '']));
         }
 
 
         /* 4/ construction de la page avec builders et vues */
-        $this->useChildrenBuilder(self::$root_node);
+        $this->useChildrenBuilder($this->root_node);
 
         if(isset($_SESSION['flash_message'])){
             $this->html .= '<script>window.flash_message = "' . $_SESSION['flash_message'] . '";</script>';
