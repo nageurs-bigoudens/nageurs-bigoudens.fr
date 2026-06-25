@@ -98,6 +98,8 @@ class Node
     {
         $this->page = $page;
     }*/
+
+    // utiliser l'interface de NodeData et EmailForm
     public function getArticle(): Article
     {
         return $this->article;
@@ -106,9 +108,13 @@ class Node
     {
         $this->article = $article;
     }*/
+
     // une interface serait cool!
+    // OU possible un "héritage doctrine", faire en sorte que Node soit la mère de NodeData, EmailForm, Article...
+    // une seulle instance est matérialisée par plusieurs tables en même temps
     public function getNodeData(): NodeData|EmailForm|null
     {
+        // limite du polymorphisme avec doctrine => impossible d'avoir une unique variable $node_data
         return $this->name_node === 'form' ? $this->email_form : $this->node_data;
     }
     public function getChildren(): array

@@ -176,7 +176,7 @@ class Backup
 	    }
 	    // sécurité cas pas normal
 	    if(empty($tables)){
-	        throw new Exception("Aucune table à supprimer");
+	        throw new RuntimeException("Aucune table à supprimer");
 	    }
 
 		$tmp = tempnam('../var', 'tmp_db_codes_'); // crée un fichier avec un nom aléatoire et des droits 600 (concurrence)

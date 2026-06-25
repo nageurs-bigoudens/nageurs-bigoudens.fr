@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ViewController
 {
-    static function getWebPage(EntityManager $entityManager, Request $request): RedirectResponse
+    static function getWebPage(EntityManager $entityManager, Request $request): Response
     {
         /* 1/ 1er contrôle des paramètres */
 

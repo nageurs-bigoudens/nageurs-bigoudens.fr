@@ -10,4 +10,4 @@ Config::load('../config/config.ini');
 require '../src/model/doctrine-bootstrap.php';
 
 $file_name = Backup::mySQLdump($entityManager, 'console'); // créer un nouveau backup
-echo realpath($file_name) . "\n";
+echo "Un backup a été créé:\n" . realpath($file_name) . "\n";
