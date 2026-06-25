@@ -15,7 +15,7 @@ if($argc === 2){
 	    }
     }
     $file_name = pathinfo($argv[1])['basename'];
-    $file_data = '../' . file_get_contents($argv[1]);
+    $file_data = file_get_contents($argv[1]);
 }
 
 chdir(dirname(__FILE__)); // /chemin/absolu/bin/restore_db.php

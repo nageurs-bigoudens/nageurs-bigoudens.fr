@@ -156,6 +156,7 @@ class Backup
 		}
 	}
 
+	// pattern "template method"
 	static public function restoreDatabase(EntityManager $entityManager, string $file_name): void
 	{
 		// création d'un backup de sécurité non écrasable
