@@ -156,8 +156,7 @@ class Backup
 		}
 	}
 
-	// pattern "template method"
-	static public function restoreDatabase(EntityManager $entityManager, string $file_name): void
+	static public function restoreDatabase(EntityManager $entityManager, string $file_name, array $exclusion_list = []): void
 	{
 		// création d'un backup de sécurité non écrasable
 		$date = new DateTime;
@@ -168,20 +167,10 @@ class Backup
 		$version = $entityManager->getConnection()->fetchOne('SELECT VERSION()');
 		$engine = stripos($version, 'mariadb') !== false ? 'mariadb' : 'mysql';
 
-		// choisir les tables à restaurer
-		$tables = $entityManager->getConnection()->createSchemaManager()->listTableNames();
-		foreach($tables as $key => $elem){
-	    	if($elem === TABLE_PREFIX . 'user'){
-	    		unset($tables[$key]);
-	    	}
-	    }
-	    // sécurité cas pas normal
-	    if(empty($tables)){
-	        throw new RuntimeException("Aucune table à supprimer");
-	    }
+		$tables = self::getDBListOfTables($entityManager, $exclusion_list); // choisir les tables à effacer et restaurer, exclure "user"
 
-		$tmp = tempnam('../var', 'tmp_db_codes_'); // crée un fichier avec un nom aléatoire et des droits 600 (concurrence)
-		file_put_contents($tmp, 
+		$tmp_db_codes = tempnam('../var', 'tmp_db_codes_'); // crée un fichier avec un nom aléatoire et des droits 600 (concurrence)
+		file_put_contents($tmp_db_codes, 
 			"[client]\n
 			user=" . Config::$user . "\n
 			password=" . Config::$password . "\n
@@ -191,31 +180,53 @@ class Backup
 
 		$command = new Process([
 		    $engine, // mariadb ou mysql
-		    '--defaults-extra-file=' . $tmp, // pour ne pas enregistrer les codes dans l'historique de la console ou dans les processus de l'OS
+		    '--defaults-extra-file=' . $tmp_db_codes, // pour ne pas enregistrer les codes dans l'historique de la console ou dans les processus de l'OS
 		    Config::$database
 		]);
 		$command->setInput(file_get_contents(Backup::$backup_dir . '/' . $file_name)); // l'entrée <
 
-
+		// utiliser une liste de tables à exclure dynamique
 		try{
 			// tout effacer
 			$tables_with_backquotes = array_map(fn($t) => '`' . $t . '`', $tables);
-		    $sql = "SET FOREIGN_KEY_CHECKS=0; DROP TABLE " . implode(', ', $tables_with_backquotes) . "; SET FOREIGN_KEY_CHECKS=1;";
-		    $entityManager->getConnection()->executeStatement($sql);
+			if(!empty($tables_with_backquotes)){
+			    $sql = "SET FOREIGN_KEY_CHECKS=0; DROP TABLE " . implode(', ', $tables_with_backquotes) . "; SET FOREIGN_KEY_CHECKS=1;";
+			    $entityManager->getConnection()->executeStatement($sql);
+			}
 
-			// la table user restante va poser problème
-			$entityManager->getConnection()->executeStatement('RENAME TABLE `' . TABLE_PREFIX . 'user` TO `' . TABLE_PREFIX . 'user_dont_touch`;');
+			// copie des tables à ne pas restaurer
+			foreach($exclusion_list as $excluded){
+				$entityManager->getConnection()->executeStatement('RENAME TABLE `' . TABLE_PREFIX . $excluded . '` TO `' . TABLE_PREFIX . $excluded . '_dont_touch`;');
+			}
 			
 			// restaurer
 			$command->mustRun(); // comme run() mais lance une ProcessFailedException
 
 			// remettre table user comme avant
-			$entityManager->getConnection()->executeStatement('DROP TABLE `' . TABLE_PREFIX . 'user`;');
-			$entityManager->getConnection()->executeStatement('RENAME TABLE `' . TABLE_PREFIX . 'user_dont_touch` TO `' . TABLE_PREFIX . 'user`;');
+			foreach($exclusion_list as $excluded){
+				$entityManager->getConnection()->executeStatement('DROP TABLE `' . TABLE_PREFIX . $excluded . '`;');
+				$entityManager->getConnection()->executeStatement('RENAME TABLE `' . TABLE_PREFIX . $excluded . '_dont_touch` TO `' . TABLE_PREFIX . $excluded . '`;');
+			}
 		}
 		finally{
 			// exécuté même quand situé après "return"
-			unlink($tmp);
+			unlink($tmp_db_codes);
 		}
+	}
+
+	static private function getDBListOfTables(EntityManager $entityManager, array $exclusion_list = []): array
+	{
+		$tables = $entityManager->getConnection()->createSchemaManager()->listTableNames();
+		foreach($tables as $key => $elem){
+			foreach($exclusion_list as $excluded){
+				if(!is_string($excluded)){ // cas pas du tout censé arriver!
+					throw new LogicException("Un nom de table doit etre une chaîne de caractères.");
+				}
+				if($elem === TABLE_PREFIX . $excluded){
+		    		unset($tables[$key]);
+		    	}
+			}
+	    }
+	    return $tables;
 	}
 }

@@ -103,7 +103,7 @@ class MaintenanceController
 			if(pathinfo($selected_file)['extension'] !== 'sql'){ // pas censé se produire en fait
 	        	throw new Exception("charger un fichier au format SQL");
 	        }
-	        Backup::restoreDatabase($entityManager, $selected_file);
+	        Backup::restoreDatabase($entityManager, $selected_file, ['user']);
 
 	        $_SESSION['flash_message'] = "La base de données a été restaurée avec succès !!";
 	    }
@@ -134,7 +134,7 @@ class MaintenanceController
 	        $uploaded_file->move(Backup::$backup_dir, $server_place);
 
 	        // s'en servir
-	        Backup::restoreDatabase($entityManager, $server_place);
+	        Backup::restoreDatabase($entityManager, $server_place, ['user']);
 
 	        $_SESSION['flash_message'] = "La base de données a été restaurée avec succès !!";
 	    }
