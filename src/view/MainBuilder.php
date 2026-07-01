@@ -53,10 +53,10 @@ class MainBuilder extends AbstractBuilder
     }
 
     // mode modification de page uniquement
-    private function viewEditBlocks($node): void
+    private function viewEditBlocks(Node $node): void
     {
         $options = '';
-        foreach(Blocks::$blocks as $key => $value){
+        foreach(Presentation::$blocks as $key => $value){
             $options .= '<option value= "' . $key . '">' . $value . "</option>\n";
         }
         
@@ -69,7 +69,7 @@ class MainBuilder extends AbstractBuilder
             }
 
             // présentation par défaut
-            if(Blocks::hasPresentation($child_node->getName()) && $child_node->getNodeData()->getPresentation() === null){
+            if(Presentation::hasPresentation($child_node->getName()) && $child_node->getNodeData()->getPresentation() === null){
                 $child_node->getNodeData()->setPresentation('full_width'); // pas de persistence ici
             }
             
@@ -87,7 +87,7 @@ class MainBuilder extends AbstractBuilder
     private function makePresentationOptions(string $presentation): string
     {
         $options = '';
-        foreach(Blocks::$presentations as $key => $value){
+        foreach(Presentation::$presentations as $key => $value){
             $options .= '<option value="' . $key . '" ' . ($presentation === $key ? 'selected' : '') . '>' . $value . '</option>';
         }
         return $options;

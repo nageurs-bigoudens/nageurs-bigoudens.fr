@@ -7,6 +7,7 @@ use App\Entity\Page;
 use App\Entity\Node;
 use App\Entity\NodeData;
 use App\Entity\EmailForm;
+use App\Entity\Presentation;
 //use App\Entity\Image;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -131,7 +132,7 @@ class PageManagementController
 	    $main = $model->getNode();
 	    $position = count($main->getChildren()) + 1; // position dans la fraterie
 
-	    if(!in_array($request->request->get("bloc_select"), array_keys(Blocks::$blocks), true)){ // 3è param: contrôle du type
+	    if(!in_array($request->request->get("bloc_select"), array_keys(Presentation::$blocks), true)){ // 3è param: contrôle du type
 	    	// utiliser une flash error
 	        return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'error' => 'bad_bloc_type']));
 	    }
@@ -146,7 +147,12 @@ class PageManagementController
 
 	    $block = new Node($request->request->get("bloc_select"), $position, $main, $page);
 
-	    $DataClass = $request->request->get("bloc_select") === 'form' ? EmailForm::class : NodeData::class; // cas particulier avec bloc 'email_form'
+	    $DataClass = match($request->request->get("bloc_select")){
+	    	'form' => EmailForm::class,
+	    	'post_block', 'news_block' => Presentation::class,
+	    	'calendar' => NodeData::class,
+	    	default => throw new InvalidArgumentException("Erreur: type de bloc inconnu"),
+	    };
 	    $data = new $DataClass(['title' => trim(htmlspecialchars($request->request->get("bloc_title")))], $block);
 
 	    // valeurs par défaut
@@ -305,7 +311,7 @@ class PageManagementController
 			$model = new Model($entityManager);
 			$model->findNodeById($json['id']);
 
-			if(in_array($json['presentation'], array_keys(Blocks::$presentations))){
+			if(in_array($json['presentation'], array_keys(Presentation::$presentations))){
 				$model->getNode()->getNodeData()->setPresentation($json['presentation']);
 				$entityManager->flush();
 

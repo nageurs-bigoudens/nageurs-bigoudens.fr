@@ -99,7 +99,7 @@ class FooterBuilder extends AbstractBuilder
     private function makePageModifModeButton(): string
     {
         $link_edit_page = new URL(['page' => CURRENT_PAGE]);
-        if(!in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths', 'maintenance'])) // ajouter 'user_edit' et 'connection' le jour où ces pages auront un footer
+        if(!in_array(CURRENT_PAGE, ViewController::SPECIAL_PAGES)) // cas impossibles: 'user_edit' et 'connection' qui n'ont pas de footer
         {
             if(MainBuilder::$modif_mode){
                 $link_edit_label = 'Sortir du mode modification';

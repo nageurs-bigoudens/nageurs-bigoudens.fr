@@ -224,6 +224,7 @@ class Backup
 				}
 				if($elem === TABLE_PREFIX . $excluded){
 		    		unset($tables[$key]);
+		    		break; // petite optimisation
 		    	}
 			}
 	    }

@@ -106,7 +106,7 @@ class Router{
                     return ContactFormController::sendVisitorEmail($this->entityManager, $json);
                 }
                 /*else{
-                    return new JsonResponse(['success' => false, 'error' => 'tu fais quoi là mec?']);
+                    return new JsonResponse(['success' => false, 'error' => 'tu fais quoi là mec?'], JsonResponse::HTTP_BAD_REQUEST);
                 }*/
             }
 
@@ -183,7 +183,7 @@ class Router{
                                 return MaintenanceController::eraseLogs($this->entityManager);
 
                             default:
-                                return new JsonResponse(['success' => false]);
+                                return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST);
                         }
                     }
 

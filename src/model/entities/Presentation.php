@@ -1,29 +1,23 @@
 <?php
-// src/model/entities/NodeData.php
+// src/model/entities/Presentation.php
 
 declare(strict_types=1);
 
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection; // classe
-use Doctrine\Common\Collections\Collection; // interface
 
 #[ORM\Entity]
-#[ORM\Table(name: TABLE_PREFIX . "node_data")]
-class NodeData
-{
-    static array $social_networks = ['globe', 'facebook', 'instagram', 'whatsapp', 'snapchat', 'tiktok', 'linkedin', 'github']; // à completer
-    
-    #[ORM\Id]
+#[ORM\Table(name: TABLE_PREFIX . "presentation")]
+class Presentation{
+	#[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id_node_data;
+    private int $id_presentation;
 
-    // onDelete: "CASCADE" supprime les données si le noeud est supprimé
-    // inverseBy fait le lien avec $node_data dans Node (qui a "mappedBy")
-    #[ORM\OneToOne(targetEntity: Node::class, inversedBy: "node_data")]
-    #[ORM\JoinColumn(name: "node_id", referencedColumnName: "id_node", onDelete: "CASCADE")]
+    // inverseBy fait le lien avec $presentation dans Node (qui a "mappedBy")
+    #[ORM\OneToOne(targetEntity: Node::class, inversedBy: "presentation")]
+    #[ORM\JoinColumn(name: "node_id", referencedColumnName: "id_node")]
     private ?Node $node;
 
     #[ORM\Column(type: "json")]
@@ -41,29 +35,34 @@ class NodeData
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $pagination_limit = null; // pour les post_block et news_block
 
-    #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: AssetEmployment::class, cascade: ['persist', 'remove'])]
-    private Collection $asset_employment;
+    private int $nb_pages = 1;
 
-    private array $emails = []; // => noeud "show_emails"
-
-    public function __construct(array $data, Node $node, Collection $asset_employment = new ArrayCollection){
+    public function __construct(array $data, Node $node
+        //, ?string $presentation = null, ?bool $chrono_order = null
+    ){
         $this->data = $data;
         $this->node = $node;
-        $this->asset_employment = $asset_employment;
+        /*if(!empty($presentation) && $presentation === 'grid'){
+            $this->grid_cols_min_width = 250;
+        }
+        $this->chrono_order = $chrono_order ?? null;*/
     }
 
-    public function getId(): int
+    /*public function getId(): int
     {
-        return $this->id_node_data;
+        return $this->id_presentation;
+    }*/
+
+    public function setNode(?Node $node): void
+    {
+    	$this->node = $node;
     }
+
+    // un trait pour ça
     public function getData(): array
     {
         return $this->data;
     }
-    /*public function setData(array $data): void // entrée = tableau associatif
-    {
-        $this->data = $data;
-    }*/
     public function updateData(string $key, string|int|bool|array $value = ''): void
     {
         if($value !== ''){
@@ -76,7 +75,7 @@ class NodeData
     }
 
     // spécifique aux blocs contenant des articles
-    /*public function getPresentation(): ?string
+    public function getPresentation(): ?string
     {
         return $this->presentation;
     }
@@ -111,7 +110,6 @@ class NodeData
     {
         $this->pagination_limit = $pagination_limit;
     }
-    private int $nb_pages = 1;
     public function getNumberOfPages(): int
     {
         return $this->nb_pages;
@@ -119,42 +117,17 @@ class NodeData
     public function setNumberOfPages(int $nb_pages): void
     {
         $this->nb_pages = $nb_pages;
-    }*/
-    
-    public function setNode(?Node $node): void
-    {
-        $this->node = $node;
     }
 
-    public function getNodeDataAssets(): Collection
+    static public array $blocks = ['post_block' => 'Articles libres', 'news_block' => 'Actualités',
+        //'galery' => 'Galerie',
+        'calendar' => 'Calendrier', 'form' => 'Formulaire'
+    ];
+    static public array $presentations = ['fullwidth' => 'Pleine largeur', 'grid' => 'Grille', 'mosaic' => 'Mosaïque'
+        //, 'carousel' => 'Carrousel'
+    ];
+    static public function hasPresentation(string $block): bool
     {
-        return $this->asset_employment;
-    }
-    public function getAssetEmploymentByRole(string $role): ?AssetEmployment
-    {
-        foreach($this->asset_employment as $nda){
-            if($nda->getRole() === $role){
-                return $nda;
-            }
-        }
-        return null;
-    }
-    public function getAssetByRole(string $role): ?Asset
-    {
-        $nda = $this->getAssetEmploymentByRole($role);
-        if($nda === null){
-            return null;
-        }
-        return $nda->getAsset() ?? null;
-    }
-
-    // pour affichage page Courriels
-    public function getEmails(): array // appelée dans ShowEmailsBuilder
-    {
-        return $this->emails;
-    }
-    public function setEmails(array $emails): void // appelée dans Model
-    {
-        $this->emails = $emails;
+        return in_array($block, ['post_block', 'news_block']) ? true : false;
     }
 }

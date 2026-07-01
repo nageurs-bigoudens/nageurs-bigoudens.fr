@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Config;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -47,6 +46,9 @@ class Node
 
     #[ORM\OneToOne(targetEntity: EmailForm::class, mappedBy: "node", cascade: ['persist'])] // pas de remove, les e-mails sont associés au EmailForm
     private ?EmailForm $email_form = null;
+
+    #[ORM\OneToOne(targetEntity: Presentation::class, mappedBy: "node", cascade: ['persist', 'remove'])]
+    private ?Presentation $presentation = null;
 
     // attributs non destinés à doctrine
     private array $children = []; // tableau de Node
@@ -111,11 +113,15 @@ class Node
 
     // une interface serait cool!
     // OU possible un "héritage doctrine", faire en sorte que Node soit la mère de NodeData, EmailForm, Article...
-    // une seulle instance est matérialisée par plusieurs tables en même temps
-    public function getNodeData(): NodeData|EmailForm|null
+    // une seule instance est matérialisée par plusieurs tables en même temps
+    public function getNodeData(): NodeData|EmailForm|Presentation|null
     {
-        // limite du polymorphisme avec doctrine => impossible d'avoir une unique variable $node_data
-        return $this->name_node === 'form' ? $this->email_form : $this->node_data;
+        // pour du polymorphisme (une unique variable $node_data): opter pour l'héritage
+        return match($this->name_node){
+            'form' => $this->email_form,
+            'post_block', 'news_block' => $this->presentation,
+            default => $this->node_data, // inclut 'calendar'
+        };
     }
     public function getChildren(): array
     {
@@ -134,7 +140,7 @@ class Node
     {
         $this->children[] = $child;
 
-        if(!\Blocks::hasPresentation($this->getName())){ // post_block et news_block ont leurs enfants ordonnés avec ORDER BY
+        if(!Presentation::hasPresentation($this->getName())){ // post_block et news_block ont leurs enfants ordonnés avec ORDER BY
             $this->sortChildren(false);
         }
     }

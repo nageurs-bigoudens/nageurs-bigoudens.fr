@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use App\Entity\Node;
 use App\Entity\Article;
+use App\Entity\Presentation;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class ArticleController
 			$model->findNodeById($id);
 			$parent_block = $model->getNode();
 
-			if(Blocks::hasPresentation($parent_block->getName())){
+			if(Presentation::hasPresentation($parent_block->getName())){
 				$get_articles_return = $model->getNextArticles($parent_block, $request);
 				$bulk_data = $get_articles_return[0];
 
@@ -44,11 +45,11 @@ class ArticleController
 				return new JsonResponse(['success' => true, 'html' => $html, 'truncated' => $get_articles_return[1]]);
 			}
 			else{
-				return new JsonResponse(['success' => false, 'error' => 'server side error']);
+				return new JsonResponse(['success' => false, 'error' => 'server side error'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
 			}
 		}
 		else{
-			return new JsonResponse(['success' => false, 'error' => 'bad parameters']);
+			return new JsonResponse(['success' => false, 'error' => 'bad parameters'], JsonResponse::HTTP_BAD_REQUEST);
 		}
 	}
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 use Doctrine\ORM\EntityManager;
 use App\Entity\Page;
 use App\Entity\Node;
+use App\Entity\Presentation;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -60,7 +61,7 @@ class Model
 
             foreach($bulk_data as $parent_block){
                 // groupes d'articles triés par bloc, permet de paginer par bloc                
-                if(Blocks::hasPresentation($parent_block->getName())){ // = post_block ou news_block
+                if(Presentation::hasPresentation($parent_block->getName())){ // = post_block ou news_block
                     $bulk_data = array_merge($bulk_data, $this->getNextArticles($parent_block, $request)[0]);
                 }
 

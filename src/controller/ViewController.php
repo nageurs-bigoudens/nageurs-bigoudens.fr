@@ -8,8 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ViewController
-{
+class ViewController{
+    const SPECIAL_PAGES = ['article', 'new_page', 'menu_paths', 'user_edit', 'connection', 'emails', 'maintenance'];
+
     static function getWebPage(EntityManager $entityManager, Request $request): Response
     {
         /* 1/ 1er contrôle des paramètres */
@@ -17,7 +18,7 @@ class ViewController
         // mode modification d'une page
         if(IS_ADMIN
             && $request->query->has('mode') && $request->query->get('mode') === 'page_modif'
-            && !in_array(CURRENT_PAGE, ['article', 'new_page', 'menu_paths', 'user_edit', 'connection']))
+            && !in_array(CURRENT_PAGE, self::SPECIAL_PAGES))
         {
             MainBuilder::$modif_mode = true;
         }
