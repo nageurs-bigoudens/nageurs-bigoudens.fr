@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 <div class="modify_one_block" id="bloc_edit_<?= $child_node->getId() ?>">
     <div class="block_options">
-        <label for="bloc_rename_<?= $child_node->getId() ?>">Type <b><?= App\Entity\Presentation::$blocks[$child_node->getName()] ?? '<i>erreur base de données</i>' ?></b>
+        <label for="bloc_rename_<?= $child_node->getId() ?>">Type <b><?= App\Entity\Presentation::BLOCKS[$child_node->getName()] ?? '<i>erreur base de données</i>' ?></b>
         </label>
         <p>
             <input type="text" id="bloc_rename_<?= $child_node->getId() ?>" name="bloc_rename_title" value="<?= $child_node->getNodeData()->getdata()['title'] ?>" required>

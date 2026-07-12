@@ -29,18 +29,6 @@ class NodeData
     #[ORM\Column(type: "json")]
     private array $data;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
-    private ?string $presentation;
-
-    #[ORM\Column(type: "boolean", length: 255, nullable: true)]
-    private ?bool $chrono_order = null;
-
-    #[ORM\Column(type: "integer", nullable: true)]
-    private ?int $grid_cols_min_width = null; // pour le mode grille
-
-    #[ORM\Column(type: "integer", nullable: true)]
-    private ?int $pagination_limit = null; // pour les post_block et news_block
-
     #[ORM\OneToMany(mappedBy: 'node_data', targetEntity: AssetEmployment::class, cascade: ['persist', 'remove'])]
     private Collection $asset_employment;
 
@@ -74,52 +62,6 @@ class NodeData
             unset($this->data[$key]);
         }
     }
-
-    // spécifique aux blocs contenant des articles
-    /*public function getPresentation(): ?string
-    {
-        return $this->presentation;
-    }
-    public function setPresentation(string $presentation): void
-    {
-        $this->presentation = $presentation;
-    }
-    public function getColsMinWidth(): int
-    {
-        $default = 320; // pixels
-        return $this->grid_cols_min_width === null ? $default : $this->grid_cols_min_width;
-    }
-    public function setColsMinWidth(int $columns): void
-    {
-        $this->grid_cols_min_width = $columns;
-    }
-    public function getChronoOrder(): bool
-    {
-        return $this->chrono_order ?? false;
-    }
-    public function setChronoOrder(bool $reverse_order): void
-    {
-        $this->chrono_order = $reverse_order;
-    }
-
-    public function getPaginationLimit(): ?int
-    {
-        $default = 12; // si 0 pas de pagination, 12 rend bien avec des grilles de 2, 3 ou 4 colonnes
-        return $this->pagination_limit === null ? $default : $this->pagination_limit;
-    }
-    public function setPaginationLimit(int $pagination_limit): void
-    {
-        $this->pagination_limit = $pagination_limit;
-    }
-    private int $nb_pages = 1;
-    public function getNumberOfPages(): int
-    {
-        return $this->nb_pages;
-    }
-    public function setNumberOfPages(int $nb_pages): void
-    {
-        $this->nb_pages = $nb_pages;
-    }*/
     
     public function setNode(?Node $node): void
     {

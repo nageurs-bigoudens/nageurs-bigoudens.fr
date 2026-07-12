@@ -132,7 +132,7 @@ class PageManagementController
 	    $main = $model->getNode();
 	    $position = count($main->getChildren()) + 1; // position dans la fraterie
 
-	    if(!in_array($request->request->get("bloc_select"), array_keys(Presentation::$blocks), true)){ // 3è param: contrôle du type
+	    if(!in_array($request->request->get("bloc_select"), array_keys(Presentation::BLOCKS), true)){ // 3è param: contrôle du type
 	    	// utiliser une flash error
 	        return new RedirectResponse((string)new URL(['page' => $request->query->get('page'), 'error' => 'bad_bloc_type']));
 	    }
@@ -311,7 +311,7 @@ class PageManagementController
 			$model = new Model($entityManager);
 			$model->findNodeById($json['id']);
 
-			if(in_array($json['presentation'], array_keys(Presentation::$presentations))){
+			if(in_array($json['presentation'], array_keys(Presentation::PRESENTATIONS))){
 				$model->getNode()->getNodeData()->setPresentation($json['presentation']);
 				$entityManager->flush();
 

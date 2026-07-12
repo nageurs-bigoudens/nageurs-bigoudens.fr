@@ -1,19 +1,15 @@
 <?php
 // public/index/php
 
-/* plan d'action pour "symfonyfier" le site
-A - 
-    1/ de vrais contrôleurs: classes et méthodes prenant une requête en entrée et retournant une réponse
-    (début de séparation contrôleurs et classes métier)
-    2/ routeur structuré: méthodes GET et POST, content-type, admin
-    3/ routeur amélioré: pré-routage avec méthodes HTTP: GET, HEAD, POST, PUT, PATCH, DELETE, etc
-    4/ réécriture avec les classes Request et Response sans toucher les liens
-    5/ http-foundation possède aussi une classe Session. intéressant!
-B - 
-    1/ passer à des chemins modernes "ciblant des ressources" genre /chemin/de/la/page
-        le mode modification de page doit thérioquement être appelé comme ça: /chemin/de/la/page/modif_page
-        apparemment, le from=nom_page pour les formulaires ne se fait pas...
-    2/ utiliser le routeur de symfony: nécéssite que tous les contrôleurs soient des classes avec un namespace */
+/* idées pour "symfonyfier" le site
+1/ router à la manière de symfony?
+2/ utiliser les méthodes HTTP: GET, HEAD, POST, PUT, PATCH, DELETE?
+3/ http-foundation possède aussi une classe Session. intéressant!
+4/ passer à des chemins modernes "ciblant des ressources" genre /chemin/de/la/page
+    le mode modification de page doit thérioquement être appelé comme ça: /chemin/de/la/page/modif_page
+    apparemment, le from=nom_page pour les formulaires ne se fait pas...
+5/ utiliser le routeur de symfony? => nécéssite que les contrôleurs soient aient tous un namespace
+*/
 
 declare(strict_types=1);
 

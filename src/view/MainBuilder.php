@@ -56,7 +56,7 @@ class MainBuilder extends AbstractBuilder
     private function viewEditBlocks(Node $node): void
     {
         $options = '';
-        foreach(Presentation::$blocks as $key => $value){
+        foreach(Presentation::BLOCKS as $key => $value){
             $options .= '<option value= "' . $key . '">' . $value . "</option>\n";
         }
         
@@ -87,7 +87,7 @@ class MainBuilder extends AbstractBuilder
     private function makePresentationOptions(string $presentation): string
     {
         $options = '';
-        foreach(Presentation::$presentations as $key => $value){
+        foreach(Presentation::PRESENTATIONS as $key => $value){
             $options .= '<option value="' . $key . '" ' . ($presentation === $key ? 'selected' : '') . '>' . $value . '</option>';
         }
         return $options;

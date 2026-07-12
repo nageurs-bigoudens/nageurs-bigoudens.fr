@@ -119,11 +119,13 @@ class Presentation{
         $this->nb_pages = $nb_pages;
     }
 
-    static public array $blocks = ['post_block' => 'Articles libres', 'news_block' => 'Actualités',
+
+    /* -- blocs et présentations disponibles dans l'application -- */
+    const BLOCKS = ['post_block' => 'Articles libres', 'news_block' => 'Actualités',
         //'galery' => 'Galerie',
         'calendar' => 'Calendrier', 'form' => 'Formulaire'
     ];
-    static public array $presentations = ['fullwidth' => 'Pleine largeur', 'grid' => 'Grille', 'mosaic' => 'Mosaïque'
+    const PRESENTATIONS = ['fullwidth' => 'Pleine largeur', 'grid' => 'Grille', 'mosaic' => 'Mosaïque'
         //, 'carousel' => 'Carrousel'
     ];
     static public function hasPresentation(string $block): bool
