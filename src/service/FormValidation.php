@@ -6,49 +6,29 @@ declare(strict_types=1);
 class FormValidation
 {
 	private array $data; // tableau associatif (probablement $_POST)
-	private string $validation_strategy; // à remplacer plus tard par un objet (pattern stratégie) d'interface ValidationStrategy
+	private Closure $callStrategy;
 	private array $errors;
 	private bool $validated = false;
 
-	public function __construct(array $data, string $validation_strategy){
+	public function __construct(array $data, string $strategy_name){
 		$this->data = $data;
-		$this->validation_strategy = $validation_strategy;
+		$this->callStrategy = match($strategy_name){
+			// bloc formulaire de contact
+			'email_send' => fn() => $this->emailStrategy(), // raccourci pour: 'email_send' => function () { return $this->emailStrategy(); },
+			'email_params' => fn() => $this->emailParamsStrategy(),
+			// formulaires pages spéciales
+			'create_user' => fn() => $this->createUserStrategy(),
+			'connection' => fn() => $this->connectionStrategy(),
+			'username_update' => fn() => $this->usernameUpdateStrategy(),
+			'password_update' => fn() => $this->passwordUpdateStrategy(),
+			default => throw new LogicException("server_error_strategy_not_found")
+		};
 	}
 
 	public function validate(): bool
 	{
 		$this->errors = [];
-
-		// pattern stratégie en une seule classe
-		switch($this->validation_strategy){
-			// bloc formulaire de contact
-			case 'email_send':
-				$this->emailStrategy();
-				break;
-			case 'email_params': // paramètrage en mode admin
-				$this->emailParamsStrategy();
-				break;
-
-			// formulaires pages spéciales
-			case 'create_user':
-				$this->createUserStrategy();
-				break;
-			case 'connection':
-				$this->connectionStrategy();
-				break;
-			case 'username_update':
-				$this->usernameUpdateStrategy();
-				break;
-			case 'password_update':
-				$this->passwordUpdateStrategy();
-				break;
-
-			default:
-				http_response_code(500); // c'est un peu comme jeter une exception
-				echo json_encode(['success' => false, 'error' => 'server_error']);
-				die;
-		}
-
+		($this->callStrategy)();
 		$this->validated = true;
 		return empty($this->errors);
 	}
@@ -73,10 +53,10 @@ class FormValidation
 		}
 		
 		if($captcha_try == 0){
-			$error = 'error_non_valid_captcha';
+			$this->errors[] = 'error_non_valid_captcha';
 		}
 		elseif($captcha_solution == 0){ // ne peut pas arriver, si?
-			$error = 'captcha_server_error';
+			$this->errors[] = 'captcha_server_error';
 		}
 		elseif($captcha_try !== $captcha_solution){
 			$this->errors[] = 'bad_solution_captcha';
