@@ -25,7 +25,7 @@ class UserController
 	{
 		unset($_SESSION['user']);
 
-		$form = new FormValidation($_POST, 'create_user');
+		$form = new FormValidation($_POST, ValidationStrategy::CreateUser);
 		
 		$url = new URL;
 		$error = '';
@@ -58,7 +58,7 @@ class UserController
 		}
 		unset($_SESSION['user']);
 
-		$form = new FormValidation($_POST, 'connection');
+		$form = new FormValidation($_POST, ValidationStrategy::Connection);
 
 		$error = '';
 		if($form->validate()){
@@ -135,7 +135,7 @@ class UserController
 		$url = new URL(['page' => 'user_edit']);
 		isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
 
-		$form = new FormValidation($_POST, 'username_update');
+		$form = new FormValidation($_POST, ValidationStrategy::UsernameUpdate);
 
 		$error = '';
 		if($form->validate()){
@@ -174,7 +174,7 @@ class UserController
 		$url = new URL(['page' => 'user_edit']);
 		isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
 
-		$form = new FormValidation($_POST, 'password_update');
+		$form = new FormValidation($_POST, ValidationStrategy::PasswordUpdate);
 
 		$error = '';
 		if($form->validate()){

@@ -45,21 +45,16 @@ if(IS_ADMIN){
 // remplit la BDD initiale, ne fonctionne que si la BDD est vide
 DatabaseSettingUp::run($entityManager);
 
-$request = Request::createFromGlobals();
-
 
 /* -- partie 2: routage et contrôleurs -- */
-
+$request = Request::createFromGlobals();
 define('CURRENT_PAGE', htmlspecialchars($request->query->get('page') ?? ''));
-
-//Router::dispatch($request, $entityManager);
-//$response = Router::dispatch($request, $entityManager);
 
 $router = new Router($request, $entityManager);
 $response = $router->dispatch();
 $response->send();
 
-// gestion des erreurs
+// avec gestion des erreurs
 /*try{
     $response = $router->dispatch();
 }

@@ -28,7 +28,7 @@ class ContactFormController
 	}
 	static public function setEmailParam(EntityManager $entityManager, array $json): JsonResponse
 	{
-		$form = new FormValidation($json, 'email_params');
+		$form = new FormValidation($json, ValidationStrategy::EmailParam);
 		
 		if($form->validate()){
 			$form_data = $entityManager->find(EmailForm::class, $json['id']);
@@ -45,7 +45,7 @@ class ContactFormController
 	// les deux méthodes suivantes sont "factorisables", elles ne se distinguent que par la gestion ou non du formulaire rempli par le visiteur
 	static public function sendVisitorEmail(EntityManager $entityManager, array $json): JsonResponse
 	{
-		$form = new FormValidation($json, 'email_send');
+		$form = new FormValidation($json, ValidationStrategy::EmailSend);
 
 		$error = '';
 		if($form->validate()){

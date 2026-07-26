@@ -1,35 +1,50 @@
 <?php
 // src/service/FormValidation.php
+//
+// pattern strategy simplifié, permet évolution future vers le vrai pattern
 
 declare(strict_types=1);
+
+// classe spéciale permettant de bénéficier du typage de classe au lieu de passer une chaîne à FormValidation
+enum ValidationStrategy {
+	// bloc formulaire de contact
+	case EmailSend;
+    case EmailParam;
+    // formulaires pages spéciales
+    case CreateUser;
+    case Connection;
+    case UsernameUpdate;
+    case PasswordUpdate;
+
+    public function method(): string
+    {
+    	return match($this){
+    		self::EmailSend => 'emailStrategy',
+		    self::EmailParam => 'emailParamStrategy',
+		    self::CreateUser => 'createUserStrategy',
+		    self::Connection => 'connectionStrategy',
+		    self::UsernameUpdate => 'usernameUpdateStrategy',
+		    self::PasswordUpdate => 'passwordUpdateStrategy'
+    	};
+    }
+}
 
 class FormValidation
 {
 	private array $data; // tableau associatif (probablement $_POST)
 	private Closure $callStrategy;
 	private array $errors;
-	private bool $validated = false;
 
-	public function __construct(array $data, string $strategy_name){
+	public function __construct(array $data, ValidationStrategy $strategy){
 		$this->data = $data;
-		$this->callStrategy = match($strategy_name){
-			// bloc formulaire de contact
-			'email_send' => fn() => $this->emailStrategy(), // raccourci pour: 'email_send' => function () { return $this->emailStrategy(); },
-			'email_params' => fn() => $this->emailParamsStrategy(),
-			// formulaires pages spéciales
-			'create_user' => fn() => $this->createUserStrategy(),
-			'connection' => fn() => $this->connectionStrategy(),
-			'username_update' => fn() => $this->usernameUpdateStrategy(),
-			'password_update' => fn() => $this->passwordUpdateStrategy(),
-			default => throw new LogicException("server_error_strategy_not_found")
-		};
+		$method = $strategy->method();
+		$this->callStrategy = fn() => $this->$method();
 	}
 
 	public function validate(): bool
 	{
 		$this->errors = [];
-		($this->callStrategy)();
-		$this->validated = true;
+		($this->callStrategy)(); // appel de la callback
 		return empty($this->errors);
 	}
 
@@ -40,7 +55,7 @@ class FormValidation
 
 	public function getField(string $field): string
 	{
-		return $this->validated ? $this->data[$field] : '';
+		return $this->data[$field] ?? '';
 	}
 
 	// méthodes de validation
@@ -76,9 +91,7 @@ class FormValidation
 	{
 		$this->captchaValidate(false);
 
-		if(!isset($this->data['name']) || empty($this->data['name'])
-			|| !isset($this->data['email']) || empty($this->data['email'])
-			|| !isset($this->data['message']) || empty($this->data['message'])
+		if(empty($this->data['name']) || empty($this->data['email']) || empty($this->data['message'])
 			|| !isset($this->data['hidden']) || !empty($this->data['hidden'])){
 			$this->errors[] = 'missing_fields';
 		}
@@ -91,34 +104,28 @@ class FormValidation
 		$this->data['email'] = htmlspecialchars(trim($this->data['email']));
 		$this->data['message'] = htmlspecialchars($this->data['message']);
 	}
-	private function emailParamsStrategy(): void
+	private function emailParamStrategy(): void
 	{
-		if(!isset($this->data['id'], $this->data['what_param'], $this->data['value'], $this->data['hidden'])
-			|| !empty($this->data['hidden'])){
+		if(empty($this->data['id']) || empty($this->data['what_param']) || empty($this->data['value'])
+			|| !isset($this->data['hidden']) || !empty($this->data['hidden'])){
 			$this->errors[] = 'missing_fields';
 		}
 
-		elseif($this->data['value'] !== ''){
-			if(!in_array($this->data['what_param'], ['smtp_host', 'smtp_secure', 'smtp_username', 'smtp_password', 'email_dest'])){
-				$this->errors[] = 'unknown_parameter';
-			}
-			elseif($this->data['what_param'] === 'smtp_username' || $this->data['what_param'] === 'email_dest'){
-				if(!filter_var($this->data['value'], FILTER_VALIDATE_EMAIL)){
-					$this->errors[] = 'invalide_email_address';
-				}
+		if(!in_array($this->data['what_param'], ['smtp_host', 'smtp_secure', 'smtp_username', 'smtp_password', 'email_dest'])){
+			$this->errors[] = 'unknown_parameter';
+		}
+		elseif($this->data['what_param'] === 'smtp_username' || $this->data['what_param'] === 'email_dest'){
+			if(!filter_var($this->data['value'], FILTER_VALIDATE_EMAIL)){
+				$this->errors[] = 'invalide_email_address';
 			}
 		}
-
-		// htmlspecialchars exécutés à l'affichage dans FormBuilder
 	}
 	private function createUserStrategy(): void
 	{
 		$this->captchaValidate();
 
 		// test mauvais paramètres
-		if(!isset($this->data['login']) || empty($this->data['login'])
-	        || !isset($this->data['password']) || empty($this->data['password'])
-	        || !isset($this->data['password_confirmation']) || empty($this->data['password_confirmation'])
+		if(empty($this->data['login']) || empty($this->data['password']) || empty($this->data['password_confirmation'])
 	        || !isset($this->data['create_user_hidden']) || !empty($this->data['create_user_hidden']))
 		{
 			$this->errors[] = 'bad_login_or_password';
@@ -137,8 +144,7 @@ class FormValidation
 	{
 		$this->captchaValidate();
 
-		if(!isset($this->data['login']) || empty($this->data['login'])
-			|| !isset($this->data['password']) || empty($this->data['password'])
+		if(empty($this->data['login']) || empty($this->data['password'])
 			|| !isset($this->data['connection_hidden']) || !empty($this->data['connection_hidden']))
 		{
 			$this->errors[] = 'bad_login_or_password';
@@ -148,9 +154,7 @@ class FormValidation
 	{
 		$this->captchaValidate();
 
-		if(!isset($this->data['login']) || empty($this->data['login'])
-			|| !isset($this->data['password']) || empty($this->data['password'])
-			|| !isset($this->data['new_login']) || empty($this->data['new_login'])
+		if(empty($this->data['login']) || empty($this->data['password']) || empty($this->data['new_login'])
 			|| !isset($this->data['modify_username_hidden']) || !empty($this->data['modify_username_hidden']))
 		{
 			$this->errors[] = 'bad_login_or_password';
@@ -172,9 +176,7 @@ class FormValidation
 	{
 		$this->captchaValidate();
 
-		if(!isset($this->data['login']) || empty($this->data['login'])
-			|| !isset($this->data['password']) || empty($this->data['password'])
-			|| !isset($this->data['new_password']) || empty($this->data['new_password'])
+		if(empty($this->data['login']) || empty($this->data['password']) || empty($this->data['new_password'])
 			|| !isset($this->data['modify_password_hidden']) || !empty($this->data['modify_password_hidden']))
 		{
 			$this->errors[] = 'bad_login_or_password';
