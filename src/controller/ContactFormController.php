@@ -38,7 +38,7 @@ class ContactFormController
 			return new JsonResponse(['success' => true]);
 		}
 		else{
-			return new JsonResponse(['success' => false, 'error' => $form->getErrors()[0]]); // la 1ère erreur sera affichée
+			return new JsonResponse(['success' => false, 'error' => $form->getError()]);
 		}
 	}
 
@@ -60,7 +60,7 @@ class ContactFormController
 			}
 		}
 		else{
-			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+			$error = $form->getError();
 		}
 
 		if(empty($error)){

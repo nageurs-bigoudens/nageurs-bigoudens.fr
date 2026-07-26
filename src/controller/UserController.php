@@ -36,7 +36,7 @@ class UserController
 			$entityManager->flush();
 		}
 		else{
-			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+			$error = $form->getError();
 		}
 		
 		if(!empty($error)){
@@ -96,7 +96,7 @@ class UserController
 			$entityManager->flush();
 		}
 		else{
-			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+			$error = $form->getError();
 		}
 		
 		if(!empty($error)){
@@ -154,7 +154,7 @@ class UserController
 			}
 		}
 		else{
-			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+			$error = $form->getError();
 		}
 		
 		if(!empty($error)){
@@ -193,7 +193,7 @@ class UserController
 			}
 		}
 		else{
-			$error = $form->getErrors()[0]; // la 1ère erreur sera affichée
+			$error = $form->getError();
 		}
 		
 		if(!empty($error)){
