@@ -43,13 +43,13 @@ function installFullCalendar(): void
         $new_version = getVersion($path . '/' . $key);
 
         if(!$old_version){
-            echo $key . " installé " . $new_version . "\n";
+            echo 'public/js/fullcalendar/' . $key . ' installé ' . $new_version . "\n";
         }
         elseif($old_version === $new_version){
-            echo $key . " réinstallé " . $new_version . "\n";
+            echo 'public/js/fullcalendar/' . $key . ' réinstallé ' . $new_version . "\n";
         }
         else{
-            echo $key . " mis à jour de " . $old_version . " vers " . $new_version . "\n";
+            echo 'public/js/fullcalendar/' . $key . ' mis à jour de ' . $old_version . ' vers ' . $new_version . "\n";
         }
     }
 }
