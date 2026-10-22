@@ -1,0 +1,237 @@
+<?php
+// src/Controller/UserController.php
+//
+/* actuellement un fourre-tout de méthodes en rapport avec les utilisateurs
+pour l'améliorer on pourrait appliquer le principe de reponsabilité unique
+=> UserController devrait se limiter à gérer des requêtes et réponses (changement transparent pour le routeur)
+il instancierait un classe correspondant au formulaire (prend POST et SESSION) et une classe "métier" UserService
+=> UserService contiendrait des méthodes utilisant l'objet formulaire pour agir sur la BDD
+=> les formulaires peuvent tenir dans une classe "UserUpdateForm" avec des stratégies ou plusieurs, les données y sont validées
+=> il est aussi possible de découper UserController en contrôleurs par fonctionnalité:
+Auth (connexion, deconnexion), User (infos, choix photo), Account (créer, supprimer compte), Avatar (upload photo...)
+*/
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Doctrine\ORM\EntityManager;
+use App\Entity\User;
+use App\Entity\Log;
+use App\Service\FormValidation;
+use App\Service\ValidationStrategy;
+use App\Service\URL;
+use App\Service\Backup;
+use App\Service\EmailService;
+
+class UserController
+{
+	// account
+	static public function createAdminUser(EntityManager $entityManager): RedirectResponse
+	{
+		unset($_SESSION['user']);
+
+		$form = new FormValidation($_POST, ValidationStrategy::CreateUser);
+		
+		$url = new URL;
+		$error = '';
+		if($form->validate()){
+			$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+			$user = new User($_POST['login'], 'admin', $password);
+			$entityManager->persist($user);
+			$entityManager->flush();
+		}
+		else{
+			$error = $form->getError();
+		}
+		
+		if(!empty($error)){
+			$url->addParams(['error' => $error]);
+		}
+
+		return new RedirectResponse((string)$url);
+	}
+
+	// account
+	//static public function createUser(EntityManager $entityManager){}
+
+	// auth
+	static public function connect(EntityManager $entityManager): RedirectResponse
+	{
+		$url = new URL;
+		if(IS_ADMIN){ // déjà connecté?
+			return new RedirectResponse((string)$url);
+		}
+		unset($_SESSION['user']);
+
+		$form = new FormValidation($_POST, ValidationStrategy::Connection);
+
+		$error = '';
+		if($form->validate()){
+			// à mettre dans une classe métier UserService, Authentication, AuthService?
+			$user = self::getUserByName($_POST['login'], $entityManager);
+			if(!empty($user) && $_POST['login'] === $user->getLogin() && password_verify($_POST['password'], $user->getPassword())){
+				$log = new Log(true);
+				
+				// protection fixation de session, si l'attaquant crée un cookie de session, il est remplacé
+				session_regenerate_id(true);
+				$_SESSION['user']['id'] = $user->getId();
+				$_SESSION['user']['username'] = $user->getLogin();
+				$_SESSION['user']['role'] = $user->getRole();
+
+				EmailService::cleanEmails($entityManager);
+				
+				try{
+					if(file_exists('../var/backups')){
+						Backup::mySQLdump($entityManager, 'auto'); // créer un nouveau backup, sauf si les dossiers nécessaires sont encore à créer
+					}
+				}
+				catch(\RuntimeException $e){
+					echo '<script>window.error_message = "' . $e->getMessage() . '";</script>';
+				}
+
+				$url->addParams(isset($_GET['from']) ? ['page' => $_GET['from']] : []);
+				isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
+			}
+			else
+			{
+				$log = new Log(false);
+				$error = 'bad_login_or_password';
+			}
+			$entityManager->persist($log);
+			$entityManager->flush();
+		}
+		else{
+			$error = $form->getError();
+		}
+		
+		if(!empty($error)){
+			sleep(1); // défense basique à la force brute
+			$url->addParams(['page' => 'connection']);
+			isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
+			isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : null;
+			$url->addParams(['error' => $error]);
+		}
+
+		return new RedirectResponse((string)$url);
+	}
+
+	// auth
+	static public function disconnect(): RedirectResponse
+	{
+		// nettoyage complet
+		unset($_SESSION['user']); // mémoire vive
+		session_destroy(); // fichier côté serveur
+		setcookie('PHPSESSID', '', time() - 86400, '/'); // cookie de session
+
+		// retour même page
+		$url = new URL;
+		isset($_GET['from']) ? $url->addParams(['page' => $_GET['from']]) : '';
+		isset($_GET['id']) ? $url->addParams(['id' => $_GET['id']]) : '';
+		return new RedirectResponse((string)$url);
+	}
+
+	// user
+	static public function updateUsername(EntityManager $entityManager): RedirectResponse
+	{
+		if(!IS_ADMIN){ // superflux, fait dans le routeur
+			return self::disconnect();
+		}
+
+		$url = new URL(['page' => 'user_edit']);
+		isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
+
+		$form = new FormValidation($_POST, ValidationStrategy::UsernameUpdate);
+
+		$error = '';
+		if($form->validate()){
+			// à mettre dans une classe métier UserService?
+			$user = self::getUserByName($_POST['login'], $entityManager);
+			if(password_verify($_POST['password'], $user->getPassword())){
+				$user->setLogin($_POST['new_login']);
+				$entityManager->flush();
+				$_SESSION['user']['username'] = $_POST['new_login'];
+
+				$url->addParams(['success_username' => 'new_login']);
+				$error = '';
+			}
+			else{
+				$error = 'bad_login_or_password';
+			}
+		}
+		else{
+			$error = $form->getError();
+		}
+		
+		if(!empty($error)){
+			sleep(1);
+			$url->addParams(['error_username' => $error]);
+		}
+		return new RedirectResponse((string)$url);
+	}
+
+	// user
+	static public function updatePassword(EntityManager $entityManager): RedirectResponse
+	{
+		if(!IS_ADMIN){ // superflux, fait dans le routeur
+			return self::disconnect();
+		}
+
+		$url = new URL(['page' => 'user_edit']);
+		isset($_GET['from']) ? $url->addParams(['from' => $_GET['from']]) : null;
+
+		$form = new FormValidation($_POST, ValidationStrategy::PasswordUpdate);
+
+		$error = '';
+		if($form->validate()){
+			// à mettre dans une classe métier UserService?
+			$user = self::getUserByName($_POST['login'], $entityManager);
+			if(password_verify($_POST['password'], $user->getPassword())){
+				$new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+				$user->setPassword($new_password);
+				$entityManager->flush();
+
+				$url->addParams(['success_password' => 'new_password']);
+				$error = '';
+			}
+			else{
+				$error = 'bad_login_or_password';
+			}
+		}
+		else{
+			$error = $form->getError();
+		}
+		
+		if(!empty($error)){
+			sleep(1);
+			$url->addParams(['error_password' => $error]);
+		}
+		return new RedirectResponse((string)$url);
+	}
+
+	// dans une classe mère ou un trait après découpage de UserController?
+	static private function getUserByName(string $login, EntityManager $entityManager): ?User
+	{
+		$users = $entityManager->getRepository(User::class)->findBy(['login' => $login]);
+		foreach($users as $user){
+			if($user->getLogin() === $login){
+				return $user;
+			}
+		}
+		return null;
+	}
+
+	static public function getUserById(int $id, EntityManager $entityManager): ?User
+	{
+		return $entityManager->find(User::class, $id);
+	}
+
+	// dans une classe Form?
+	// erreurs à la création des mots de passe
+	static private function removeSpacesTabsCRLF(string $chaine): string
+	{
+		$cibles = [' ', "\t", "\n", "\r"]; // doubles quotes !!
+		return(str_replace($cibles, '', $chaine));
+	}
+}

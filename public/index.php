@@ -14,7 +14,11 @@
 declare(strict_types=1);
 
 use Symfony\Component\HttpFoundation\Request;
-
+use App\Model\DatabaseSettingUp;
+use App\Service\Config;
+use App\Service\URL;
+use App\Service\Installation;
+use App\Service\Router;
 
 /* -- partie 1: prétraitement --
 code à exécuter pour toutes requêtes */
@@ -31,10 +35,10 @@ URL::setPort(Config::$port);
 URL::setHost($_SERVER['HTTP_HOST'] . Config::$index_path);
 
 // $entityManager
-require '../src/model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter
+require '../src/Model/doctrine-bootstrap.php'; // isDevMode est sur "true", DSN à adapter
 
 // session
-require('../src/service/session.php');
+require('../src/Service/session.php');
 startSession($entityManager);
 
 // tests de bon fonctionnement

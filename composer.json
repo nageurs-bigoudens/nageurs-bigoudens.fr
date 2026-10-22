@@ -36,6 +36,9 @@
         }
     ],
     "autoload": {
-        "classmap": ["src/"]
-     }
+        "psr-4": {
+            "App\\Entity\\": "src/Model/Entity/",
+            "App\\": "src/"
+        }
+    }
 }

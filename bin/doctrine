@@ -4,14 +4,15 @@
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+use App\Service\Config;
 
 chdir(dirname(__FILE__)); // pour être au même niveau que l'appli dans /public
 
-require('../src/service/Config.php');
+require('../src/Service/Config.php');
 Config::load('../config/config.ini');
 
-require '../src/model/doctrine-bootstrap.php';  // relatif
-//require __DIR__ . '/../src/model/doctrine-bootstrap.php'; // absolu
+require '../src/Model/doctrine-bootstrap.php';  // relatif
+//require __DIR__ . '/../src/Model/doctrine-bootstrap.php'; // absolu
 
 ConsoleRunner::run(
     new SingleManagerProvider($entityManager)

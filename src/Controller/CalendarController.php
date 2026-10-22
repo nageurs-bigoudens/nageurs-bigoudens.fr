@@ -1,0 +1,77 @@
+<?php
+// /src/Controller/CalendarController.php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Entity\Event;
+use App\Model\EventDTO;
+
+class CalendarController
+{
+	static public function getData(EntityManager $entityManager): JsonResponse
+	{
+	    // bornes début et fin du calendrier affiché à l'heure locale
+	    // noter que la vue "planning" est similaire à la vue "semaine"
+	    $start = new \DateTime($_GET['start']);
+	    $end = new \DateTime($_GET['end']);
+	    $start->setTimezone(new \DateTimeZone('UTC'));
+	    $end->setTimezone(new \DateTimeZone('UTC'));
+
+	    // affichage format ISO à l'heure UTC
+	    //$date->format('Y-m-d\TH:i:s\Z');
+
+	    // on prend les évènements se finissant après le début ou commençant avant la fin de la fourchette
+	    $dql = 'SELECT e FROM App\Entity\Event e WHERE e.end >= :start AND e.start <= :end';
+	    $bulk_data = $entityManager->createQuery($dql)
+	        ->setParameter('start', $start)
+	        ->setParameter('end', $end)
+	        ->getResult();
+
+	    $events = [];
+	    foreach($bulk_data as $one_entry){
+	        $event = new EventDTO($one_entry);
+	        $events[] = $event->toArray();
+	    }
+
+	    return new JsonResponse($events);
+	}
+
+	static public function newEvent(array $json, EntityManager $entityManager): JsonResponse
+	{
+		try{
+	        $event = new Event($json);
+	    }
+	    catch(\InvalidArgumentException $e){
+	        return new JsonResponse(['success' => false, 'error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST); // code 400
+	    }
+	    $entityManager->persist($event);
+	    $entityManager->flush();
+		
+		return new JsonResponse(['success' => true, 'id' => $event->getId()]);
+	}
+	static public function updateEvent(array $json, EntityManager $entityManager): JsonResponse
+	{
+		$event = $entityManager->find('App\Entity\Event', (int)$json['id']);
+	    try{
+	        $event->securedUpdateFromJSON($json);
+	    }
+	    catch(\InvalidArgumentException $e){
+	        return new JsonResponse(['success' => false, 'error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST); // code 400
+	    }
+	    $entityManager->flush();
+
+		return new JsonResponse(['success' => true]);
+	}
+	static public function removeEvent(array $json, EntityManager $entityManager): JsonResponse
+	{
+		$event = $entityManager->find('App\Entity\Event', (int)$json['id']);
+	    $entityManager->remove($event);
+	    $entityManager->flush();
+
+		return new JsonResponse(['success' => true]);
+	}
+}

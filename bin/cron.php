@@ -4,9 +4,12 @@
 
 declare(strict_types=1);
 
+use App\Service\Config;
+use App\Service\EmailService;
+
 chdir(dirname(__FILE__)); // = /chemin/du/site/bin = même niveau que public/
-require('../src/Config.php');
+require('../src/Service/Config.php');
 Config::load('../config/config.ini');
-require '../src/model/doctrine-bootstrap.php';
+require '../src/Model/doctrine-bootstrap.php';
 
 EmailService::cleanEmails($entityManager);

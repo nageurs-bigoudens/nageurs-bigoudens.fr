@@ -1,0 +1,226 @@
+<?php
+// src/Controller/MenuAndPathsController.php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Entity\Page;
+use App\Model\Menu;
+use App\Model\Model;
+use App\Service\URL;
+use App\View\NavBuilder;
+use App\View\MenuBuilder;
+
+class MenuAndPathsController
+{
+    static public function newUrlMenuEntry(EntityManager $entityManager): RedirectResponse
+    {
+        Model::$menu = new Menu($entityManager);
+        $previous_page = Model::$menu->findPageById((int)$_POST["location"]); // (int) à cause de declare(strict_types=1);
+        $parent = $previous_page->getParent();
+
+        $url_input = trim($_POST["url_input"]); // faire htmlspecialchars à l'affichage
+        if(!filter_var($url_input, FILTER_VALIDATE_URL) || !str_starts_with($url_input, 'http')){
+            // utiliser une flash error
+            return new RedirectResponse((string)new URL(['page' => $_GET['from'], 'error' => 'invalide_url']));
+        }
+
+        $page = new Page(
+            trim(htmlspecialchars($_POST["label_input"])),
+            $url_input, '',
+            true, true, false,
+            $previous_page->getPosition(),
+            $parent); // peut et DOIT être null si on est au 1er niveau
+
+        // on a donné à la nouvelle entrée la même position qu'à la précédente,
+        // addChild l'ajoute à la fin du tableau "children" puis on trie
+        // exemple avec 2 comme position demandée: 1 2 3 4 2 devient 1 2 3 4 5 et la nouvelle entrée sera en 3è position
+        if(!$parent){
+            $parent = Model::$menu;
+        }
+        $parent->addChild($page); // true pour réindexer les positions en BDD
+        $parent->reindexPositions();
+
+        $entityManager->persist($page);
+        $entityManager->flush();
+        return new RedirectResponse((string)new URL(['page' => $_GET['from']]));
+    }
+
+    // on pourrait utiliser FormValidation ici
+    static public function editUrl(EntityManager $entityManager, array $json): JsonResponse
+    {
+        $url_data = trim($json['input_data']); // garder htmlspecialchars pour l'affichage
+        $page = $entityManager->find('App\Entity\Page', $json['id']);
+
+        if(!$page){
+            return new JsonResponse(['success' => false, 'message' => "id invalide"]);
+        }
+        elseif(!in_array($json['field'], ['url_name', 'url_content'])){
+            return new JsonResponse(['success' => false, 'message' => "champ invalide"]);
+        }
+        elseif($json['field'] === 'url_content' && (!filter_var($url_data, FILTER_VALIDATE_URL) || !str_starts_with($url_data, 'http'))){
+            return new JsonResponse(['success' => false, 'message' => "la chaîne envoyée n'est pas une URL valide"]);
+        }
+        else{
+            if($json['field'] === 'url_name'){
+                $page->setPageName($url_data);
+            }
+            elseif($json['field'] === 'url_content'){
+                $page->setEndOfPath($url_data);
+            }
+            $entityManager->flush();
+            return new JsonResponse(['success' => true, 'url_data' => $url_data]);
+        }
+    }
+
+    static public function deleteUrlMenuEntry(EntityManager $entityManager): RedirectResponse
+    {
+        Model::$menu = new Menu($entityManager);
+        $page = Model::$menu->findPageById((int)$_POST["delete"]);
+        $parent = $page->getParent();
+        if($parent == null){
+            $parent = Model::$menu;
+        }
+
+        $parent->removeChild($page); // suppression de $children avant de trier
+        $parent->reindexPositions();
+
+        $entityManager->remove($page); // suppression en BDD
+        $entityManager->flush();
+        return new RedirectResponse((string)new URL(['page' => $_GET['from']]));
+    }
+
+	static public function MoveOneLevelUp(EntityManager $entityManager, array $json): JsonResponse
+	{
+		$id = $json['id'];
+		$page = Model::$menu->findPageById((int)$id);
+
+        $parent = $page->getParent(); // peut être null
+        if($parent === null){
+            // 1er niveau: ne rien faire
+            return new JsonResponse(['success' => false, 'message' => 'nothing to do']);
+        }
+        // BDD
+        else{
+            $page->setPosition($parent->getPosition() + 1); // nouvelle position
+
+            // 2ème niveau: le parent devient $menu, puis null après tri
+            if($parent->getParent() === null){
+                // connexion dans les deux sens
+                $page->setParent(Model::$menu); // => pour la persistance
+                
+                //Model::$menu->addChild($page); // => pour sortChildren
+                $page->getParent()->addChild($page); // => pour sortChildren
+                $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
+                $page->setParent(null);
+
+                // affichage
+                $page->setPagePath($page->getEndOfPath());
+                $page->fillChildrenPagePath();
+            }
+            // 3ème niveau et plus
+            else{
+                $page->setParent($parent->getParent()); // nouveau parent
+                $page->getParent()->addChild($page); // => pour sortChildren
+                $page->getParent()->sortChildren(true); // positions décaléees des nouveaux petits frères
+                $page->fillChildrenPagePath($page->getParent()->getPagePath());
+            }
+            $entityManager->flush();
+            
+            // affichage
+            $parent->removeChild($page);
+            $nav_builder = new NavBuilder();
+	        $menu_builder = new MenuBuilder(null, false);
+			return new JsonResponse(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
+        }
+	}
+
+	static public function MoveOneLevelDown(EntityManager $entityManager, array $json): JsonResponse
+	{
+		$id = $json['id'];
+		$page = Model::$menu->findPageById((int)$id);
+
+        $parent = $page->getParent(); // peut être null
+        if($parent === null){
+            $parent = Model::$menu;
+        }
+
+        // BDD
+        $parent->sortChildren(true); // trie et réindexe par sécurité: 1, 2, 3...
+        if($page->getPosition() > 1){
+            foreach($parent->getChildren() as $child){
+                if($child->getPosition() === $page->getPosition() - 1){
+                    // refus si $parent est une adresse, ça va casser le lien, exemple: index.php?page=chemin/http://un_site_web.fr/vers/ici
+                    if(str_starts_with($child->getEndOfPath(), 'http')){
+                        return new JsonResponse(['success' => false, 'error' => 'new_parent_is_a_link']);
+                    }
+
+                    $page->setParent($child);
+                    break;
+                }
+            }
+            $page->setPosition(count($page->getParent()->getChildren()) + 1);
+        }
+        $entityManager->flush();
+
+        // affichage
+		$parent->removeChild($page);
+        $page->getParent()->addChild($page);
+        $page->fillChildrenPagePath($page->getParent()->getPagePath()); // variable non mappée $page_path
+        $nav_builder = new NavBuilder();
+		$menu_builder = new MenuBuilder(null, false);
+
+		return new JsonResponse(['success' => true, 'nav' => $nav_builder->render(), 'menu_buttons' => $menu_builder->render()]);
+	}
+
+	static public function SwitchPositions(EntityManager $entityManager, array $json): JsonResponse
+	{
+		$id1 = $json['id1'];
+        $id2 = $json['id2'];
+
+        // vérifier qu'ils ont le même parent
+        $page1 = Model::$menu->findPageById((int)$id1);
+        $page2 = Model::$menu->findPageById((int)$id2);
+
+        // double le contrôle fait en JS
+        if($page1->getParent() === $page2->getParent()) // comparaison stricte d'objet (même instance du parent?)
+        {
+        	// inversion
+	        $tmp = $page1->getPosition();
+	        $page1->setPosition($page2->getPosition());
+	        $page2->setPosition($tmp);
+	        Model::$menu->sortChildren(true); // modifie tableau children 
+	        $entityManager->flush();
+	        
+	        // nouveau menu
+	        $nav_builder = new NavBuilder();
+	        return new JsonResponse(['success' => true, 'nav' => $nav_builder->render()]);
+        }
+        else{
+        	return new JsonResponse(['success' => false]);
+        }
+	}
+
+	static public function displayInMenu(EntityManager $entityManager, array $json): JsonResponse
+	{
+		$id = $json['id'];
+		$checked = $json['checked'];
+
+		$page = Model::$menu->findPageById((int)$id);
+		if($page->isHidden() === $checked){
+			$page->setHidden(!$checked);
+			$entityManager->flush();
+
+			// nouveau menu
+			$nav_builder = new NavBuilder();
+			return new JsonResponse(['success' => true, 'nav' => $nav_builder->render()]);
+		}
+		else{
+			return new JsonResponse(['success' => false]);
+		}
+	}
+}

@@ -4,6 +4,9 @@
 
 declare(strict_types=1);
 
+use App\Service\Config;
+use App\Service\Backup;
+
 if($argc === 2){
     if(pathinfo($argv[1])['extension'] !== 'sql'){
     	try{
@@ -21,7 +24,7 @@ if($argc === 2){
 chdir(dirname(__FILE__)); // /chemin/absolu/bin/restore_db.php
 require "../vendor/autoload.php";
 Config::load('../config/config.ini');
-require '../src/model/doctrine-bootstrap.php';
+require '../src/Model/doctrine-bootstrap.php';
 
 // backup sur le système de fichiers en paramètre
 if($argc === 2){
