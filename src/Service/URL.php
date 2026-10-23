@@ -58,33 +58,20 @@ class URL implements \Stringable
 	public function setAnchor(string $anchor = ''): void
 	{
 		if($anchor != ''){
-			$this->anchor = '#' . ltrim($anchor, '#');
+			$this->anchor = '#' . rawurlencode(ltrim($anchor, '#'));// rawurlencode échappe les mêmes caractères
 		}
 		else{
 			$this->anchor = '';
 		}
 	}
 
-	private function makeParams(): string
-	{
-		$output = '';
-		$first = true;
-		
-		foreach($this->params as $key => $value) {
-			if($first){
-				$output .= '?';
-				$first = false;
-			}
-			else{
-				$output .= '&';
-			}
-			$output .= $key . '=' . $value;
-		}
-		return $output;
-	}
-
 	public function __toString(): string
 	{
-		return self::$protocol . self::$host . self::$port . self::$path . $this->makeParams() . $this->anchor;
+		return self::$protocol . self::$host . self::$port . self::$path
+			. ($this->params ? '?' . http_build_query($this->params) : '')
+			. $this->anchor;
+		// http_build_query change un tableau comme ['key1' => 'value 1', 'key2' => 'value 2']
+		// en chaine: key1=value+1&key2=value+2
+		// les caractères ", ', <, >, &, #, = et espaces sont échappés (comme avec rawurlencode pour les ancres)
 	}
 }

@@ -118,7 +118,7 @@ class NewBuilder extends AbstractBuilder
                     if(self::$new_article_mode){
                         $delete_article = '';
                         // valider la création d'un nouvel article
-                        $submit_js = 'onclick="submitArticle(\'' . $_GET['id'] . '\')"';
+                        $submit_js = 'onclick="submitArticle(\'' . $id . '\')"';
                         $submit_article = '<p id="save-' . $id . '"><img class="action_icon delete_button" src="assets/save.svg" ' . $submit_js . '></p>' . "\n";
                     }
                     // mode article existant

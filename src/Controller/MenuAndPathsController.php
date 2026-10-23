@@ -6,31 +6,33 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Entity\Page;
 use App\Model\Menu;
 use App\Model\Model;
 use App\Service\URL;
+use App\Service\Security;
 use App\View\NavBuilder;
 use App\View\MenuBuilder;
 
 class MenuAndPathsController
 {
-    static public function newUrlMenuEntry(EntityManager $entityManager): RedirectResponse
+    static public function newUrlMenuEntry(EntityManager $entityManager, Request $request): RedirectResponse
     {
         Model::$menu = new Menu($entityManager);
         $previous_page = Model::$menu->findPageById((int)$_POST["location"]); // (int) à cause de declare(strict_types=1);
         $parent = $previous_page->getParent();
 
-        $url_input = trim($_POST["url_input"]); // faire htmlspecialchars à l'affichage
-        if(!filter_var($url_input, FILTER_VALIDATE_URL) || !str_starts_with($url_input, 'http')){
+        $url_input = trim($request->request->get("url_input")); // faire htmlspecialchars à l'affichage
+        if(!Security::validateURL($url_input)){
             // utiliser une flash error
-            return new RedirectResponse((string)new URL(['page' => $_GET['from'], 'error' => 'invalide_url']));
+            return new RedirectResponse((string)new URL(['page' => $request->query->get('from'), 'error' => 'invalide_url']));
         }
 
         $page = new Page(
-            trim(htmlspecialchars($_POST["label_input"])),
+            trim(htmlspecialchars($request->request->get("label_input"))),
             $url_input, '',
             true, true, false,
             $previous_page->getPosition(),
@@ -47,7 +49,7 @@ class MenuAndPathsController
 
         $entityManager->persist($page);
         $entityManager->flush();
-        return new RedirectResponse((string)new URL(['page' => $_GET['from']]));
+        return new RedirectResponse((string)new URL(['page' => $request->query->get('from')]));
     }
 
     // on pourrait utiliser FormValidation ici
@@ -62,7 +64,7 @@ class MenuAndPathsController
         elseif(!in_array($json['field'], ['url_name', 'url_content'])){
             return new JsonResponse(['success' => false, 'message' => "champ invalide"]);
         }
-        elseif($json['field'] === 'url_content' && (!filter_var($url_data, FILTER_VALIDATE_URL) || !str_starts_with($url_data, 'http'))){
+        elseif($json['field'] === 'url_content' && !Security::validateURL($url_data)){
             return new JsonResponse(['success' => false, 'message' => "la chaîne envoyée n'est pas une URL valide"]);
         }
         else{
@@ -77,10 +79,10 @@ class MenuAndPathsController
         }
     }
 
-    static public function deleteUrlMenuEntry(EntityManager $entityManager): RedirectResponse
+    static public function deleteUrlMenuEntry(EntityManager $entityManager, Request $request): RedirectResponse
     {
         Model::$menu = new Menu($entityManager);
-        $page = Model::$menu->findPageById((int)$_POST["delete"]);
+        $page = Model::$menu->findPageById((int)$request->request->get("delete"));
         $parent = $page->getParent();
         if($parent == null){
             $parent = Model::$menu;
@@ -91,7 +93,7 @@ class MenuAndPathsController
 
         $entityManager->remove($page); // suppression en BDD
         $entityManager->flush();
-        return new RedirectResponse((string)new URL(['page' => $_GET['from']]));
+        return new RedirectResponse((string)new URL(['page' => $request->query->get('from')]));
     }
 
 	static public function MoveOneLevelUp(EntityManager $entityManager, array $json): JsonResponse

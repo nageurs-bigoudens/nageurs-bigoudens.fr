@@ -46,7 +46,7 @@ class FormValidation
 	public function validate(): bool
 	{
 		$this->error = ($this->callStrategy)(); // appel de la callback
-		return empty($this->errors);
+		return $this->error === null;
 	}
 
 	public function getError(): string

@@ -347,11 +347,11 @@ class Router{
                     /* -- page Menu et chemins -- */
                     // création d'une entrée de menu avec une URL
                     elseif($this->request->request->has("label_input") && $this->request->request->has("url_input") && $this->request->request->has("location")){
-                        return MenuAndPathsController::newUrlMenuEntry($this->entityManager);
+                        return MenuAndPathsController::newUrlMenuEntry($this->entityManager, $this->request);
                     }
                     // suppression d'une entrée de menu avec une URL
                     elseif($this->request->request->has('delete') && $this->request->request->has('x') && $this->request->request->has('y')){ // 2 params x et y sont là parce qu'on a cliqué sur une image
-                        return MenuAndPathsController::deleteUrlMenuEntry($this->entityManager);
+                        return MenuAndPathsController::deleteUrlMenuEntry($this->entityManager, $this->request);
                     }
 
 

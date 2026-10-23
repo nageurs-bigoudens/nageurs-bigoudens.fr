@@ -85,7 +85,7 @@ class HeaderBuilder extends AbstractBuilder
                 // boucle sur la liste complète de réseaux sociaux
                 foreach(NodeData::$social_networks as $network){
                     $checked = (isset($social_show[$network]) && $social_show[$network]) ? 'checked' : '';
-                    $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . $social[$network] . '"' : '';
+                    $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . htmlspecialchars($social[$network]) . '"' : '';
 
                     $social_networks .= '<div id="header_' . $network . '">
                         <input type="checkbox" onclick="checkSocialNetwork(\'header_' . $network . '\')" ' . $checked . '>
@@ -112,7 +112,7 @@ class HeaderBuilder extends AbstractBuilder
                     // boucle sur les réseaux sociaux "activés"
                     foreach(array_keys($social_show) as $network){
                         if($social_show[$network]){
-                            $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . $social[$network] . '"' : '';
+                            $href = (isset($social[$network]) && $social[$network] !== '') ? 'href="' . htmlspecialchars($social[$network]) . '"' : '';
                             $social_networks .= '<div id="header_' . $network . '">
                                     <a ' . $href . ' target="_blank" rel="noopener noreferrer">'
                                         . $this->insertSVG(self::ICON_PATH . $network . '.svg', ['id' => 'header_' . $network . '_content','class' => 'svg_fill_red'])

@@ -27,6 +27,12 @@ class Security
 	    return trim(htmLawed($chaine, self::$configHtmLawed, self::$specHtmLawed));
 	}
 
+	public static function validateURL(string $link): bool
+	{
+	    return filter_var($link, FILTER_VALIDATE_URL) !== false // c'est une URL?
+        && in_array(strtolower(parse_url($link, PHP_URL_SCHEME) ?? ''), ['http', 'https'], true); // PHP_URL_SCHEME pour récupérer le protocole
+	}
+
 	public static function secureFileName(string $chaine): string
 	{
 		// sécuriser un nom avec chemin avec basename?
@@ -83,7 +89,7 @@ class Security
 }
 
 // lien sans http://
-function fixLinks($data)
+function fixLinks(string $data): string
 {
     // 1/
     // si une adresse est de type "domaine.fr" sans le http:// devant, le comportement des navigateurs est de rechercher un fichier comme si mon adresse commençait par file://

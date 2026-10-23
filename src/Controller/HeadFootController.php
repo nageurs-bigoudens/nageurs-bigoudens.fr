@@ -28,14 +28,19 @@ class HeadFootController
 			$node_data = $model->getNode()->getNodeData();
 
 			// liens réseaux sociaux
+			$link = trim($json['new_text'] ?? ''); // trim n'aime pas recevoir un NULL
 			if(in_array($params_array[1], NodeData::$social_networks)){
+			    if($link !== '' && !Security::validateURL($link)){
+			    	return new JsonResponse(['success' => false, 'error' => 'invalid_url']);
+			    }
+
 				$social = $node_data->getData()['social'] ?? [];
-				$social[$params_array[1]] = $json['new_text'];
+				$social[$params_array[1]] = $link;
 				$node_data->updateData('social', $social);
 			}
 			// autres textes
 			else{
-				$node_data->updateData($params_array[1], $json['new_text']); // $params_array[1] n'est pas contrôlé
+				$node_data->updateData($params_array[1], $link); // $params_array[1] n'est pas contrôlé
 			}
 
 			$entityManager->flush();

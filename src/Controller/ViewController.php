@@ -38,7 +38,8 @@ class ViewController{
                 else{
                     // mode création d'article
                     // l'id du bloc et 'from=' sont vérifiés dans ArticleController::editorSubmit
-                    if($request->query->get('id')[0] === 'n' && $request->query->has('from') && !empty($request->query->get('from'))){
+                    if(preg_match('/^n\d+\z/', $request->query->get('id')) // débute par 'n' puis des chiffres, \z au lieu de $ pour éviter un saut de ligne à la fin
+                        && $request->query->has('from') && !empty($request->query->get('from'))){
                         NewBuilder::$new_article_mode = true;
                     }
                 }
