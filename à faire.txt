@@ -1,0 +1,10 @@
+retester toutes les fonctionnalités
+
+dans Backup, détecter zlib pour la compression gzip optionnelle
+- le serveur stocke avec gzip si dispo parce qu'il est peut probable qu'il perde un jour une fonctionnalité
+
+mise à jour depuis le site:
+- uploader des zip page maintenance et les mettre dans var/ accompagnés d'un script de MAJ au cas où
+- le code permettant la MAJ fait partie du site
+- supprimer dossier public/deploiement
+- supprimer fichier deploiement.txt

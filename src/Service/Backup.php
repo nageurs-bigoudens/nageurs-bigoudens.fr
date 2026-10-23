@@ -47,7 +47,10 @@ class Backup
 			}
 			$command->mustRun(); // comme run() mais lance une ProcessFailedException
 
-			//$file_path = self::gzipCompress($file_path); // '.gz' ajouté à la fin
+			// pour plus tard
+			/*if(extension_loaded('zlib')){
+				//$file_path = self::gzipCompress($file_path); // '.gz' ajouté à la fin
+			}*/
 
 			chmod($file_path, 0666);
 			return $file_path;
